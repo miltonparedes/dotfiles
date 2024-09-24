@@ -1,0 +1,38 @@
+{
+  "vim_mode": false,
+  "chat_panel": {
+    "dock": "left"
+  },
+  "assistant": {
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-3-5-sonnet-20240620"
+    },
+    "version": "2",
+    "dock": "left",
+    "default_width": 450
+  },
+  "features": {
+    "inline_completion_provider": "supermaven"
+  },
+  "project_panel": {
+    "dock": "right"
+  },
+  "theme": "VSCode Dark Modern",
+  "experimental.theme_overrides": {
+    "element.background": "#181818",
+    "deleted": "#d07277ff",
+    "deleted.background": "#d072771a",
+    "deleted.border": "#4c2b2cff",
+    "info": "#a1c181ff",
+    "info.background": "#a1c1811a",
+    "info.border": "#353535"
+  },
+  "ui_font_size": 15,
+  "buffer_font_size": 13,
+  "show_wrap_guides": true,
+  "wrap_guides": [88, 120],
+  "show_indent_guides": true,
+  "soft_wrap": "editor_width",
+  "show_whitespaces": "all"
+}

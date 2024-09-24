@@ -1,0 +1,16 @@
+alias ..='z ..'
+
+alias ls='eza'
+alias lst='eza -T'
+alias ll='eza -l -o'
+alias la='eza -a'
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+alias j='just'
