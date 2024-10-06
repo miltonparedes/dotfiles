@@ -1,8 +1,4 @@
 # Install configurations
-install:
-    @echo "Installing configurations..."
-    # Commands to install your dotfiles would go here
-    just install-python-dependencies
 
 install-python-dependencies:
     @echo "Installing Python dependencies..."
@@ -13,7 +9,7 @@ compile-python-dependencies:
     @uv pip compile requirements.in > requirements.txt
 
 # Install or update custom CLI tool
-install-cli:
+install-spell:
     @echo "Inscribing or updating the Spell CLI..."
     @mkdir -p ~/.config/spell
     @cp -f spell/cli.just ~/.config/spell/cli.just
@@ -44,6 +40,13 @@ detect-os:
         echo "Unrecognized operating system"; \
     fi
 
+install-brew-essential-cli-packages:
+    @echo "Installing Homebrew packages..."
+    brew update
+    brew bundle --file cli.Brewfile
+    brew upgrade
+    brew cleanup
+
 # Install OS-specific configuration
 install-os-config: detect-os
     @if [ "$(uname)" = "Darwin" ]; then \
@@ -56,6 +59,5 @@ install-os-config: detect-os
         echo "Cannot install OS-specific configuration"; \
     fi
 
-# Install everything
-install-all: install install-cli install-os-config
+install: install-brew-essential-cli-packages install-os-config install-spell
     @echo "Installation complete"
