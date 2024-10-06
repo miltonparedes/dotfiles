@@ -1,4 +1,4 @@
-#! ../../.venv/bin/python
+#!/usr/bin/env python
 
 # Required parameters:
 # @raycast.schemaVersion 1
@@ -19,10 +19,15 @@ import sys
 import subprocess
 import os
 from thefuzz import process
+from dotenv import load_dotenv
 
-remote_host = "workstation"
-remote_user = "milton"
-remote_workspace = "/var/home/milton/Workspaces"
+# Load environment variables from ../../.env
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
+load_dotenv(dotenv_path)
+
+remote_host = os.getenv('REMOTE_HOST')
+remote_user = os.getenv('REMOTE_USER')
+remote_workspace = os.getenv('REMOTE_WORKSPACE')
 
 
 def run_ssh_command(command):

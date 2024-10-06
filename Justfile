@@ -2,6 +2,15 @@
 install:
     @echo "Installing configurations..."
     # Commands to install your dotfiles would go here
+    just install-python-dependencies
+
+install-python-dependencies:
+    @echo "Installing Python dependencies..."
+    @uv pip install -r requirements.txt --system --break-system-packages
+
+compile-python-dependencies:
+    @echo "Compiling Python dependencies..."
+    @uv pip compile requirements.in > requirements.txt
 
 # Install or update custom CLI tool
 install-cli:
