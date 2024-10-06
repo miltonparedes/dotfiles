@@ -15,19 +15,20 @@
 # @raycast.author miltonparedes
 # @raycast.authorURL https://raycast.com/miltonparedes
 
-import sys
-import subprocess
 import os
-from thefuzz import process
+import subprocess
+import sys
+
 from dotenv import load_dotenv
+from thefuzz import process
 
 # Load environment variables from ../../.env
-dotenv_path = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
+dotenv_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 load_dotenv(dotenv_path)
 
-remote_host = os.getenv('REMOTE_HOST')
-remote_user = os.getenv('REMOTE_USER')
-remote_workspace = os.getenv('REMOTE_WORKSPACE')
+remote_host = os.getenv("REMOTE_HOST")
+remote_user = os.getenv("REMOTE_USER")
+remote_workspace = os.getenv("REMOTE_WORKSPACE")
 
 
 def run_ssh_command(command):
@@ -35,7 +36,11 @@ def run_ssh_command(command):
     ssh_command = ["ssh", f"{remote_user}@{remote_host}", command]
     try:
         result = subprocess.run(
-            ssh_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            ssh_command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
         )
         return result.stdout.strip()
     except subprocess.CalledProcessError:
@@ -55,7 +60,9 @@ def list_projects():
     result = run_ssh_command(command)
     if result:
         # Extract relative paths of the projects
-        projects = [line.replace(f"{remote_workspace}/", "") for line in result.split("\n")]
+        projects = [
+            line.replace(f"{remote_workspace}/", "") for line in result.split("\n")
+        ]
         return projects
     return []
 
@@ -87,7 +94,9 @@ def main():
             print(f"No projects found in {remote_workspace}.")
             sys.exit(1)
 
-        similar_project = find_similar_project(project_path, available_projects, threshold=50)
+        similar_project = find_similar_project(
+            project_path, available_projects, threshold=50
+        )
 
         if similar_project:
             print(f"Did you mean '{similar_project}'? Using the closest match.")
