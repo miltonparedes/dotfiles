@@ -64,7 +64,7 @@ set-shell-functions shell:
 
 lazygit-config path:
     @echo "Configuring lazygit..."
-    @mkdir -p '{{path}}/lazygit'
+    @mkdir -p {{path}}/lazygit
     @cp -f lazygit/config.yml {{path}}/lazygit/config.yml
 
 install-mac-os-config: install-python-dependencies
