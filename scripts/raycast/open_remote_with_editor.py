@@ -113,8 +113,8 @@ def main():
     elif editor == "cursor":
         command = ["cursor", "--folder-uri", folder_uri]
     elif editor == "zed":
-        # TODO: Add real support for zed
-        command = ["zed", "--folder-uri", folder_uri]
+        zed_uri = f"ssh://{remote_user}@{remote_host}{remote_path}"
+        command = ["zed", zed_uri]
     else:
         print(f"Unsupported editor: {editor}")
         sys.exit(1)
