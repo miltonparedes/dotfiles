@@ -2,7 +2,7 @@ customCommands:
   - key: <c-a>
     description: Lazycommit
     command: |
-      aichat "Please suggest 10 commit messages, given the following diff:
+      aichat "Please suggest 5 commit messages, given the following diff:
 
         \`\`\`diff
         $(git diff --cached)
@@ -14,16 +14,16 @@ customCommands:
         which is \`<type>(<scope>): <description>\`.
         2. **Relevance:** Avoid mentioning a module name unless it's directly relevant
         to the change.
-        3. **Enumeration:** List the commit messages from 1 to 10.
+        3. **Enumeration:** List the commit messages from 1 to 5.
         4. **Clarity and Conciseness:** Each message should clearly and concisely convey
         the change made.
 
         **Commit Message Examples:**
 
-        - fix(app): add password regex pattern
-        - test(unit): add new test cases
+        - fix: add password regex pattern
+        - test: add new test cases
         - style: remove unused imports
-        - refactor(pages): extract common code to \`utils/wait.ts\`
+        - refactor: extract common code to \`utils/wait.ts\`
 
         **Recent Commits on Repo for Reference:**
 
@@ -65,7 +65,7 @@ customCommands:
         for your best commit, not the best average commit. It's better to cover more
         scenarios than include a lot of overlap.
 
-        Write your 10 commit messages below in the format shown in Output Template section above." \
+        Write your 5 commit messages below in the format shown in Output Template section above." \
           | fzf --height 40% --border --ansi --preview "echo {}" --preview-window=up:wrap \
           | sed -E 's/^[0-9]+\.\s*//' \
           | xargs -I {} bash -c '
