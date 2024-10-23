@@ -59,8 +59,8 @@ case "$editor" in
 esac
 
 if eval "$command"; then
-    echo "Abriendo $project_root con $editor localmente"
+    echo "Opening $project_root with $editor"
 else
-    echo "Error al abrir $project_root con $editor"
+    echo "Error opening $project_root with $editor"
     exit 1
 fi
