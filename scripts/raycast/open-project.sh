@@ -17,17 +17,6 @@
 
 source "$(dirname "$0")/../../.env"
 
-list_projects_and_check_path() {
-    local check_path="$1"
-    projects=$(find "${LOCAL_WORKSPACE}" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | sed "s|${LOCAL_WORKSPACE}/||")
-    echo "$projects"
-    if [ -d "${LOCAL_WORKSPACE}/${check_path}" ]; then
-        echo "PATH_EXISTS"
-    else
-        echo "PATH_NOT_EXISTS"
-    fi
-}
-
 if [ $# -lt 1 ]; then
     echo "No project path provided."
     exit 1
@@ -36,27 +25,22 @@ fi
 project_path="${1%/}"
 editor="${2:-cursor}"
 
-project_root=$(echo "$project_path" | cut -d'/' -f1,2)
+project_root=$(find "${LOCAL_WORKSPACE}" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | \
+    sed "s|${LOCAL_WORKSPACE}/||" | \
+    fzf --filter="$project_path" --no-sort | \
+    head -n1)
 
-output=$(list_projects_and_check_path "$project_root")
-projects=$(echo "$output" | sed '$d')
-path_exists=$(echo "$output" | tail -n1)
-
-if [ "$path_exists" = "PATH_NOT_EXISTS" ]; then
-    echo "Project path '$project_root' does not exist locally."
-
-    similar_project=$(echo "$projects" | fzf --filter="$project_root" --no-sort | head -n1)
-
-    if [ -n "$similar_project" ]; then
-        echo "Did you mean '$similar_project'? Using the closest match."
-        project_root="$similar_project"
-    else
-        echo "No similar project found."
-        exit 1
-    fi
+if [ -z "$project_root" ]; then
+    echo "No project found matching '$project_path'"
+    exit 1
 fi
 
 local_path="${LOCAL_WORKSPACE}/${project_root}"
+
+if [ ! -d "$local_path" ]; then
+    echo "Project path '$project_root' does not exist locally."
+    exit 1
+fi
 
 case "$editor" in
     code|vscode)
@@ -69,14 +53,14 @@ case "$editor" in
         command="zed \"$local_path\""
         ;;
     *)
-        echo "Unsupported editor: $editor"
+        echo "Editor no soportado: $editor"
         exit 1
         ;;
 esac
 
 if eval "$command"; then
-    echo "Opening $project_root with $editor locally"
+    echo "Abriendo $project_root con $editor localmente"
 else
-    echo "Error opening $project_root with $editor"
+    echo "Error al abrir $project_root con $editor"
     exit 1
 fi
