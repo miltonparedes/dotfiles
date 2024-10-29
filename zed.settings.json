@@ -6,11 +6,17 @@
   "assistant": {
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-3-5-sonnet-20240620"
+      "model": "claude-3-5-sonnet-latest"
     },
     "version": "2",
     "dock": "left",
     "default_width": 450
+  },
+  "language_models": {
+    "openai": {
+      "version": "1",
+      "low_speed_timeout_in_seconds": 1200
+    }
   },
   "features": {
     "inline_completion_provider": "supermaven"
@@ -28,11 +34,12 @@
     "info.background": "#a1c1811a",
     "info.border": "#353535"
   },
-  "ui_font_size": 15,
+  "ui_font_size": 14,
   "buffer_font_size": 13,
   "show_wrap_guides": true,
   "wrap_guides": [88, 120],
   "show_indent_guides": true,
   "soft_wrap": "editor_width",
-  "show_whitespaces": "all"
+  "show_whitespaces": "all",
+  "relative_line_numbers": true
 }
