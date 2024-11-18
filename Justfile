@@ -4,19 +4,11 @@ bash_aliases := "~/.bashrc.d/aliases"
 spell_cli_path := "~/.config/spell/cli.just"
 spell_alias := 'alias spell="just --justfile ~/.config/spell/cli.just --working-directory ~"'
 
-install-python-dependencies:
-    @echo "Installing Python dependencies..."
-    @uv pip install -r requirements.txt --system --break-system-packages
-
-compile-python-dependencies:
-    @echo "Compiling Python dependencies..."
-    @uv pip compile requirements.in > requirements.txt
-
 # Install or update custom CLI tool
 install-spell:
     @echo "Inscribing or updating the Spell CLI..."
     @mkdir -p ~/.config/spell
-    @cp -f spell/cli.just ~/.config/spell/cli.just
+    @cp -rf spell/* ~/.config/spell/
     @if [ -f ~/.zshrc.d/aliases ]; then \
         if grep -q "alias spell=" ~/.zshrc.d/aliases; then \
             if [ "$(uname)" = "Darwin" ]; then \
@@ -67,7 +59,7 @@ lazygit-config path:
     @mkdir -p {{path}}/lazygit
     @cp -f lazygit/config.yml {{path}}/lazygit/config.yml
 
-install-mac-os-config: install-python-dependencies
+install-mac-os-config:
     @echo "Installing configuration for macOS (zsh)..."
     just set-shell-functions zsh
     just lazygit-config "~/Library/Application\ Support"
