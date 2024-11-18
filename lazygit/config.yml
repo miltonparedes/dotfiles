@@ -15,47 +15,62 @@ customCommands:
         
         trap cleanup EXIT INT TERM
         
-        aichat "Please suggest 5 commit messages, given the following diff:
+        aichat "You are a Git commit message expert, specializing in detailed and meaningful commit messages.
 
+          TASK: Generate 5 commit messages for the following changes, considering multiple files may have been modified.
+
+          CURRENT CHANGES:
           \`\`\`diff
           $(git diff --cached)
           \`\`\`
 
-          **Criteria:**
-
-          1. Follow the conventional commits format: \`<type>: <description>\`
-          2. Types: fix, feat, docs, style, refactor, test, chore
-          3. Keep messages clear, concise and meaningful
-          4. Focus on WHY and WHAT, not HOW
-          5. Use imperative mood (e.g., 'add' not 'added')
-
-          **Examples of good commits:**
-          - fix: prevent racing of requests
-          - feat: add support for dark mode
-          - refactor: simplify error handling logic
-          - docs: update API documentation
-          
-          **Recent Commits:**
+          RECENT COMMITS:
           \`\`\`
           $(git log -n 5 --pretty=format:'%h %s')
           \`\`\`
 
-          **Instructions:**
+          REQUIREMENTS:
 
-          - Take a moment to understand the changes made in the diff
-          - Think about the impact of these changes on the project
-          - Consider if this is a bug fix, new feature, improvement, or maintenance
-          - Generate messages that will be helpful for future code reviews
-          - Each message should stand alone and make sense without context
+          1. Conventional Commits Format:
+             <type>: <short summary>
+             
+             [optional body]
+             [optional footer(s)]
 
-          **Output Format:**
-          - List exactly 5 commit messages
-          - Each on a new line
-          - No numbering or bullets
-          - No extra spacing or decorations
-          - Follow the conventional commit format strictly
+          2. Types:
+             - feat: new feature
+             - fix: bug fix
+             - docs: documentation only
+             - style: formatting, missing semi colons, etc
+             - refactor: code change that neither fixes a bug nor adds a feature
+             - test: adding missing tests
+             - chore: updating build tasks, package manager configs, etc
+             - perf: performance improvements
+             - ci: CI related changes
 
-          Suggest 5 different commit messages that best describe these changes. Focus on impact and purpose, not implementation details." \
+          3. Best Practices:
+             - Consider ALL modified files and their relationships
+             - Group related changes under a single commit if they serve one purpose
+             - Break unrelated changes into separate commit suggestions
+             - Focus on the overall impact rather than individual file changes
+             - Keep the scope in mind (e.g., 'feat(api): ...' or 'fix(ui): ...')
+             - Include breaking changes warnings when needed: BREAKING CHANGE:
+             - Reference issues if applicable: 'fixes #123' or 'relates to #456'
+
+          4. Message Structure:
+             - Subject line: max 50 chars, imperative mood
+             - Body: wrapped at 72 chars, explains WHY and WHAT
+             - Footer: reference issues, breaking changes
+
+          Please analyze the complete diff across all modified files and suggest 5 comprehensive commit messages that:
+          - Capture the full scope of changes
+          - Group related modifications
+          - Follow industry best practices
+          - Are clear and meaningful for future reference
+          - Consider the relationships between changed components
+
+          OUTPUT FORMAT:
+          5 commit messages, each on a new line, no numbering or bullets" \
             | fzf --height 40% --border --ansi --preview "echo {}" --preview-window=up:wrap \
             | sed -E 's/^[0-9]+\.\s*//' \
             | (read -r message && git commit --no-verify -m "$message")
