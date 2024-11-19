@@ -1,0 +1,13 @@
+alias ..='z ..'
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+# Development tools
+alias j='just'
+alias lg='lazygit'
