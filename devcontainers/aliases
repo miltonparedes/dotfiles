@@ -1,4 +1,4 @@
-alias ..='z ..'
+alias ..='cd ..'
 
 alias rm='rm -i'
 alias cp='cp -i'
