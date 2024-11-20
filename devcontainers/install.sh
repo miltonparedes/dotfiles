@@ -29,11 +29,6 @@ else
     ACTUAL_USER=$(whoami)
 fi
 
-if [ "$ACTUAL_USER" = "root" ]; then
-    echo "⚠️ Warning: Could not determine the actual user, using default 'vscode'"
-    ACTUAL_USER="vscode"
-fi
-
 USER_HOME=$(eval echo ~${ACTUAL_USER})
 
 echo "👤 Configuring for user: ${ACTUAL_USER} (home: ${USER_HOME})"
