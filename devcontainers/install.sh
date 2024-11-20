@@ -4,11 +4,6 @@ set -e
 
 echo "🚀 Starting development environment setup..."
 
-if [ "$(id -u)" != "0" ]; then
-    echo "❌ This script must be run as root"
-    exit 1
-fi
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
