@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Function to detect operating system
+set -e
+
 detect_os() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -35,9 +36,10 @@ install_rust() {
 }
 
 install_cli_tools() {
-    echo "🛠️ Installing CLI tools (just, aichat)..."
+    echo "🛠️ Installing CLI tools..."
     cargo install just
     cargo install aichat
+    cargo install zoxide --locked
 }
 
 cleanup() {
@@ -47,7 +49,11 @@ cleanup() {
 }
 
 install_base_packages
-install_rust
+
+if ! command -v cargo &> /dev/null; then
+    install_rust
+fi
+
 install_cli_tools
 
 echo "🔄 Installing lazygit..."
@@ -56,8 +62,5 @@ curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/lates
 tar xf lazygit.tar.gz lazygit
 install lazygit /usr/local/bin
 rm lazygit lazygit.tar.gz
-
-echo "📍 Installing zoxide..."
-curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
 
 cleanup
