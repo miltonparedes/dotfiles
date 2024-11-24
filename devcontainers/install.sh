@@ -44,4 +44,21 @@ elif [ -f "./lazygit/config.yml" ]; then
     cp "./lazygit/config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml"
 fi
 
+echo "⚙️ Setting up aichat configuration..."
+AICHAT_CONFIG_DIR="$HOME/.config/aichat"
+mkdir -p "$AICHAT_CONFIG_DIR"
+
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "❌ Error: OPENAI_API_KEY environment variable is not set"
+    exit 1
+fi
+
+if [ -f "${PROJECT_ROOT}/aichat/config.yml" ]; then
+    cp "${PROJECT_ROOT}/aichat/config.yml" "${AICHAT_CONFIG_DIR}/config.yml"
+    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yml" && rm "${AICHAT_CONFIG_DIR}/config.yml.bak"
+elif [ -f "./aichat/config.yml" ]; then
+    cp "./aichat/config.yml" "${AICHAT_CONFIG_DIR}/config.yml"
+    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yml" && rm "${AICHAT_CONFIG_DIR}/config.yml.bak"
+fi
+
 echo "✅ Setup completed!"
