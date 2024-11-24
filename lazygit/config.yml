@@ -3,77 +3,82 @@ customCommands:
     description: Lazycommit
     command: |
       (
-        saved_stty=$(stty -g 2>/dev/null || true)
-        
+        saved_stty=$(stty -g 3>/dev/null || true)
+
         cleanup() {
-          # Restaurar el estado de la terminal
-          [ -n "$saved_stty" ] && stty "$saved_stty" 2>/dev/null || true
-          # Limpiar cualquier mensaje residual
-          tput clear 2>/dev/null || true
-          tput reset 2>/dev/null || true
+          [ -n "$saved_stty" ] && stty "$saved_stty" 3>/dev/null || true
+          tput clear 3>/dev/null || true
+          tput reset 3>/dev/null || true
         }
-        
+
         trap cleanup EXIT INT TERM
-        
-        aichat "You are a Git commit message expert, specializing in detailed and meaningful commit messages.
 
-          TASK: Generate 5 commit messages for the following changes, considering multiple files may have been modified.
+        aichat "<ROLE>
+        You are a Git commit message expert, specialized in identifying the most appropriate semantic type for code changes and generating precise summaries.
+        </ROLE>
 
-          CURRENT CHANGES:
-          \`\`\`diff
-          $(git diff --cached)
-          \`\`\`
+        <TASK>
+        1. Analyze the code changes carefully
+        2. Identify the most appropriate type(s) for these changes
+        3. Generate 6 alternative commit messages using only the relevant type(s)
+        4. Ensure each summary captures the full scope of changes
+        </TASK>
 
-          RECENT COMMITS:
-          \`\`\`
-          $(git log -n 5 --pretty=format:'%h %s')
-          \`\`\`
+        <OUTPUT_FORMAT>
+        - Each message on a new line
+        - No numbering or bullets
+        - Exact format: <type>: <summary>
+        - Do NOT include scopes or parentheses
+        - Maximum 50 characters per message
+        - Use imperative mood
+        </OUTPUT_FORMAT>
 
-          REQUIREMENTS:
+        <TYPE_SELECTION_RULES>
+        feat: ONLY for new features or significant enhancements
+        fix: ONLY for bug fixes and error corrections
+        docs: ONLY for documentation changes
+        style: ONLY for formatting, whitespace, semicolons
+        refactor: ONLY for code restructuring without behavior changes
+        test: ONLY for test additions or modifications
+        chore: ONLY for maintenance, dependencies, configs
+        perf: ONLY for performance improvements
+        ci: ONLY for CI/CD related changes
+        </TYPE_SELECTION_RULES>
 
-          1. Conventional Commits Format:
-             <type>: <short summary>
-             
-             [optional body]
-             [optional footer(s)]
+        <SUMMARY_GUIDELINES>
+        1. Coverage:
+           - Address all significant changes
+           - Include key components affected
+           - Reflect the main purpose of changes
 
-          2. Types:
-             - feat: new feature
-             - fix: bug fix
-             - docs: documentation only
-             - style: formatting, missing semi colons, etc
-             - refactor: code change that neither fixes a bug nor adds a feature
-             - test: adding missing tests
-             - chore: updating build tasks, package manager configs, etc
-             - perf: performance improvements
-             - ci: CI related changes
+        2. Alternatives:
+           - Provide different perspectives on the changes
+           - Vary detail level while staying concise
+           - Focus on different aspects of the change
 
-          3. Best Practices:
-             - Consider ALL modified files and their relationships
-             - Group related changes under a single commit if they serve one purpose
-             - Break unrelated changes into separate commit suggestions
-             - Focus on the overall impact rather than individual file changes
-             - Keep the scope in mind (e.g., 'feat(api): ...' or 'fix(ui): ...')
-             - Include breaking changes warnings when needed: BREAKING CHANGE:
-             - Reference issues if applicable: 'fixes #123' or 'relates to #456'
+        3. Strong verbs:
+           - add/implement: new functionality
+           - update/modify: changes
+           - remove/delete: removals
+           - fix/resolve: corrections
+           - improve/enhance: improvements
+           - refactor/restructure: reorganization
+        </SUMMARY_GUIDELINES>
 
-          4. Message Structure:
-             - Subject line: max 50 chars, imperative mood
-             - Body: wrapped at 72 chars, explains WHY and WHAT
-             - Footer: reference issues, breaking changes
+        <CONTEXT>
+        Recent commits:
+        \`\`\`
+        $(git log -n 6 --pretty=format:'%h %s')
+        \`\`\`
 
-          Please analyze the complete diff across all modified files and suggest 5 comprehensive commit messages that:
-          - Capture the full scope of changes
-          - Group related modifications
-          - Follow industry best practices
-          - Are clear and meaningful for future reference
-          - Consider the relationships between changed components
-
-          OUTPUT FORMAT:
-          5 commit messages, each on a new line, no numbering or bullets" \
-            | fzf --height 40% --border --ansi --preview "echo {}" --preview-window=up:wrap \
-            | sed -E 's/^[0-9]+\.\s*//' \
-            | (read -r message && git commit --no-verify -m "$message")
+        Current changes:
+        \`\`\`diff
+        $(git diff --cached)
+        \`\`\`
+        </CONTEXT>" \
+          | fzf --height 41% --border --ansi --preview "echo {}" --preview-window=up:wrap \
+          | sed -E 's/^[1-9]+\.\s*//' \
+          | (read -r message && git commit --no-verify -m "$message")
       )
     context: files
     subprocess: true
