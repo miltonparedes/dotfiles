@@ -53,12 +53,12 @@ if [ -z "$OPENAI_API_KEY" ]; then
     exit 1
 fi
 
-if [ -f "${PROJECT_ROOT}/aichat/config.yml" ]; then
-    cp "${PROJECT_ROOT}/aichat/config.yml" "${AICHAT_CONFIG_DIR}/config.yml"
-    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yml" && rm "${AICHAT_CONFIG_DIR}/config.yml.bak"
-elif [ -f "./aichat/config.yml" ]; then
-    cp "./aichat/config.yml" "${AICHAT_CONFIG_DIR}/config.yml"
-    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yml" && rm "${AICHAT_CONFIG_DIR}/config.yml.bak"
+if [ -f "${PROJECT_ROOT}/aichat/config.yaml" ]; then
+    cp "${PROJECT_ROOT}/aichat/config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
+    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yaml" && rm "${AICHAT_CONFIG_DIR}/config.yaml.bak"
+elif [ -f "./aichat/config.yaml" ]; then
+    cp "./aichat/config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
+    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yaml" && rm "${AICHAT_CONFIG_DIR}/config.yaml.bak"
 fi
 
 echo "✅ Setup completed!"
