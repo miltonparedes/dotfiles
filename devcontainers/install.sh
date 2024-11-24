@@ -29,7 +29,7 @@ for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
 
         echo 'source "$HOME/.cargo/env"' >> "$SHELL_RC"
 
-        SHELL_NAME=$(basename ${SHELL_RC%"rc"})
+        SHELL_NAME=$(basename "$SHELL")
         echo "eval \"\$(zoxide init $SHELL_NAME)\"" >> "$SHELL_RC"
     fi
 done
