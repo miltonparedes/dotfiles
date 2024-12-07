@@ -1,3 +1,4 @@
+brew "just"
 brew "uv"
 brew "bat"
 brew "eza"
