@@ -61,7 +61,7 @@ if [ ! -z "$OPENAI_API_KEY" ]; then
     sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yaml" && rm "${AICHAT_CONFIG_DIR}/config.yaml.bak"
 else
     echo "ℹ️ No OPENAI_API_KEY found. To set it later, run:"
-    echo "sed -i.bak \"s/OPENAI_API_KEY_PLACEHOLDER/your-api-key-here/\" \$HOME/.config/aichat/config.yaml"
+    echo 'sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/<your-api-key-here>/" $HOME/.config/aichat/config.yaml'
 fi
 
 echo "✅ Setup completed!"
