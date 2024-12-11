@@ -17,12 +17,6 @@ else
 fi
 
 echo "👤 Configuring environment..."
-# Load OPENAI_API_KEY from .env file
-ENV_FILE="${PROJECT_ROOT}/.env"
-if [ -f "$ENV_FILE" ]; then
-    echo "📄 Loading OPENAI_API_KEY from .env file..."
-    export $(grep -v '^#' "$ENV_FILE" | xargs)
-fi
 
 for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
     if [ -f "$SHELL_RC" ]; then
@@ -54,19 +48,20 @@ echo "⚙️ Setting up aichat configuration..."
 AICHAT_CONFIG_DIR="$HOME/.config/aichat"
 mkdir -p "$AICHAT_CONFIG_DIR"
 
-if [ -z "$OPENAI_API_KEY" ]; then
-    echo "❌ Error: OPENAI_API_KEY environment variable is not set."
-    echo "Please make sure it's defined in ../.env file or as an environment variable."
-    exit 1
-fi
-
-echo "🔑 Setting up aichat OpenAI API key..."
+# Set aichat config
 if [ -f "${PROJECT_ROOT}/aichat/config.yaml" ]; then
     cp "${PROJECT_ROOT}/aichat/config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
-    sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yaml" && rm "${AICHAT_CONFIG_DIR}/config.yaml.bak"
 elif [ -f "./aichat/config.yaml" ]; then
     cp "./aichat/config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
+fi
+
+# Handle OpenAI API key
+if [ ! -z "$OPENAI_API_KEY" ]; then
+    echo "🔑 Setting up aichat OpenAI API key..."
     sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/" "${AICHAT_CONFIG_DIR}/config.yaml" && rm "${AICHAT_CONFIG_DIR}/config.yaml.bak"
+else
+    echo "ℹ️ No OPENAI_API_KEY found. To set it later, run:"
+    echo "sed -i.bak \"s/OPENAI_API_KEY_PLACEHOLDER/your-api-key-here/\" \$HOME/.config/aichat/config.yaml"
 fi
 
 echo "✅ Setup completed!"
