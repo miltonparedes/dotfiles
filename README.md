@@ -39,7 +39,7 @@ If you only want to install the development container configuration with CLI too
 export OPENAI_API_KEY=your-api-key-here
 
 # Run the installation script
-curl -sSL https://raw.githubusercontent.com/milton/dotfiles/main/devcontainers/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/miltonparedes/dotfiles/main/devcontainers/install.sh | bash
 ```
 
 This will install and configure:
