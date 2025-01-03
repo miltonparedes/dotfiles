@@ -9,7 +9,7 @@ if [ -z "$OPENAI_API_KEY" ]; then
     echo "⚠️  No OPENAI_API_KEY environment variable found"
     echo "ℹ️  To use aichat with OpenAI, run the installation like this:"
     echo "    export OPENAI_API_KEY=your-api-key-here"
-    echo "    curl -sSL https://raw.githubusercontent.com/milton/dotfiles/main/devcontainers/install.sh | bash"
+    echo "    curl -sSL https://raw.githubusercontent.com/miltonparedes/dotfiles/main/devcontainers/install.sh | bash"
     echo ""
     read -p "Do you want to continue without setting OPENAI_API_KEY? [y/N] " -n 1 -r
     echo
@@ -20,14 +20,37 @@ fi
 
 # Create temporary directory for downloads
 TEMP_DIR=$(mktemp -d)
-REPO_URL="https://raw.githubusercontent.com/milton/dotfiles/main"
+REPO_URL="https://raw.githubusercontent.com/miltonparedes/dotfiles/main"
+
+# Function to download a file with verification
+download_file() {
+    local url="$1"
+    local output="$2"
+    local filename=$(basename "$output")
+    
+    echo "📥 Downloading ${filename}..."
+    if ! curl -sSLf "$url" -o "$output"; then
+        echo "❌ Failed to download ${filename}"
+        echo "URL: ${url}"
+        echo "HTTP Status: $(curl -s -o /dev/null -w "%{http_code}" "$url")"
+        return 1
+    fi
+    
+    if [ ! -s "$output" ]; then
+        echo "❌ Downloaded file ${filename} is empty"
+        return 1
+    fi
+}
 
 # Download necessary files
 echo "📥 Downloading configuration files..."
-curl -sSL "${REPO_URL}/devcontainers/packages.sh" -o "${TEMP_DIR}/packages.sh"
-curl -sSL "${REPO_URL}/devcontainers/aliases" -o "${TEMP_DIR}/aliases"
-curl -sSL "${REPO_URL}/lazygit/config.yml" -o "${TEMP_DIR}/lazygit_config.yml"
-curl -sSL "${REPO_URL}/aichat/config.yaml" -o "${TEMP_DIR}/aichat_config.yaml"
+download_file "${REPO_URL}/devcontainers/packages.sh" "${TEMP_DIR}/packages.sh" || exit 1
+download_file "${REPO_URL}/devcontainers/aliases" "${TEMP_DIR}/aliases" || exit 1
+download_file "${REPO_URL}/lazygit/config.yml" "${TEMP_DIR}/lazygit_config.yml" || exit 1
+download_file "${REPO_URL}/aichat/config.yaml" "${TEMP_DIR}/aichat_config.yaml" || exit 1
+
+# Make packages.sh executable
+chmod +x "${TEMP_DIR}/packages.sh"
 
 # Source the packages script
 source "${TEMP_DIR}/packages.sh"
