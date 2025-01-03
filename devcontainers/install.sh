@@ -4,56 +4,59 @@ set -e
 
 echo "🚀 Starting development environment setup..."
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-
-if [ -f "${SCRIPT_DIR}/packages.sh" ]; then
-    source "${SCRIPT_DIR}/packages.sh"
-elif [ -f "./devcontainers/packages.sh" ]; then
-    source "./devcontainers/packages.sh"
-else
-    echo "❌ Cannot find packages.sh"
-    exit 1
+# Check for OPENAI_API_KEY
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "⚠️  No OPENAI_API_KEY environment variable found"
+    echo "ℹ️  To use aichat with OpenAI, run the installation like this:"
+    echo "    export OPENAI_API_KEY=your-api-key-here"
+    echo "    curl -sSL https://raw.githubusercontent.com/milton/dotfiles/main/devcontainers/install.sh | bash"
+    echo ""
+    read -p "Do you want to continue without setting OPENAI_API_KEY? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
 fi
+
+# Create temporary directory for downloads
+TEMP_DIR=$(mktemp -d)
+REPO_URL="https://raw.githubusercontent.com/milton/dotfiles/main"
+
+# Download necessary files
+echo "📥 Downloading configuration files..."
+curl -sSL "${REPO_URL}/devcontainers/packages.sh" -o "${TEMP_DIR}/packages.sh"
+curl -sSL "${REPO_URL}/devcontainers/aliases" -o "${TEMP_DIR}/aliases"
+curl -sSL "${REPO_URL}/lazygit/config.yml" -o "${TEMP_DIR}/lazygit_config.yml"
+curl -sSL "${REPO_URL}/aichat/config.yaml" -o "${TEMP_DIR}/aichat_config.yaml"
+
+# Source the packages script
+source "${TEMP_DIR}/packages.sh"
 
 echo "👤 Configuring environment..."
 
+# Setup shell configurations
 for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
     if [ -f "$SHELL_RC" ]; then
         echo "⚙️ Setting up aliases for $(basename ${SHELL_RC})..."
-        if [ -f "${SCRIPT_DIR}/aliases" ]; then
-            cat "${SCRIPT_DIR}/aliases" >> "$SHELL_RC"
-        elif [ -f "./devcontainers/aliases" ]; then
-            cat "./devcontainers/aliases" >> "$SHELL_RC"
-        fi
-
+        cat "${TEMP_DIR}/aliases" >> "$SHELL_RC"
         echo 'source "$HOME/.cargo/env"' >> "$SHELL_RC"
-
+        
         SHELL_NAME=$(basename "$SHELL")
         echo "eval \"\$(zoxide init $SHELL_NAME)\"" >> "$SHELL_RC"
     fi
 done
 
+# Setup lazygit configuration
 echo "⚙️ Setting up lazygit configuration..."
 LAZYGIT_CONFIG_DIR="$HOME/.config/lazygit"
 mkdir -p "$LAZYGIT_CONFIG_DIR"
+cp "${TEMP_DIR}/lazygit_config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml"
 
-if [ -f "${PROJECT_ROOT}/lazygit/config.yml" ]; then
-    cp "${PROJECT_ROOT}/lazygit/config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml"
-elif [ -f "./lazygit/config.yml" ]; then
-    cp "./lazygit/config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml"
-fi
-
+# Setup aichat configuration
 echo "⚙️ Setting up aichat configuration..."
 AICHAT_CONFIG_DIR="$HOME/.config/aichat"
 mkdir -p "$AICHAT_CONFIG_DIR"
-
-# Set aichat config
-if [ -f "${PROJECT_ROOT}/aichat/config.yaml" ]; then
-    cp "${PROJECT_ROOT}/aichat/config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
-elif [ -f "./aichat/config.yaml" ]; then
-    cp "./aichat/config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
-fi
+cp "${TEMP_DIR}/aichat_config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
 
 # Handle OpenAI API key
 if [ ! -z "$OPENAI_API_KEY" ]; then
@@ -63,5 +66,8 @@ else
     echo "ℹ️ No OPENAI_API_KEY found. To set it later, run:"
     echo 'sed -i.bak "s/OPENAI_API_KEY_PLACEHOLDER/<your-api-key-here>/" $HOME/.config/aichat/config.yaml'
 fi
+
+# Cleanup
+rm -rf "$TEMP_DIR"
 
 echo "✅ Setup completed!"
