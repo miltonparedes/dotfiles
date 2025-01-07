@@ -67,11 +67,20 @@ echo "👤 Configuring environment..."
 for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
     if [ -f "$SHELL_RC" ]; then
         echo "⚙️ Setting up aliases for $(basename ${SHELL_RC})..."
-        cat "${TEMP_DIR}/aliases" >> "$SHELL_RC"
-        echo 'source "$HOME/.cargo/env"' >> "$SHELL_RC"
-        
-        SHELL_NAME=$(basename "$SHELL")
-        echo "eval \"\$(zoxide init $SHELL_NAME)\"" >> "$SHELL_RC"
+        if [ -f "${TEMP_DIR}/aliases" ]; then
+            cat "${TEMP_DIR}/aliases" >> "$SHELL_RC" || {
+                echo "❌ Failed to append aliases to ${SHELL_RC}"
+                continue
+            }
+            echo 'source "$HOME/.cargo/env"' >> "$SHELL_RC" || {
+                echo "❌ Failed to append cargo env to ${SHELL_RC}"
+                continue
+            }
+            echo "✅ Successfully configured $(basename ${SHELL_RC})"
+        else
+            echo "❌ Aliases file not found at ${TEMP_DIR}/aliases"
+            echo "⚠️ Skipping aliases setup for $(basename ${SHELL_RC})"
+        fi
     fi
 done
 

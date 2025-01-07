@@ -18,10 +18,8 @@ install_base_packages() {
     echo "📦 Installing basic dependencies..."
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
-        curl \
         git \
         fzf \
-        wget \
         gnupg \
         apt-transport-https \
         lsb-release \
@@ -39,7 +37,6 @@ install_cli_tools() {
     echo "🛠️ Installing CLI tools..."
     cargo install just
     cargo install aichat
-    cargo install zoxide --locked
 }
 
 cleanup() {
