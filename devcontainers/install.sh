@@ -4,12 +4,6 @@ set -e
 
 echo "🚀 Starting development environment setup..."
 
-# Check for sudo privileges
-if ! command -v sudo &> /dev/null; then
-    echo "❌ 'sudo' command is required but not installed."
-    exit 1
-fi
-
 # Check for OPENAI_API_KEY
 if [ -z "$OPENAI_API_KEY" ]; then
     echo "⚠️  No OPENAI_API_KEY environment variable found"
@@ -24,20 +18,22 @@ if [ -z "$OPENAI_API_KEY" ]; then
     fi
 fi
 
-# Create temporary directory for downloads with proper permissions
-TEMP_DIR=$(mktemp -d)
-if [ ! -d "$TEMP_DIR" ]; then
-    echo "❌ Failed to create temporary directory"
+# Create and use a local directory for downloads
+INSTALL_DIR="$PWD/.devcontainer-setup"
+rm -rf "$INSTALL_DIR"  # Clean previous installation if exists
+mkdir -p "$INSTALL_DIR"
+
+if [ ! -d "$INSTALL_DIR" ]; then
+    echo "❌ Failed to create installation directory"
     exit 1
 fi
 
-# Ensure temporary directory is writable
-if [ ! -w "$TEMP_DIR" ]; then
-    echo "❌ Temporary directory is not writable: $TEMP_DIR"
+if [ ! -w "$INSTALL_DIR" ]; then
+    echo "❌ Installation directory is not writable: $INSTALL_DIR"
     exit 1
 fi
 
-echo "📁 Using temporary directory: $TEMP_DIR"
+echo "📁 Using installation directory: $INSTALL_DIR"
 REPO_URL="https://raw.githubusercontent.com/miltonparedes/dotfiles/main"
 
 # Function to download a file with verification
@@ -79,31 +75,31 @@ declare -A FILE_MAPPINGS=(
 
 for src in "${!FILE_MAPPINGS[@]}"; do
     dest="${FILE_MAPPINGS[$src]}"
-    if ! download_file "${REPO_URL}/${src}" "${TEMP_DIR}/${dest}"; then
+    if ! download_file "${REPO_URL}/${src}" "${INSTALL_DIR}/${dest}"; then
         echo "❌ Failed to download ${src}. Cleaning up and exiting..."
-        rm -rf "$TEMP_DIR"
+        rm -rf "$INSTALL_DIR"
         exit 1
     fi
 done
 
 # Debug: List downloaded files
-echo "📁 Contents of temporary directory:"
-ls -la "$TEMP_DIR"
+echo "📁 Contents of installation directory:"
+ls -la "$INSTALL_DIR"
 
 # Make packages.sh executable
-chmod +x "${TEMP_DIR}/packages.sh" || {
+chmod +x "${INSTALL_DIR}/packages.sh" || {
     echo "❌ Failed to make packages.sh executable"
-    rm -rf "$TEMP_DIR"
+    rm -rf "$INSTALL_DIR"
     exit 1
 }
 
 # Source the packages script
-if [ -f "${TEMP_DIR}/packages.sh" ]; then
+if [ -f "${INSTALL_DIR}/packages.sh" ]; then
     echo "📦 Running packages installation..."
-    source "${TEMP_DIR}/packages.sh"
+    source "${INSTALL_DIR}/packages.sh"
 else
-    echo "❌ packages.sh not found in temporary directory"
-    rm -rf "$TEMP_DIR"
+    echo "❌ packages.sh not found in installation directory"
+    rm -rf "$INSTALL_DIR"
     exit 1
 fi
 
@@ -114,15 +110,15 @@ for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
     if [ -f "$SHELL_RC" ]; then
         echo "⚙️ Setting up aliases for $(basename ${SHELL_RC})..."
         
-        if [ ! -f "${TEMP_DIR}/aliases" ]; then
-            echo "❌ Aliases file not found at: ${TEMP_DIR}/aliases"
-            echo "📁 Contents of temporary directory:"
-            ls -la "$TEMP_DIR"
+        if [ ! -f "${INSTALL_DIR}/aliases" ]; then
+            echo "❌ Aliases file not found at: ${INSTALL_DIR}/aliases"
+            echo "📁 Contents of installation directory:"
+            ls -la "$INSTALL_DIR"
             continue
         fi
         
-        if [ ! -r "${TEMP_DIR}/aliases" ]; then
-            echo "❌ Aliases file is not readable at: ${TEMP_DIR}/aliases"
+        if [ ! -r "${INSTALL_DIR}/aliases" ]; then
+            echo "❌ Aliases file is not readable at: ${INSTALL_DIR}/aliases"
             continue
         fi
 
@@ -133,7 +129,7 @@ for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
         }
 
         # Append aliases
-        if cat "${TEMP_DIR}/aliases" >> "$SHELL_RC"; then
+        if cat "${INSTALL_DIR}/aliases" >> "$SHELL_RC"; then
             if echo 'source "$HOME/.cargo/env"' >> "$SHELL_RC"; then
                 echo "✅ Successfully configured $(basename ${SHELL_RC})"
             else
@@ -157,12 +153,12 @@ mkdir -p "$LAZYGIT_CONFIG_DIR" || {
     exit 1
 }
 
-if [ ! -f "${TEMP_DIR}/lazygit_config.yml" ]; then
-    echo "❌ Lazygit config file not found in temporary directory"
-    echo "📁 Contents of temporary directory:"
-    ls -la "$TEMP_DIR"
+if [ ! -f "${INSTALL_DIR}/lazygit_config.yml" ]; then
+    echo "❌ Lazygit config file not found in installation directory"
+    echo "📁 Contents of installation directory:"
+    ls -la "$INSTALL_DIR"
 else
-    cp "${TEMP_DIR}/lazygit_config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml" || {
+    cp "${INSTALL_DIR}/lazygit_config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml" || {
         echo "❌ Failed to copy lazygit config file"
     }
 fi
@@ -172,12 +168,12 @@ echo "⚙️ Setting up aichat configuration..."
 AICHAT_CONFIG_DIR="$HOME/.config/aichat"
 mkdir -p "$AICHAT_CONFIG_DIR"
 
-if [ ! -f "${TEMP_DIR}/aichat_config.yaml" ]; then
-    echo "❌ Aichat config file not found in temporary directory"
-    echo "📁 Contents of temporary directory:"
-    ls -la "$TEMP_DIR"
+if [ ! -f "${INSTALL_DIR}/aichat_config.yaml" ]; then
+    echo "❌ Aichat config file not found in installation directory"
+    echo "📁 Contents of installation directory:"
+    ls -la "$INSTALL_DIR"
 else
-    cp "${TEMP_DIR}/aichat_config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml" || {
+    cp "${INSTALL_DIR}/aichat_config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml" || {
         echo "❌ Failed to copy aichat config file"
     }
 fi
@@ -192,6 +188,6 @@ else
 fi
 
 # Cleanup
-rm -rf "$TEMP_DIR"
+rm -rf "$INSTALL_DIR"
 
 echo "✅ Setup completed!"
