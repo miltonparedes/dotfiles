@@ -70,20 +70,25 @@ download_file() {
 
 # Download necessary files
 echo "📥 Downloading configuration files..."
-FILES_TO_DOWNLOAD=(
-    "devcontainers/packages.sh"
-    "devcontainers/aliases"
-    "lazygit/config.yml"
-    "aichat/config.yaml"
+declare -A FILE_MAPPINGS=(
+    ["devcontainers/packages.sh"]="packages.sh"
+    ["devcontainers/aliases"]="aliases"
+    ["lazygit/config.yml"]="lazygit_config.yml"
+    ["aichat/config.yaml"]="aichat_config.yaml"
 )
 
-for file in "${FILES_TO_DOWNLOAD[@]}"; do
-    if ! download_file "${REPO_URL}/${file}" "${TEMP_DIR}/$(basename ${file})"; then
-        echo "❌ Failed to download ${file}. Cleaning up and exiting..."
+for src in "${!FILE_MAPPINGS[@]}"; do
+    dest="${FILE_MAPPINGS[$src]}"
+    if ! download_file "${REPO_URL}/${src}" "${TEMP_DIR}/${dest}"; then
+        echo "❌ Failed to download ${src}. Cleaning up and exiting..."
         rm -rf "$TEMP_DIR"
         exit 1
     fi
 done
+
+# Debug: List downloaded files
+echo "📁 Contents of temporary directory:"
+ls -la "$TEMP_DIR"
 
 # Make packages.sh executable
 chmod +x "${TEMP_DIR}/packages.sh" || {
@@ -108,16 +113,16 @@ echo "👤 Configuring environment..."
 for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
     if [ -f "$SHELL_RC" ]; then
         echo "⚙️ Setting up aliases for $(basename ${SHELL_RC})..."
-        ALIASES_FILE="${TEMP_DIR}/aliases"
         
-        if [ ! -f "$ALIASES_FILE" ]; then
-            echo "❌ Aliases file not found at: $ALIASES_FILE"
-            ls -la "$TEMP_DIR"  # Debug: show contents of temp directory
+        if [ ! -f "${TEMP_DIR}/aliases" ]; then
+            echo "❌ Aliases file not found at: ${TEMP_DIR}/aliases"
+            echo "📁 Contents of temporary directory:"
+            ls -la "$TEMP_DIR"
             continue
         fi
         
-        if [ ! -r "$ALIASES_FILE" ]; then
-            echo "❌ Aliases file is not readable at: $ALIASES_FILE"
+        if [ ! -r "${TEMP_DIR}/aliases" ]; then
+            echo "❌ Aliases file is not readable at: ${TEMP_DIR}/aliases"
             continue
         fi
 
@@ -128,7 +133,7 @@ for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
         }
 
         # Append aliases
-        if cat "$ALIASES_FILE" >> "$SHELL_RC"; then
+        if cat "${TEMP_DIR}/aliases" >> "$SHELL_RC"; then
             if echo 'source "$HOME/.cargo/env"' >> "$SHELL_RC"; then
                 echo "✅ Successfully configured $(basename ${SHELL_RC})"
             else
@@ -152,11 +157,12 @@ mkdir -p "$LAZYGIT_CONFIG_DIR" || {
     exit 1
 }
 
-if [ ! -f "${TEMP_DIR}/config.yml" ]; then
+if [ ! -f "${TEMP_DIR}/lazygit_config.yml" ]; then
     echo "❌ Lazygit config file not found in temporary directory"
-    ls -la "$TEMP_DIR"  # Debug: show contents of temp directory
+    echo "📁 Contents of temporary directory:"
+    ls -la "$TEMP_DIR"
 else
-    cp "${TEMP_DIR}/config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml" || {
+    cp "${TEMP_DIR}/lazygit_config.yml" "${LAZYGIT_CONFIG_DIR}/config.yml" || {
         echo "❌ Failed to copy lazygit config file"
     }
 fi
@@ -165,7 +171,16 @@ fi
 echo "⚙️ Setting up aichat configuration..."
 AICHAT_CONFIG_DIR="$HOME/.config/aichat"
 mkdir -p "$AICHAT_CONFIG_DIR"
-cp "${TEMP_DIR}/aichat_config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml"
+
+if [ ! -f "${TEMP_DIR}/aichat_config.yaml" ]; then
+    echo "❌ Aichat config file not found in temporary directory"
+    echo "📁 Contents of temporary directory:"
+    ls -la "$TEMP_DIR"
+else
+    cp "${TEMP_DIR}/aichat_config.yaml" "${AICHAT_CONFIG_DIR}/config.yaml" || {
+        echo "❌ Failed to copy aichat config file"
+    }
+fi
 
 # Handle OpenAI API key
 if [ ! -z "$OPENAI_API_KEY" ]; then
