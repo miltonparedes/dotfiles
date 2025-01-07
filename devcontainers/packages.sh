@@ -13,10 +13,10 @@ detect_os() {
 
 install_base_packages() {
     echo "🔄 Updating package list..."
-    apt-get update -qq
+    sudo apt-get update -qq
     
     echo "📦 Installing basic dependencies..."
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
         git \
@@ -44,8 +44,8 @@ install_cli_tools() {
 
 cleanup() {
     echo "🧹 Cleaning up..."
-    apt-get clean
-    rm -rf /var/lib/apt/lists/*
+    sudo apt-get clean
+    sudo rm -rf /var/lib/apt/lists/*
 }
 
 install_base_packages
@@ -57,9 +57,7 @@ fi
 install_cli_tools
 
 echo "🔄 Installing/Updating lazygit..."
-if [ -f "/usr/local/bin/lazygit" ]; then
-    rm -f /usr/local/bin/lazygit
-fi
+mkdir -p "$HOME/.local/bin"
 
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
@@ -67,8 +65,14 @@ cd "$TEMP_DIR"
 LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
 curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
 tar xf lazygit.tar.gz lazygit
-install lazygit /usr/local/bin
+install -m 755 lazygit "$HOME/.local/bin"
 cd - > /dev/null
 rm -rf "$TEMP_DIR"
+
+# Add ~/.local/bin to PATH if not already present
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+fi
 
 cleanup

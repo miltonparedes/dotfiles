@@ -4,6 +4,12 @@ set -e
 
 echo "🚀 Starting development environment setup..."
 
+# Check for sudo privileges
+if ! command -v sudo &> /dev/null; then
+    echo "❌ 'sudo' command is required but not installed."
+    exit 1
+fi
+
 # Check for OPENAI_API_KEY
 if [ -z "$OPENAI_API_KEY" ]; then
     echo "⚠️  No OPENAI_API_KEY environment variable found"
