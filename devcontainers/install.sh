@@ -119,7 +119,7 @@ for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc"; do
         if [ ! -r "$ALIASES_FILE" ]; then
             echo "❌ Aliases file is not readable at: $ALIASES_FILE"
             continue
-        }
+        fi
 
         # Backup original rc file
         cp "$SHELL_RC" "${SHELL_RC}.backup" || {
