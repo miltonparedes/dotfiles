@@ -9,6 +9,7 @@
 # @raycast.icon 🔎
 # @raycast.argument1 { "type": "text", "placeholder": "project path" }
 # @raycast.argument2 { "type": "text", "placeholder": "editor (cursor, zed or vscode)", "optional": true }
+# @raycast.argument3 { "type": "text", "placeholder": "remote host", "optional": true }
 # @raycast.packageName Developer Utils
 
 # Documentation:
@@ -17,8 +18,31 @@
 
 source "$(dirname "$0")/../../.env"
 
+get_ssh_host() {
+    local input_host="$1"
+    local default_host="workstation"
+
+    # If no host provided, return default
+    if [ -z "$input_host" ]; then
+        echo "$default_host"
+        return
+    fi
+
+    local hosts=$(grep "^Host " ~/.ssh/config | awk '{print $2}')
+    
+    # Try fuzzy match using fzf
+    local matched_host=$(echo "$hosts" | fzf --filter="$input_host" --no-sort | head -n1)
+
+    if [ -n "$matched_host" ]; then
+        echo "$matched_host"
+    else
+        echo "$default_host"
+    fi
+}
+
 run_ssh_command() {
-    ssh "${REMOTE_USER}@${REMOTE_HOST}" "$1"
+    local host=$(get_ssh_host "${REMOTE_HOST}")
+    ssh "${REMOTE_USER}@${host}" "$1"
 }
 
 list_projects_and_check_path() {
@@ -41,6 +65,11 @@ fi
 
 project_path="${1%/}"
 editor="${2:-cursor}"
+remote_host="${3}"
+
+if [ -n "$remote_host" ]; then
+    REMOTE_HOST=$(get_ssh_host "$remote_host")
+fi
 
 project_root=$(echo "$project_path" | cut -d'/' -f1,2)
 
