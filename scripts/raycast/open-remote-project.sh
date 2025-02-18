@@ -20,7 +20,7 @@ source "$(dirname "$0")/../../.env"
 
 get_ssh_host() {
     local input_host="$1"
-    local default_host="workstation"
+    local default_host="box"
 
     # If no host provided, return default
     if [ -z "$input_host" ]; then

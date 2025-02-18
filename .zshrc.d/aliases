@@ -16,4 +16,4 @@ alias fgrep='fgrep --color=auto'
 alias j='just'
 alias lg='lazygit'
 
-alias sw='ssh workstation'
+alias sb='ssh box'
