@@ -3,23 +3,72 @@
   "chat_panel": {
     "dock": "left"
   },
+  "git_panel": {
+    "dock": "right"
+  },
   "assistant": {
+    "profiles": {
+      "architech": {
+        "name": "Architech",
+        "tools": {
+          "terminal": true,
+          "batch_tool": true,
+          "code_symbols": true,
+          "copy_path": true,
+          "create_file": true,
+          "delete_path": true,
+          "diagnostics": true,
+          "find_replace_file": true,
+          "edit_files": false,
+          "fetch": true,
+          "list_directory": true,
+          "move_path": true,
+          "now": true,
+          "path_search": true,
+          "read_file": true,
+          "regex_search": true,
+          "symbol_info": true,
+          "thinking": true
+        },
+        "enable_all_context_servers": true,
+        "context_servers": {}
+      },
+      "ask": {
+        "name": "Ask",
+        "tools": {
+          "terminal": true,
+          "diagnostics": true,
+          "fetch": true,
+          "list_directory": true,
+          "now": true,
+          "path_search": true,
+          "read_file": true,
+          "regex_search": true,
+          "thinking": true,
+          "batch_tool": true
+        },
+        "enable_all_context_servers": false,
+        "context_servers": {}
+      }
+    },
+    "always_allow_tool_actions": false,
+    "default_profile": "write",
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-3-5-sonnet-latest"
+      "provider": "google",
+      "model": "gemini-2.5-pro-exp-03-25"
     },
     "version": "2",
     "dock": "left",
-    "default_width": 450
+    "default_width": 450,
+    "enable_experimental_live_diffs": true
   },
   "language_models": {
     "openai": {
-      "version": "1",
-      "low_speed_timeout_in_seconds": 1200
+      "version": "1"
     }
   },
   "features": {
-    "inline_completion_provider": "supermaven"
+    "edit_prediction_provider": "zed"
   },
   "project_panel": {
     "dock": "right"
@@ -34,8 +83,8 @@
     "info.background": "#a1c1811a",
     "info.border": "#353535"
   },
-  "ui_font_size": 14,
-  "buffer_font_size": 13,
+  "ui_font_size": 15,
+  "buffer_font_size": 14,
   "show_wrap_guides": true,
   "wrap_guides": [88, 120],
   "show_indent_guides": true,
