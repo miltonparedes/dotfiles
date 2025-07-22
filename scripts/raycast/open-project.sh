@@ -23,7 +23,7 @@ if [ $# -lt 1 ]; then
 fi
 
 project_path="${1%/}"
-editor="${2:-cursor}"
+editor="${2:-zed}"
 
 project_root=$(find "${LOCAL_WORKSPACE}" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | \
     sed "s|${LOCAL_WORKSPACE}/||" | \

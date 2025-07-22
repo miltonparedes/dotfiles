@@ -29,7 +29,7 @@ get_ssh_host() {
     fi
 
     local hosts=$(grep "^Host " ~/.ssh/config | awk '{print $2}')
-    
+
     # Try fuzzy match using fzf
     local matched_host=$(echo "$hosts" | fzf --filter="$input_host" --no-sort | head -n1)
 
@@ -64,7 +64,7 @@ if [ $# -lt 1 ]; then
 fi
 
 project_path="${1%/}"
-editor="${2:-cursor}"
+editor="${2:-zed}"
 remote_host="${3}"
 
 if [ -n "$remote_host" ]; then
