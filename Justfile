@@ -3,6 +3,7 @@ zsh_aliases := "~/.zshrc.d/aliases"
 bash_aliases := "~/.bashrc.d/aliases"
 spell_cli_path := "~/.config/spell/cli.just"
 spell_alias := 'alias spell="just --justfile ~/.config/spell/cli.just --working-directory ~"'
+nvim_config_path := config_dir + "/nvim"
 
 # Install or update custom CLI tool
 install-spell:
@@ -59,6 +60,93 @@ lazygit-config path:
     @mkdir -p {{path}}/lazygit
     @cp -f lazygit/config.yml {{path}}/lazygit/config.yml
 
+# Check if required dependencies are installed
+check-nvim-deps:
+    @echo "Checking Neovim dependencies..."
+    @if ! command -v git >/dev/null 2>&1; then \
+        echo "❌ git is required but not installed"; \
+        exit 1; \
+    fi
+    @if ! command -v curl >/dev/null 2>&1; then \
+        echo "❌ curl is required but not installed"; \
+        exit 1; \
+    fi
+    @if ! command -v rg >/dev/null 2>&1; then \
+        echo "❌ ripgrep is required but not installed"; \
+        exit 1; \
+    fi
+    @if ! command -v nvim >/dev/null 2>&1; then \
+        echo "❌ neovim is required but not installed"; \
+        exit 1; \
+    fi
+    @echo "✅ All Neovim dependencies are installed"
+
+# Install missing dependencies
+install-nvim-deps:
+    @echo "Installing Neovim dependencies..."
+    @if [ "$(uname)" = "Darwin" ]; then \
+        if ! command -v git >/dev/null 2>&1; then brew install git; fi; \
+        if ! command -v curl >/dev/null 2>&1; then brew install curl; fi; \
+        if ! command -v rg >/dev/null 2>&1; then brew install ripgrep; fi; \
+        if ! command -v nvim >/dev/null 2>&1; then brew install neovim; fi; \
+    elif command -v apt-get >/dev/null 2>&1; then \
+        sudo apt-get update; \
+        if ! command -v git >/dev/null 2>&1; then sudo apt-get install -y git; fi; \
+        if ! command -v curl >/dev/null 2>&1; then sudo apt-get install -y curl; fi; \
+        if ! command -v rg >/dev/null 2>&1; then sudo apt-get install -y ripgrep; fi; \
+        if ! command -v nvim >/dev/null 2>&1; then sudo apt-get install -y neovim; fi; \
+    elif command -v dnf >/dev/null 2>&1; then \
+        if ! command -v git >/dev/null 2>&1; then sudo dnf install -y git; fi; \
+        if ! command -v curl >/dev/null 2>&1; then sudo dnf install -y curl; fi; \
+        if ! command -v rg >/dev/null 2>&1; then sudo dnf install -y ripgrep; fi; \
+        if ! command -v nvim >/dev/null 2>&1; then sudo dnf install -y neovim; fi; \
+    elif command -v pacman >/dev/null 2>&1; then \
+        if ! command -v git >/dev/null 2>&1; then sudo pacman -S --noconfirm git; fi; \
+        if ! command -v curl >/dev/null 2>&1; then sudo pacman -S --noconfirm curl; fi; \
+        if ! command -v rg >/dev/null 2>&1; then sudo pacman -S --noconfirm ripgrep; fi; \
+        if ! command -v nvim >/dev/null 2>&1; then sudo pacman -S --noconfirm neovim; fi; \
+    else \
+        echo "⚠️  Unknown package manager. Please install git, curl, ripgrep, and neovim manually"; \
+    fi
+
+# Backup existing Neovim configuration
+backup-nvim-config:
+    @echo "Backing up existing Neovim configuration..."
+    @if [ -e {{nvim_config_path}} ]; then \
+        backup_dir="{{nvim_config_path}}.backup.$(date +%Y%m%d_%H%M%S)"; \
+        echo "📦 Creating backup: $backup_dir"; \
+        mv {{nvim_config_path}} "$backup_dir"; \
+        echo "✅ Backup created successfully"; \
+    else \
+        echo "ℹ️  No existing Neovim configuration found"; \
+    fi
+
+# Install Neovim configuration
+install-nvim-config:
+    @echo "Installing Neovim configuration..."
+    @mkdir -p ~/.config
+    @echo "🔗 Creating symlink: $(pwd)/nvim -> {{nvim_config_path}}"
+    @ln -sf $(pwd)/nvim {{nvim_config_path}}
+    @echo "✅ Neovim configuration installed"
+
+# Trigger Lazy plugin installation
+install-nvim-plugins:
+    @echo "Installing Neovim plugins..."
+    @if nvim --headless "+quitall" 2>/dev/null; then \
+        echo "✅ Neovim plugins installed successfully"; \
+    else \
+        echo "⚠️  Plugin installation may have encountered issues (this is often normal on first run)"; \
+    fi
+
+# Update Neovim plugins
+update-nvim-plugins:
+    @echo "Updating Neovim plugins..."
+    @if nvim --headless "+Lazy! sync +qa" 2>/dev/null; then \
+        echo "✅ Neovim plugins updated successfully"; \
+    else \
+        echo "⚠️  Plugin update may have encountered issues"; \
+    fi
+
 install-mac-os-config:
     @echo "Installing configuration for macOS (zsh)..."
     just set-shell-functions zsh
@@ -84,6 +172,22 @@ install-os-config:
         exit 1; \
     fi
 
+# Install Neovim configuration (complete setup)
+install-nvim:
+    @echo "🚀 Installing Neovim configuration..."
+    just install-nvim-deps || true
+    just backup-nvim-config
+    just install-nvim-config
+    just install-nvim-plugins
+    @echo "✅ Neovim installation complete!"
+
+# Update Neovim setup
+update-nvim:
+    @echo "🔄 Updating Neovim configuration..."
+    just install-nvim-config
+    just update-nvim-plugins
+    @echo "✅ Neovim update complete!"
+
 install:
     @echo "Starting installation..."
     @if ! just install-brew-essential-cli-packages; then \
@@ -96,6 +200,10 @@ install:
     fi
     @if ! just install-spell; then \
         echo "Error installing Spell CLI"; \
+        exit 1; \
+    fi
+    @if ! just install-nvim; then \
+        echo "Error installing Neovim configuration"; \
         exit 1; \
     fi
     @echo "Installation complete"

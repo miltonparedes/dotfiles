@@ -44,7 +44,7 @@ fi
 
 case "$editor" in
     code|vscode)
-        command="code \"$local_path\""
+        command="code-insiders \"$local_path\""
         ;;
     cursor)
         command="cursor \"$local_path\""

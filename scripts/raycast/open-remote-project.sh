@@ -96,7 +96,7 @@ folder_uri="vscode-remote://ssh-remote+${REMOTE_HOST}${remote_path}"
 
 case "$editor" in
     code|vscode)
-        command="code --folder-uri \"$folder_uri\""
+        command="code-insiders --folder-uri \"$folder_uri\""
         ;;
     cursor)
         command="cursor --folder-uri \"$folder_uri\""
