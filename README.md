@@ -1,6 +1,4 @@
-# Dotfiles - Fish Shell + Starship + TMUX
-
-Modern dotfiles configuration with Fish Shell, Starship prompt, and TMUX for macOS and Bluefin/Fedora.
+# Dotfiles
 
 ## 🚀 Quick Start
 
