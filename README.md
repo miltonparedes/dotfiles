@@ -1,293 +1,265 @@
-# dotfiles
+# Dotfiles - Fish Shell + Starship + TMUX
 
-A comprehensive dotfiles setup with Neovim configuration, CLI tools, and shell aliases for productive development environments.
+Modern dotfiles configuration with Fish Shell, Starship prompt, and TMUX for macOS and Bluefin/Fedora.
 
-## Quick Installation
-
-Get up and running with a single command:
+## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/USERNAME/dotfiles.git && cd dotfiles && ./install.sh
-```
+# Clone the repository
+git clone https://github.com/yourusername/dotfiles.git ~/Workspaces/M/dotfiles
+cd ~/Workspaces/M/dotfiles
 
-> **Note**: Replace `USERNAME` with your actual GitHub username
-
-### Alternative with Just (Recommended)
-
-If you prefer using `just` directly:
-
-```bash
-git clone https://github.com/USERNAME/dotfiles.git && cd dotfiles && just install
-```
-
-## Requirements
-
-### System Dependencies
-
-The installation script will automatically install these if missing:
-
-- **git** - Version control
-- **curl** - Download utilities
-- **ripgrep** - Fast text search (for Neovim)
-
-### macOS (via Homebrew)
-
-For full functionality, Homebrew will install:
-
-- **just** - Command runner
-- **uv** - Python package manager
-- **bat** - Enhanced cat with syntax highlighting
-- **eza** - Modern ls replacement
-- **fd** - Fast find alternative
-- **gh** - GitHub CLI
-- **glab** - GitLab CLI
-- **zoxide** - Smart directory navigation
-- **aichat** - AI-powered chat in terminal
-- **lazygit** - Terminal UI for git
-- **micro** - Terminal-based text editor
-- **fzf** - Fuzzy finder
-- **btop** - Resource monitor
-
-### Python Dependencies
-
-- **Python 3.10+**
-- **python-dotenv** - Environment variable management
-- **thefuzz** - Fuzzy string matching
-- **rapidfuzz** - Fast string matching
-
-### Linux Package Managers
-
-Supported package managers:
-- **apt** (Debian/Ubuntu)
-- **yum** (CentOS/RHEL)
-- **dnf** (Fedora)
-- **pacman** (Arch)
-- **zypper** (openSUSE)
-
-## Installation Methods
-
-### Full Installation (Recommended)
-
-```bash
-# Clone and install everything
-git clone https://github.com/USERNAME/dotfiles.git
-cd dotfiles
+# Full installation
 ./install.sh
-```
-
-### Alternative: Using Just
-
-```bash
-# If you have just installed
+# or
 just install
 ```
 
-### Neovim Only
+## ✨ Features
 
-For just the Neovim configuration:
+- **Fish Shell**: Modern, user-friendly shell with autosuggestions and syntax highlighting
+- **Starship**: Blazing-fast, customizable prompt that works across shells
+- **TMUX**: Terminal multiplexer with custom theme and keybindings
+- **Neovim**: Fully configured with LSP, Treesitter, and modern plugins
+- **Cross-platform**: Works seamlessly on macOS and Bluefin/Fedora
+- **SSH-ready**: Optimized for remote development workflows
 
-```bash
-# Using install.sh wrapper
-./install.sh --nvim-only
+## 🐟 Fish Shell
 
-# Or directly with just
-just install-nvim
-```
+This configuration uses **Fish** as the primary shell, replacing bash/zsh with a more modern alternative:
 
-## Just Commands
+- **Autosuggestions**: Type faster with intelligent command suggestions
+- **Syntax highlighting**: See errors before running commands
+- **Smart abbreviations**: Expand shortcuts inline for easy editing
+- **No configuration needed**: Works great out of the box
 
-This project uses `just` as the primary task runner for consistency across all configurations. Here are the most useful commands:
-
-### Installation Commands
-
-```bash
-just install               # Full installation (CLI tools + Neovim + shell config)
-just install-nvim          # Install only Neovim configuration
-just install-nvim-deps     # Install Neovim dependencies (git, curl, ripgrep, neovim)
-just install-os-config     # Install OS-specific configurations
-just install-spell         # Install Spell CLI tool
-```
-
-### Neovim Management
+### Make Fish your default shell
 
 ```bash
-just install-nvim          # Install/reinstall Neovim configuration
-just update-nvim           # Update Neovim plugins
-just backup-nvim-config    # Backup existing Neovim configuration
-just check-nvim-deps       # Check if Neovim dependencies are installed
+# Add Fish to valid shells
+echo $(which fish) | sudo tee -a /etc/shells
+
+# Change default shell
+chsh -s $(which fish)
+
+# Or use the helper command
+just switch-to-fish
 ```
 
-### Other Commands
+## 🌟 Starship Prompt
+
+Starship provides a minimal, blazing-fast, and infinitely customizable prompt:
+
+- Git status and branch information
+- Command duration for long-running processes
+- Python virtual environment detection
+- SSH session indicators
+- Consistent across Fish, Bash, and Zsh
+
+## 🖥️ TMUX Configuration
+
+Enhanced TMUX setup with:
+
+- **Custom prefix**: `Ctrl-a` instead of `Ctrl-b`
+- **Mouse support**: Click to switch panes and windows
+- **Theme**: tmux-power with network speed indicators
+- **Smart session management**: Project-specific sessions
+- **1-indexed**: Windows and panes start at 1
+
+### TMUX Shortcuts
 
 ```bash
-just --list                # Show all available commands
-just --help                # Show just help
+ta <session>   # Attach to session
+ts <name>      # New session
+tl             # List sessions
+tp             # Project-specific session (auto-named)
 ```
 
-### Development Containers Only
+## 📦 Installation
 
-For containerized development environments:
+### Prerequisites
+
+The installer will check for these automatically:
+
+- **macOS**: Homebrew
+- **Fedora/Bluefin**: DNF package manager
+- **Git**: For cloning repositories
+
+### Full Installation
 
 ```bash
-# Optional: Set OpenAI API key for aichat
-export OPENAI_API_KEY=your-api-key-here
+# Clone and install everything
+git clone https://github.com/USERNAME/dotfiles.git ~/Workspaces/M/dotfiles
+cd ~/Workspaces/M/dotfiles
 
-# Install devcontainer tools
-curl -sSL https://raw.githubusercontent.com/USERNAME/dotfiles/main/devcontainers/install.sh | bash
+# Run full installation
+just install
 ```
 
-## Plugin Management
-
-### Neovim Plugins (Lazy.nvim)
-
-Plugins are automatically installed on first run. To update plugins:
+### Component Installation
 
 ```bash
-# Update all plugins using just (recommended)
-just update-nvim
-
-# Or using install.sh wrapper
-./install.sh --update
-
-# Or from within Neovim
-:Lazy sync
+just install-fish         # Fish shell configuration only
+just install-starship     # Starship prompt only
+just install-tmux        # TMUX configuration only
+just install-nvim        # Neovim configuration only
+just install-spell       # Spell CLI tool
 ```
 
-#### Manual Plugin Management
+### Update Components
 
 ```bash
-# Open Lazy plugin manager
-nvim +Lazy
-
-# Available commands in Lazy:
-# - `I` - Install missing plugins
-# - `U` - Update plugins
-# - `S` - Sync (clean + update)
-# - `C` - Clean unused plugins
-# - `R` - Restore plugins from lockfile
+just update              # Update all configurations
+just update-nvim         # Update Neovim plugins only
 ```
 
-### CLI Tools Updates
+## 🛠️ CLI Tools
+
+Essential CLI tools installed via Homebrew:
+
+- **just**: Task runner (like make, but better)
+- **uv**: Fast Python package manager
+- **bat**: cat with syntax highlighting
+- **eza**: Modern ls replacement
+- **fd**: User-friendly find
+- **ripgrep**: Blazing fast grep
+- **fzf**: Fuzzy finder
+- **zoxide**: Smarter cd command
+- **lazygit**: Terminal UI for git
+- **gh**: GitHub CLI
+- **glab**: GitLab CLI
+- **btop**: Resource monitor
+- **aichat**: AI chat in terminal
+
+Install all with:
 
 ```bash
-# Update Homebrew packages (macOS)
-brew update && brew upgrade
-
-# Update Python packages
-uv pip sync requirements.txt
-
-# Update specific tools
-brew upgrade just uv aichat lazygit
+just install-brew-essential-cli-packages
 ```
 
-## Configuration
+## ⚙️ Configuration Files
 
-### Environment Variables & Secrets
+```
+dotfiles/
+├── fish/                  # Fish shell configuration
+│   ├── config.fish       # Main config
+│   ├── conf.d/          # Auto-loaded configs
+│   │   ├── aliases.fish
+│   │   ├── abbreviations.fish
+│   │   ├── integrations.fish
+│   │   └── tmux.fish
+│   └── functions/       # Custom functions
+├── starship.toml        # Starship prompt config
+├── tmux.conf            # TMUX configuration
+├── nvim/                # Neovim configuration
+├── cli.Brewfile         # Homebrew packages
+└── Justfile            # Task definitions
+```
 
-Create a `.env` file from the sample template:
+## 🔍 Verification
+
+Check your setup:
 
 ```bash
-cp sample.env .env
+# Check all dependencies
+just check
+
+# Fish-specific verification
+fish -c "check_fish_setup"
 ```
 
-Then edit `.env` with your specific values:
+## 🚀 Workflow Tips
+
+### Fish Productivity
+
+1. **Abbreviations**: Type `gaa` and space to expand to `git add --all`
+2. **Directory navigation**: Use `z` to jump to frecent directories
+3. **Fuzzy history**: Press `Ctrl+R` for interactive history search
+4. **Smart completions**: Press `Tab` for context-aware suggestions
+
+### TMUX Workflow
+
+1. **Project sessions**: Run `tp` in any project directory
+2. **Split panes**: `Ctrl-a |` (vertical) or `Ctrl-a -` (horizontal)
+3. **Navigate panes**: Click with mouse or `Ctrl-a` + arrow keys
+4. **Zoom pane**: `Ctrl-a z` to focus/unfocus current pane
+
+### Remote Development
+
+Perfect for SSH workflows:
 
 ```bash
-# Remote development settings
-REMOTE_HOST=your-host.local
-REMOTE_USER=your-username
-REMOTE_WORKSPACE=/path/to/remote/workspace
-LOCAL_WORKSPACE=/path/to/local/workspace
+# On remote server
+just install
 
-# AI Chat Configuration
-OPENAI_API_KEY=your-openai-api-key
+# Start TMUX session
+tmux new -s dev
+
+# Your complete environment is ready!
 ```
 
-### Overriding Local Secrets
+## 🔧 Customization
 
-To override secrets locally without affecting the repository:
+### Add Custom Aliases
 
-1. **Never commit `.env` files** - they're gitignored by default
-2. **Use environment variables**:
-   ```bash
-   export OPENAI_API_KEY="your-secret-key"
-   export REMOTE_HOST="your-host"
-   ```
-3. **Use shell-specific configs**:
-   ```bash
-   # In ~/.zshrc (macOS) or ~/.bashrc (Linux)
-   export OPENAI_API_KEY="your-secret-key"
-   ```
-4. **Use system keychain** (macOS):
-   ```bash
-   # Store in keychain
-   security add-generic-password -a $(whoami) -s "openai-api-key" -w "your-key"
-   
-   # Retrieve in scripts
-   OPENAI_API_KEY=$(security find-generic-password -a $(whoami) -s "openai-api-key" -w)
-   ```
+Edit `fish/conf.d/aliases.fish`:
 
-### Shell Configuration
+```fish
+alias mycommand='actual-command --with-options'
+```
 
-The installer automatically configures shell aliases and functions:
+### Modify Starship Prompt
 
-- **macOS**: Uses zsh with configs in `~/.zshrc.d/`
-- **Linux**: Uses bash with configs in `~/.bashrc.d/`
+Edit `starship.toml` to customize your prompt.
 
-### Git Configuration
+### TMUX Keybindings
 
-Lazygit configuration is automatically installed:
-- **macOS**: `~/Library/Application Support/lazygit/config.yml`
-- **Linux**: `~/.config/lazygit/config.yml`
+Edit `tmux.conf` to add custom keybindings.
 
-## Troubleshooting
+## 📚 Documentation
 
-### Common Issues
+- [Fish Documentation](https://fishshell.com/docs/current/)
+- [Starship Documentation](https://starship.rs/)
+- [TMUX Documentation](https://github.com/tmux/tmux/wiki)
+- [Just Documentation](https://github.com/casey/just)
 
-1. **Permission denied on install.sh**:
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
+## 🐛 Troubleshooting
 
-2. **Missing Homebrew (macOS)**:
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
-
-3. **Neovim plugins not loading**:
-   ```bash
-   # Remove plugin data and reinstall
-   rm -rf ~/.local/share/nvim
-   ./install.sh
-   ```
-
-4. **Python dependencies issues**:
-   ```bash
-   # Reinstall with uv
-   uv pip install -r requirements.txt --force-reinstall
-   ```
-
-### Getting Help
+### Fish not recognized as valid shell
 
 ```bash
-# Show install script help
-./install.sh --help
-
-# Check installation status
-nvim --version
-just --version
+echo $(which fish) | sudo tee -a /etc/shells
 ```
 
-## What Gets Installed
+### TMUX plugins not loading
 
-- **Neovim Configuration**: Complete IDE-like setup with LSP, autocomplete, and plugins
-- **Shell Aliases**: Productivity shortcuts for common commands
-- **Git Tools**: Lazygit for terminal-based git operations
-- **CLI Utilities**: Modern replacements for common Unix tools
-- **AI Integration**: Terminal-based AI chat and assistance
-- **Development Tools**: Language servers, formatters, and linters
+```bash
+# Install TPM (TMUX Plugin Manager)
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-## Contributing
+# In TMUX, press Ctrl-a I to install plugins
+```
 
-Feel free to fork this repository and customize it for your needs. The configuration is modular and easy to extend.
+### Starship not showing
+
+```bash
+# Verify Starship is installed
+starship --version
+
+# Reinstall Fish config
+just install-fish
+```
+
+### Commands not found
+
+```bash
+# Ensure Homebrew packages are installed
+just install-brew-essential-cli-packages
+
+# Reload Fish configuration
+source ~/.config/fish/config.fish
+```
+
+## 📝 License
+
+MIT - Feel free to use and modify for your needs!

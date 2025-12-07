@@ -15,6 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Flags
 UPDATE_FLAG=false
 NVIM_ONLY=false
+FISH_ONLY=false
 
 # Function to print colored output
 print_status() {
@@ -68,20 +69,24 @@ show_help() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --update     Update Neovim plugins (equivalent to 'just update-nvim')"
-    echo "  --nvim-only  Install only Neovim configuration (equivalent to 'just install-nvim')"
-    echo "  -h, --help   Show this help message"
+    echo "  --update      Update Neovim plugins (equivalent to 'just update-nvim')"
+    echo "  --nvim-only   Install only Neovim configuration (equivalent to 'just install-nvim')"
+    echo "  --fish-only   Install only Fish shell configuration (equivalent to 'just install-fish')"
+    echo "  -h, --help    Show this help message"
     echo ""
     echo "Examples:"
-    echo "  $0                # Full installation (equivalent to 'just install')"
-    echo "  $0 --nvim-only   # Install only Neovim (equivalent to 'just install-nvim')"
-    echo "  $0 --update      # Update Neovim plugins (equivalent to 'just update-nvim')"
+    echo "  $0                 # Full installation (equivalent to 'just install')"
+    echo "  $0 --nvim-only    # Install only Neovim (equivalent to 'just install-nvim')"
+    echo "  $0 --fish-only    # Install only Fish shell (equivalent to 'just install-fish')"
+    echo "  $0 --update       # Update Neovim plugins (equivalent to 'just update-nvim')"
     echo ""
     echo "Available just commands:"
-    echo "  just install       # Full installation (CLI tools + Neovim)"
-    echo "  just install-nvim  # Install Neovim configuration only"
-    echo "  just update-nvim   # Update Neovim plugins"
-    echo "  just --list        # Show all available commands"
+    echo "  just install        # Full installation (CLI tools + Neovim + Shell config)"
+    echo "  just install-nvim   # Install Neovim configuration only"
+    echo "  just install-fish   # Install Fish shell configuration only"
+    echo "  just update-nvim    # Update Neovim plugins"
+    echo "  just switch-to-fish # Switch to Fish shell"
+    echo "  just --list         # Show all available commands"
 }
 
 # Parse command line arguments
@@ -93,6 +98,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --nvim-only)
             NVIM_ONLY=true
+            shift
+            ;;
+        --fish-only)
+            FISH_ONLY=true
             shift
             ;;
         -h|--help)
@@ -117,6 +126,17 @@ main() {
     # Change to script directory
     cd "$SCRIPT_DIR"
     
+    # Detect shell and show recommendation
+    if command -v fish >/dev/null 2>&1; then
+        print_status "Fish shell detected! Your configuration will include Fish support."
+    else
+        if [[ "$(uname)" == "Darwin" ]]; then
+            print_warning "Fish not detected. Install with: brew install fish"
+        else
+            print_warning "Fish not detected. Install with: sudo dnf install fish (Fedora/Bluefin)"
+        fi
+    fi
+    
     # Execute based on flags
     if [[ "$UPDATE_FLAG" == true ]]; then
         print_status "Updating Neovim configuration..."
@@ -124,6 +144,9 @@ main() {
     elif [[ "$NVIM_ONLY" == true ]]; then
         print_status "Installing Neovim configuration only..."
         just install-nvim
+    elif [[ "$FISH_ONLY" == true ]]; then
+        print_status "Installing Fish shell configuration only..."
+        just install-fish
     else
         print_status "Running full installation..."
         just install
@@ -131,9 +154,15 @@ main() {
     
     print_success "Installation completed!"
     print_status "Available commands:"
-    print_status "  just install-nvim   # Install/reinstall Neovim config"
-    print_status "  just update-nvim    # Update Neovim plugins"
-    print_status "  just --list         # Show all available commands"
+    print_status "  just install-nvim    # Install/reinstall Neovim config"
+    print_status "  just install-fish    # Install Fish shell config"
+    print_status "  just switch-to-fish  # Switch to Fish shell"
+    print_status "  just update-nvim     # Update Neovim plugins"
+    print_status "  just --list          # Show all available commands"
+    
+    if command -v fish >/dev/null 2>&1; then
+        print_status "Start Fish shell with: fish"
+    fi
 }
 
 # Run main function

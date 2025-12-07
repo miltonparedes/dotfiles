@@ -1,39 +1,19 @@
 config_dir := "~/.config"
-zsh_aliases := "~/.zshrc.d/aliases"
-bash_aliases := "~/.bashrc.d/aliases"
+fish_config := "~/.config/fish"
 spell_cli_path := "~/.config/spell/cli.just"
-spell_alias := 'alias spell="just --justfile ~/.config/spell/cli.just --working-directory ~"'
 nvim_config_path := config_dir + "/nvim"
 
-# Install or update custom CLI tool
+# Install or update custom CLI tool (Spell)
 install-spell:
     @echo "Inscribing or updating the Spell CLI..."
     @mkdir -p ~/.config/spell
     @cp -rf spell/* ~/.config/spell/
-    @if [ -f ~/.zshrc.d/aliases ]; then \
-        if grep -q "alias spell=" ~/.zshrc.d/aliases; then \
-            if [ "$(uname)" = "Darwin" ]; then \
-                sed -i '' 's|alias spell=.*|{{spell_alias}}|' ~/.zshrc.d/aliases; \
-            else \
-                sed -i 's|alias spell=.*|{{spell_alias}}|' ~/.zshrc.d/aliases; \
-            fi; \
-        else \
-            echo '{{spell_alias}}' >> ~/.zshrc.d/aliases; \
-        fi; \
+    @if [ -d ~/.config/fish ]; then \
+        echo "alias spell 'just --justfile ~/.config/spell/cli.just --working-directory ~'" > ~/.config/fish/conf.d/spell.fish; \
     fi
-    @if [ -f ~/.bashrc.d/aliases ]; then \
-        if grep -q "alias spell=" ~/.bashrc.d/aliases; then \
-            if [ "$(uname)" = "Darwin" ]; then \
-                sed -i '' 's|alias spell=.*|{{spell_alias}}|' ~/.bashrc.d/aliases; \
-            else \
-                sed -i 's|alias spell=.*|{{spell_alias}}|' ~/.bashrc.d/aliases; \
-            fi; \
-        else \
-            echo '{{spell_alias}}' >> ~/.bashrc.d/aliases; \
-        fi; \
-    fi
-    @echo "Spell CLI inscribed or updated. Restart your terminal or source your aliases file to activate its powers"
+    @echo "Spell CLI inscribed or updated. Restart your terminal or run 'reload' in Fish"
 
+# Install Homebrew packages
 install-brew-essential-cli-packages:
     @echo "Installing Homebrew packages..."
     brew update
@@ -41,26 +21,55 @@ install-brew-essential-cli-packages:
     brew upgrade
     brew cleanup
 
-# Set foloder with aliases/functions for a zsh or bash shell
-set-shell-functions shell:
-    @echo "Setting aliases for {{shell}}..."
-    @if [ "{{shell}}" = "zsh" ]; then \
-        mkdir -p ~/.zshrc.d; \
-        cp -R .zshrc.d/* ~/.zshrc.d/; \
-    elif [ "{{shell}}" = "bash" ]; then \
-        mkdir -p ~/.bashrc.d; \
-        cp -R .bashrc.d/* ~/.bashrc.d/; \
-    else \
-        echo "Unsupported shell: {{shell}}"; \
-        exit 1; \
-    fi
+# Install fish shell configuration
+install-fish:
+    @echo "Installing Fish shell configuration..."
+    @mkdir -p ~/.config/fish
+    @cp -R fish/* ~/.config/fish/
+    @echo "✅ Fish configuration installed successfully"
+    @echo "Run 'fish' to start using Fish shell"
 
+# Install Starship prompt configuration
+install-starship:
+    @echo "Installing Starship configuration..."
+    @mkdir -p ~/.config
+    @cp -f starship.toml ~/.config/starship.toml
+    @echo "✅ Starship configuration installed"
+
+# Install TMUX configuration
+install-tmux:
+    @echo "Installing TMUX configuration..."
+    @cp -f tmux.conf ~/.tmux.conf
+    @echo "✅ TMUX configuration installed"
+    @echo "Restart TMUX or run: tmux source-file ~/.tmux.conf"
+
+# Install Lazygit configuration
 lazygit-config path:
     @echo "Configuring lazygit..."
     @mkdir -p {{path}}/lazygit
     @cp -f lazygit/config.yml {{path}}/lazygit/config.yml
 
 # Check if required dependencies are installed
+check-deps:
+    @echo "Checking dependencies..."
+    @missing=0; \
+    for cmd in fish starship tmux nvim git rg fzf zoxide eza bat; do \
+        if ! command -v $$cmd >/dev/null 2>&1; then \
+            echo "❌ $$cmd is not installed"; \
+            missing=1; \
+        else \
+            echo "✅ $$cmd is installed"; \
+        fi; \
+    done; \
+    if [ $$missing -eq 1 ]; then \
+        echo ""; \
+        echo "Install missing dependencies with:"; \
+        echo "  just install-brew-essential-cli-packages"; \
+        exit 1; \
+    fi
+    @echo "✅ All dependencies are installed"
+
+# Check Neovim dependencies
 check-nvim-deps:
     @echo "Checking Neovim dependencies..."
     @if ! command -v git >/dev/null 2>&1; then \
@@ -89,22 +98,11 @@ install-nvim-deps:
         if ! command -v curl >/dev/null 2>&1; then brew install curl; fi; \
         if ! command -v rg >/dev/null 2>&1; then brew install ripgrep; fi; \
         if ! command -v nvim >/dev/null 2>&1; then brew install neovim; fi; \
-    elif command -v apt-get >/dev/null 2>&1; then \
-        sudo apt-get update; \
-        if ! command -v git >/dev/null 2>&1; then sudo apt-get install -y git; fi; \
-        if ! command -v curl >/dev/null 2>&1; then sudo apt-get install -y curl; fi; \
-        if ! command -v rg >/dev/null 2>&1; then sudo apt-get install -y ripgrep; fi; \
-        if ! command -v nvim >/dev/null 2>&1; then sudo apt-get install -y neovim; fi; \
     elif command -v dnf >/dev/null 2>&1; then \
         if ! command -v git >/dev/null 2>&1; then sudo dnf install -y git; fi; \
         if ! command -v curl >/dev/null 2>&1; then sudo dnf install -y curl; fi; \
         if ! command -v rg >/dev/null 2>&1; then sudo dnf install -y ripgrep; fi; \
         if ! command -v nvim >/dev/null 2>&1; then sudo dnf install -y neovim; fi; \
-    elif command -v pacman >/dev/null 2>&1; then \
-        if ! command -v git >/dev/null 2>&1; then sudo pacman -S --noconfirm git; fi; \
-        if ! command -v curl >/dev/null 2>&1; then sudo pacman -S --noconfirm curl; fi; \
-        if ! command -v rg >/dev/null 2>&1; then sudo pacman -S --noconfirm ripgrep; fi; \
-        if ! command -v nvim >/dev/null 2>&1; then sudo pacman -S --noconfirm neovim; fi; \
     else \
         echo "⚠️  Unknown package manager. Please install git, curl, ripgrep, and neovim manually"; \
     fi
@@ -147,29 +145,36 @@ update-nvim-plugins:
         echo "⚠️  Plugin update may have encountered issues"; \
     fi
 
+# Install configuration for macOS
 install-mac-os-config:
-    @echo "Installing configuration for macOS (zsh)..."
-    just set-shell-functions zsh
+    @echo "Installing configuration for macOS..."
+    just install-fish
+    just install-starship
+    just install-tmux
     just lazygit-config "~/Library/Application\ Support"
+    @echo "✅ macOS configuration installed"
 
+# Install configuration for Bluefin/Fedora
 install-bluefin-config:
+    @echo "Installing configuration for Bluefin/Fedora..."
+    just install-fish
+    just install-starship
+    just install-tmux
     just lazygit-config "~/.config"
-    just set-shell-functions bash
+    @echo "✅ Bluefin/Fedora configuration installed"
 
 # Install OS-specific configuration
 install-os-config:
     @echo "Detecting and configuring OS..."
     @if [ "$(uname)" = "Darwin" ]; then \
-        echo "macOS detected. Installing configuration..."; \
-        just set-shell-functions zsh; \
-        just lazygit-config "~/Library/Application\ Support"; \
-    elif [ "$(grep -i fedora /etc/os-release)" ]; then \
-        echo "Bluefin detected. Installing configuration..."; \
-        just lazygit-config "{{config_dir}}"; \
-        just set-shell-functions bash; \
+        echo "macOS detected."; \
+        just install-mac-os-config; \
+    elif [ -f /etc/fedora-release ] || [ -f /etc/os-release ] && grep -qi fedora /etc/os-release; then \
+        echo "Bluefin/Fedora detected."; \
+        just install-bluefin-config; \
     else \
         echo "Unrecognized operating system"; \
-        exit 1; \
+        echo "Manually run: just install-fish && just install-starship && just install-tmux"; \
     fi
 
 # Install Neovim configuration (complete setup)
@@ -188,8 +193,9 @@ update-nvim:
     just update-nvim-plugins
     @echo "✅ Neovim update complete!"
 
+# Full installation
 install:
-    @echo "Starting installation..."
+    @echo "Starting full installation..."
     @if ! just install-brew-essential-cli-packages; then \
         echo "Error installing Homebrew packages"; \
         exit 1; \
@@ -206,4 +212,86 @@ install:
         echo "Error installing Neovim configuration"; \
         exit 1; \
     fi
-    @echo "Installation complete"
+    @echo "✅ Installation complete!"
+    @echo ""
+    @echo "Next steps:"
+    @echo "1. Start Fish shell: fish"
+    @echo "2. Make Fish your default shell: chsh -s $(which fish)"
+    @echo "3. Start TMUX: tmux"
+
+# Switch to fish shell as default
+switch-to-fish:
+    @echo "Switching to Fish shell..."
+    @if command -v fish >/dev/null 2>&1; then \
+        echo "Fish is installed at: $$(which fish)"; \
+        echo ""; \
+        echo "To make Fish your default shell, run:"; \
+        echo "  chsh -s $$(which fish)"; \
+        echo ""; \
+        echo "You may need to add Fish to /etc/shells first:"; \
+        echo "  echo $$(which fish) | sudo tee -a /etc/shells"; \
+        echo ""; \
+        echo "Or start Fish now with: fish"; \
+    else \
+        echo "Fish is not installed. Install it first with:"; \
+        if [ "$(uname)" = "Darwin" ]; then \
+            echo "  brew install fish"; \
+        else \
+            echo "  sudo dnf install fish  # For Fedora/Bluefin"; \
+        fi; \
+    fi
+
+# Update all configurations
+update:
+    @echo "Updating all configurations..."
+    just install-fish
+    just install-starship
+    just install-tmux
+    just update-nvim
+    @echo "✅ All configurations updated!"
+
+# Check system setup
+check:
+    @echo "Checking system setup..."
+    just check-deps
+    @echo ""
+    @echo "Configuration status:"
+    @if [ -d ~/.config/fish ]; then \
+        echo "✅ Fish configuration installed"; \
+    else \
+        echo "❌ Fish configuration not installed"; \
+    fi
+    @if [ -f ~/.config/starship.toml ]; then \
+        echo "✅ Starship configuration installed"; \
+    else \
+        echo "❌ Starship configuration not installed"; \
+    fi
+    @if [ -f ~/.tmux.conf ]; then \
+        echo "✅ TMUX configuration installed"; \
+    else \
+        echo "❌ TMUX configuration not installed"; \
+    fi
+    @if [ -L ~/.config/nvim ] || [ -d ~/.config/nvim ]; then \
+        echo "✅ Neovim configuration installed"; \
+    else \
+        echo "❌ Neovim configuration not installed"; \
+    fi
+
+# Show help
+help:
+    @echo "Available commands:"
+    @echo "  just install              # Full installation"
+    @echo "  just install-fish         # Install Fish configuration"
+    @echo "  just install-starship     # Install Starship prompt"
+    @echo "  just install-tmux         # Install TMUX configuration"
+    @echo "  just install-nvim         # Install Neovim configuration"
+    @echo "  just install-spell        # Install Spell CLI tool"
+    @echo "  just update               # Update all configurations"
+    @echo "  just update-nvim          # Update Neovim plugins"
+    @echo "  just switch-to-fish       # Instructions to switch to Fish"
+    @echo "  just check                # Check system setup"
+    @echo "  just check-deps           # Check dependencies"
+    @echo "  just help                 # Show this help"
+
+# Default command
+default: help

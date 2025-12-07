@@ -46,11 +46,15 @@ run_ssh_command() {
 }
 
 list_projects_and_check_path() {
-    local check_path="$1"
+    local literal_path="$1"
+    local check_path="$2"
     run_ssh_command "
         projects=\$(find \"${REMOTE_WORKSPACE}\" -mindepth 2 -maxdepth 2 -type d -not -path '*/\.*' | sed \"s|${REMOTE_WORKSPACE}/||\")
         echo \"\$projects\"
-        if [ -d \"${REMOTE_WORKSPACE}/${check_path}\" ]; then
+        # Check literal path first
+        if [ -d \"${REMOTE_WORKSPACE}/${literal_path}\" ]; then
+            echo \"LITERAL_PATH_EXISTS\"
+        elif [ -d \"${REMOTE_WORKSPACE}/${check_path}\" ]; then
             echo \"PATH_EXISTS\"
         else
             echo \"PATH_NOT_EXISTS\"
@@ -73,25 +77,33 @@ fi
 
 project_root=$(echo "$project_path" | cut -d'/' -f1,2)
 
-output=$(list_projects_and_check_path "$project_root")
+output=$(list_projects_and_check_path "$project_path" "$project_root")
 projects=$(echo "$output" | sed '$d')
 path_exists=$(echo "$output" | tail -n1)
 
-if [ "$path_exists" = "PATH_NOT_EXISTS" ]; then
-    echo "Project path '$project_root' does not exist on $REMOTE_HOST."
+# Check if literal path exists first
+if [ "$path_exists" = "LITERAL_PATH_EXISTS" ]; then
+    echo "Opening literal path: $project_path"
+    final_path="$project_path"
+elif [ "$path_exists" = "PATH_EXISTS" ]; then
+    # Project root exists, use it
+    final_path="$project_root"
+else
+    # Neither literal nor project root exists, try fuzzy matching
+    echo "Path '$project_path' does not exist on $REMOTE_HOST."
 
     similar_project=$(echo "$projects" | fzf --filter="$project_root" --no-sort | head -n1)
 
     if [ -n "$similar_project" ]; then
         echo "Did you mean '$similar_project'? Using the closest match."
-        project_root="$similar_project"
+        final_path="$similar_project"
     else
         echo "No similar project found."
         exit 1
     fi
 fi
 
-remote_path="${REMOTE_WORKSPACE}/${project_root}"
+remote_path="${REMOTE_WORKSPACE}/${final_path}"
 folder_uri="vscode-remote://ssh-remote+${REMOTE_HOST}${remote_path}"
 
 case "$editor" in
@@ -112,8 +124,8 @@ case "$editor" in
 esac
 
 if eval "$command"; then
-    echo "Opening $project_root with $editor on $REMOTE_HOST"
+    echo "Opening $final_path with $editor on $REMOTE_HOST"
 else
-    echo "Error opening $project_root with $editor on $REMOTE_HOST"
+    echo "Error opening $final_path with $editor on $REMOTE_HOST"
     exit 1
 fi
