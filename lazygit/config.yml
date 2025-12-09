@@ -4,82 +4,8 @@ git:
       pager: delta --dark --paging=never --line-numbers
 
 customCommands:
-  - key: A
+  - key: G
     description: Lazycommit
-    command: |
-      (
-        saved_stty=$(stty -g 2>/dev/null || true)
-
-        cleanup() {
-          [ -n "$saved_stty" ] && stty "$saved_stty" 2>/dev/null || true
-          tput reset 2>/dev/null || true
-        }
-
-        trap cleanup EXIT INT TERM
-
-        recent_commits=$(git log -n 6 --pretty=format:'%h %s')
-        diff_content=$(git diff --cached)
-
-        prompt="You are a Git commit message expert. Generate 6 semantic commit messages.
-
-        RULES:
-        - Format: <type>: <summary> (NO scopes, NO parentheses)
-        - Max 50 characters per message
-        - Use imperative mood (add, fix, update - not added, fixed, updated)
-        - Match the style of recent commits below
-        - Each message should offer a different perspective on the changes
-
-        TYPE SELECTION:
-        feat: new features only
-        fix: bug fixes only
-        docs: documentation only
-        style: formatting, whitespace only
-        refactor: code restructuring without behavior change
-        test: test changes only
-        chore: maintenance, dependencies, configs
-        perf: performance improvements
-        ci: CI/CD changes
-
-        RECENT COMMITS (match this style):
-        $recent_commits
-
-        CHANGES TO ANALYZE:
-        $diff_content"
-
-        payload=$(jq -n \
-          --arg prompt "$prompt" \
-          '{
-            contents: [{ parts: [{ text: $prompt }] }],
-            generationConfig: {
-              responseMimeType: "application/json",
-              responseSchema: {
-                type: "object",
-                properties: {
-                  commits: {
-                    type: "array",
-                    minItems: 6,
-                    maxItems: 6,
-                    items: {
-                      type: "object",
-                      properties: {
-                        type: { type: "string", enum: ["feat","fix","docs","style","refactor","test","chore","perf","ci"] },
-                        message: { type: "string" }
-                      },
-                      required: ["type","message"]
-                    }
-                  }
-                },
-                required: ["commits"]
-              }
-            }
-          }')
-
-        curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$GEMINI_API_KEY" \
-          -H "Content-Type: application/json" \
-          -d "$payload" \
-          | jq -r '.candidates[0].content.parts[0].text | fromjson | .commits[] | "\(.type): \(.message)"' \
-          | fzf --height 41% --border --ansi --preview "echo {}" --preview-window=up:wrap \
-          | (read -r message && git commit --no-verify -m "$message")
-      )
+    command: bash ~/.config/lazygit/lazycommit.sh
     context: files
-    subprocess: true
+    output: terminal

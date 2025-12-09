@@ -165,14 +165,23 @@ install-gitconfig:
 lazygit-config path:
     #!/usr/bin/env bash
     echo "Configuring lazygit..."
-    dest="{{path}}/lazygit/config.yml"
+    expanded_path=$(eval echo "{{path}}")
+    dest_dir="$expanded_path/lazygit"
+    dest_config="$dest_dir/config.yml"
+    dest_script="$dest_dir/lazycommit.sh"
     if [ -n "{{dry_run}}" ]; then
-        echo "[DRY-RUN] Would install: lazygit/config.yml -> $dest"
-        just show-diff lazygit/config.yml "$dest"
+        echo "[DRY-RUN] Would install:"
+        echo "  lazygit/config.yml -> $dest_config"
+        echo "  lazygit/lazycommit.sh -> $dest_script"
+        just show-diff lazygit/config.yml "$dest_config"
     else
-        mkdir -p "{{path}}/lazygit"
-        just backup-file "$dest" lazygit
-        cp -f lazygit/config.yml "$dest"
+        mkdir -p "$dest_dir"
+        just backup-file "$dest_config" lazygit
+        cp -f lazygit/config.yml "$dest_config"
+        cp -f lazygit/lazycommit.sh "$dest_script"
+        chmod +x "$dest_script"
+        # Update script path in config based on actual destination (quote path for spaces)
+        sed -i '' "s|~/.config/lazygit/lazycommit.sh|'$dest_dir/lazycommit.sh'|" "$dest_config"
         echo "✅ Lazygit configuration installed"
     fi
 
