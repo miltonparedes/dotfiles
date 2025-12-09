@@ -3,81 +3,24 @@ customCommands:
     description: Lazycommit
     command: |
       (
-        saved_stty=$(stty -g 3>/dev/null || true)
+        saved_stty=$(stty -g 2>/dev/null || true)
 
         cleanup() {
-          [ -n "$saved_stty" ] && stty "$saved_stty" 3>/dev/null || true
-          tput clear 3>/dev/null || true
-          tput reset 3>/dev/null || true
+          [ -n "$saved_stty" ] && stty "$saved_stty" 2>/dev/null || true
+          tput reset 2>/dev/null || true
         }
 
         trap cleanup EXIT INT TERM
 
-        aichat "<ROLE>
-        You are a Git commit message expert, specialized in identifying the most appropriate semantic type for code changes and generating precise summaries.
-        </ROLE>
+        aichat -m gemini:gemini-2.5-flash-preview-05-20 "Generate 6 semantic commit messages for these changes. Use imperative mood, max 50 chars each.
 
-        <TASK>
-        1. Analyze the code changes carefully
-        2. Identify the most appropriate type(s) for these changes
-        3. Generate 6 alternative commit messages using only the relevant type(s)
-        4. Ensure each summary captures the full scope of changes
-        </TASK>
-
-        <OUTPUT_FORMAT>
-        - Each message on a new line
-        - No numbering or bullets
-        - Exact format: <type>: <summary>
-        - Do NOT include scopes or parentheses
-        - Maximum 50 characters per message
-        - Use imperative mood
-        </OUTPUT_FORMAT>
-
-        <TYPE_SELECTION_RULES>
-        feat: ONLY for new features or significant enhancements
-        fix: ONLY for bug fixes and error corrections
-        docs: ONLY for documentation changes
-        style: ONLY for formatting, whitespace, semicolons
-        refactor: ONLY for code restructuring without behavior changes
-        test: ONLY for test additions or modifications
-        chore: ONLY for maintenance, dependencies, configs
-        perf: ONLY for performance improvements
-        ci: ONLY for CI/CD related changes
-        </TYPE_SELECTION_RULES>
-
-        <SUMMARY_GUIDELINES>
-        1. Coverage:
-           - Address all significant changes
-           - Include key components affected
-           - Reflect the main purpose of changes
-
-        2. Alternatives:
-           - Provide different perspectives on the changes
-           - Vary detail level while staying concise
-           - Focus on different aspects of the change
-
-        3. Strong verbs:
-           - add/implement: new functionality
-           - update/modify: changes
-           - remove/delete: removals
-           - fix/resolve: corrections
-           - improve/enhance: improvements
-           - refactor/restructure: reorganization
-        </SUMMARY_GUIDELINES>
-
-        <CONTEXT>
-        Recent commits:
-        \`\`\`
+        Recent commits for context:
         $(git log -n 6 --pretty=format:'%h %s')
-        \`\`\`
 
-        Current changes:
-        \`\`\`diff
-        $(git diff --cached)
-        \`\`\`
-        </CONTEXT>" \
+        Changes to commit:
+        $(git diff --cached)" \
+          | jq -r '.commits[] | "\(.type): \(.message)"' \
           | fzf --height 41% --border --ansi --preview "echo {}" --preview-window=up:wrap \
-          | sed -E 's/^[1-9]+\.\s*//' \
           | (read -r message && git commit --no-verify -m "$message")
       )
     context: files

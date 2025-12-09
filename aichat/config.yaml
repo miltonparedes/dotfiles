@@ -1,5 +1,39 @@
-model: openai
+model: gemini
 clients:
-  - type: openai
-    api_key: OPENAI_API_KEY_PLACEHOLDER
-    model: gpt-4o-2024-11-20
+  - type: gemini
+    api_key: ${GEMINI_API_KEY}
+    patch:
+      chat_completions:
+        '.*':
+          body:
+            generationConfig:
+              responseMimeType: "application/json"
+              responseSchema:
+                type: object
+                properties:
+                  commits:
+                    type: array
+                    minItems: 6
+                    maxItems: 6
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - feat
+                            - fix
+                            - docs
+                            - style
+                            - refactor
+                            - test
+                            - chore
+                            - perf
+                            - ci
+                        message:
+                          type: string
+                      required:
+                        - type
+                        - message
+                required:
+                  - commits
