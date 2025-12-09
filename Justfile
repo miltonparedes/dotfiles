@@ -25,7 +25,7 @@ install-brew-essential-cli-packages:
 install-fish:
     @echo "Installing Fish shell configuration..."
     @mkdir -p ~/.config/fish
-    @cp -R fish/* ~/.config/fish/
+    @rsync -av --exclude '*.template' fish/ ~/.config/fish/
     @echo "✅ Fish configuration installed successfully"
     @echo "Run 'fish' to start using Fish shell"
 
@@ -48,6 +48,22 @@ lazygit-config path:
     @echo "Configuring lazygit..."
     @mkdir -p {{path}}/lazygit
     @cp -f lazygit/config.yml {{path}}/lazygit/config.yml
+
+# Install secrets (API keys) from .env file
+install-secrets:
+    @echo "Installing secrets from .env..."
+    @if [ -f .env ]; then \
+        . ./.env && \
+        if [ -n "$GEMINI_API_KEY" ]; then \
+            sed "s/GEMINI_API_KEY_PLACEHOLDER/$GEMINI_API_KEY/" \
+                fish/conf.d/secrets.fish.template > ~/.config/fish/conf.d/secrets.fish && \
+            echo "✅ Secrets installed to ~/.config/fish/conf.d/secrets.fish"; \
+        else \
+            echo "⚠️  GEMINI_API_KEY not found in .env"; \
+        fi; \
+    else \
+        echo "⚠️  .env file not found. Copy sample.env to .env and add your keys."; \
+    fi
 
 # Check if required dependencies are installed
 check-deps:
@@ -152,6 +168,7 @@ install-mac-os-config:
     just install-starship
     just install-tmux
     just lazygit-config "~/Library/Application\ Support"
+    just install-secrets
     @echo "✅ macOS configuration installed"
 
 # Install configuration for Bluefin/Fedora
@@ -161,6 +178,7 @@ install-bluefin-config:
     just install-starship
     just install-tmux
     just lazygit-config "~/.config"
+    just install-secrets
     @echo "✅ Bluefin/Fedora configuration installed"
 
 # Install OS-specific configuration
@@ -311,6 +329,7 @@ help:
     @echo "  just install-tmux         # Install TMUX configuration"
     @echo "  just install-nvim         # Install Neovim configuration"
     @echo "  just install-spell        # Install Spell CLI tool"
+    @echo "  just install-secrets      # Install API keys from .env"
     @echo "  just install-linux-ssh-tools  # Install Linux clipboard tools"
     @echo "  just update               # Update all configurations"
     @echo "  just update-nvim          # Update Neovim plugins"
