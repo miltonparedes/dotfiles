@@ -99,9 +99,39 @@ just install
 ```bash
 just install-fish         # Fish shell configuration only
 just install-starship     # Starship prompt only
-just install-tmux        # TMUX configuration only
-just install-nvim        # Neovim configuration only
-just install-spell       # Spell CLI tool
+just install-tmux         # TMUX configuration only
+just install-nvim         # Neovim configuration only
+just install-spell        # Spell CLI tool
+```
+
+### Safe Installation (Dry-Run & Backup)
+
+Preview changes before applying:
+
+```bash
+# Preview ALL changes without modifying anything
+just check-changes
+
+# Preview specific config
+DRY_RUN=1 just install-fish
+
+# Show diff for a specific config
+just diff-config git
+just diff-config tmux
+```
+
+Backups are created automatically in `~/.config-backups/`. Manage them with:
+
+```bash
+just list-backups                      # List all backups
+just restore-backup fish 20241209_123456  # Restore from backup
+just clean-backups 3                   # Keep only last 3 backups per config
+```
+
+Disable backups (not recommended):
+
+```bash
+BACKUP=0 just install-fish
 ```
 
 ### Update Components

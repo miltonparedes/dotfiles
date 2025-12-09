@@ -2,16 +2,78 @@ config_dir := "~/.config"
 fish_config := "~/.config/fish"
 spell_cli_path := "~/.config/spell/cli.just"
 nvim_config_path := config_dir + "/nvim"
+backup_dir := "~/.config-backups"
+dry_run := env_var_or_default("DRY_RUN", "")
+backup_enabled := env_var_or_default("BACKUP", "1")
+
+# Helper: Get diff command based on available tools
+[private]
+get-diff-cmd:
+    @if command -v delta >/dev/null 2>&1; then \
+        echo "delta"; \
+    elif command -v colordiff >/dev/null 2>&1; then \
+        echo "colordiff -u"; \
+    else \
+        echo "diff -u"; \
+    fi
+
+# Helper: Backup a single file before overwriting
+[private]
+backup-file dest config_name:
+    #!/usr/bin/env bash
+    if [ "{{backup_enabled}}" = "1" ] && [ -e "{{dest}}" ]; then
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        backup_path="$HOME/.config-backups/{{config_name}}/$timestamp"
+        mkdir -p "$backup_path"
+        cp -a "{{dest}}" "$backup_path/"
+        echo "  📦 Backup: {{dest}} -> $backup_path"
+    fi
+
+# Helper: Backup a directory before overwriting
+[private]
+backup-directory dest config_name:
+    #!/usr/bin/env bash
+    if [ "{{backup_enabled}}" = "1" ] && [ -d "{{dest}}" ]; then
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        backup_path="$HOME/.config-backups/{{config_name}}/$timestamp"
+        mkdir -p "$backup_path"
+        cp -a "{{dest}}/." "$backup_path/"
+        echo "  📦 Backup: {{dest}} -> $backup_path"
+    fi
+
+# Helper: Show diff between source and destination
+[private]
+show-diff src dest:
+    #!/usr/bin/env bash
+    if [ -e "{{dest}}" ]; then
+        diff_cmd=$(just get-diff-cmd)
+        echo ""
+        echo "📋 Changes for {{dest}}:"
+        $diff_cmd "{{dest}}" "{{src}}" 2>/dev/null || true
+    else
+        echo "  [NEW] {{dest}} (file does not exist yet)"
+    fi
 
 # Install or update custom CLI tool (Spell)
 install-spell:
-    @echo "Inscribing or updating the Spell CLI..."
-    @mkdir -p ~/.config/spell
-    @cp -rf spell/* ~/.config/spell/
-    @if [ -d ~/.config/fish ]; then \
-        echo "alias spell 'just --justfile ~/.config/spell/cli.just --working-directory ~'" > ~/.config/fish/conf.d/spell.fish; \
+    #!/usr/bin/env bash
+    echo "Inscribing or updating the Spell CLI..."
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install: spell/* -> ~/.config/spell/"
+        echo "Files that would be copied:"
+        find spell -type f -exec echo "  {}" \;
+        if [ -d ~/.config/fish ]; then
+            echo "[DRY-RUN] Would create: ~/.config/fish/conf.d/spell.fish"
+        fi
+    else
+        mkdir -p ~/.config/spell
+        just backup-directory ~/.config/spell spell
+        cp -rf spell/* ~/.config/spell/
+        if [ -d ~/.config/fish ]; then
+            echo "alias spell 'just --justfile ~/.config/spell/cli.just --working-directory ~'" > ~/.config/fish/conf.d/spell.fish
+        fi
+        echo "✅ Spell CLI inscribed or updated. Restart your terminal or run 'reload' in Fish"
     fi
-    @echo "Spell CLI inscribed or updated. Restart your terminal or run 'reload' in Fish"
 
 # Install Homebrew packages
 install-brew-essential-cli-packages:
@@ -23,38 +85,96 @@ install-brew-essential-cli-packages:
 
 # Install fish shell configuration
 install-fish:
-    @echo "Installing Fish shell configuration..."
-    @mkdir -p ~/.config/fish
-    @rsync -av --exclude '*.template' fish/ ~/.config/fish/
-    @echo "✅ Fish configuration installed successfully"
-    @echo "Run 'fish' to start using Fish shell"
+    #!/usr/bin/env bash
+    echo "Installing Fish shell configuration..."
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install: fish/ -> ~/.config/fish/"
+        echo ""
+        echo "Files that would be copied:"
+        find fish -type f ! -name '*.template' -exec echo "  {}" \;
+        echo ""
+        echo "Checking for changes in existing files:"
+        for f in $(find fish -type f ! -name '*.template'); do
+            dest="$HOME/.config/$f"
+            if [ -f "$dest" ]; then
+                just show-diff "$f" "$dest"
+            else
+                echo "  [NEW] ~/.config/$f"
+            fi
+        done
+    else
+        mkdir -p ~/.config/fish
+        just backup-directory ~/.config/fish fish
+        rsync -av --exclude '*.template' fish/ ~/.config/fish/
+        echo "✅ Fish configuration installed successfully"
+        echo "Run 'fish' to start using Fish shell"
+    fi
 
 # Install Starship prompt configuration
 install-starship:
-    @echo "Installing Starship configuration..."
-    @mkdir -p ~/.config
-    @cp -f starship.toml ~/.config/starship.toml
-    @echo "✅ Starship configuration installed"
+    #!/usr/bin/env bash
+    echo "Installing Starship configuration..."
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install: starship.toml -> ~/.config/starship.toml"
+        just show-diff starship.toml ~/.config/starship.toml
+    else
+        mkdir -p ~/.config
+        just backup-file ~/.config/starship.toml starship
+        cp -f starship.toml ~/.config/starship.toml
+        echo "✅ Starship configuration installed"
+    fi
 
 # Install TMUX configuration
 install-tmux:
-    @echo "Installing TMUX configuration..."
-    @cp -f tmux.conf ~/.tmux.conf
-    @echo "✅ TMUX configuration installed"
-    @echo "Restart TMUX or run: tmux source-file ~/.tmux.conf"
+    #!/usr/bin/env bash
+    echo "Installing TMUX configuration..."
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install:"
+        echo "  tmux.conf -> ~/.tmux.conf"
+        echo "  tmux/*.conf -> ~/.config/tmux/"
+        just show-diff tmux.conf ~/.tmux.conf
+        for f in tmux/*.conf; do
+            dest="$HOME/.config/tmux/$(basename $f)"
+            just show-diff "$f" "$dest"
+        done
+    else
+        mkdir -p ~/.config/tmux
+        just backup-file ~/.tmux.conf tmux
+        just backup-directory ~/.config/tmux tmux
+        cp -f tmux.conf ~/.tmux.conf
+        cp -f tmux/*.conf ~/.config/tmux/
+        echo "✅ TMUX configuration installed"
+        echo "Restart TMUX or run: tmux source-file ~/.tmux.conf"
+    fi
 
 # Install git configuration (delta pager)
 install-gitconfig:
-    @echo "Installing git configuration..."
-    @mkdir -p ~/.config/git
-    @cp -f git/config ~/.config/git/config
-    @echo "Git configuration installed (delta pager enabled)"
+    #!/usr/bin/env bash
+    echo "Installing git configuration..."
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install: git/config -> ~/.config/git/config"
+        just show-diff git/config ~/.config/git/config
+    else
+        mkdir -p ~/.config/git
+        just backup-file ~/.config/git/config git
+        cp -f git/config ~/.config/git/config
+        echo "✅ Git configuration installed (delta pager enabled)"
+    fi
 
 # Install Lazygit configuration
 lazygit-config path:
-    @echo "Configuring lazygit..."
-    @mkdir -p {{path}}/lazygit
-    @cp -f lazygit/config.yml {{path}}/lazygit/config.yml
+    #!/usr/bin/env bash
+    echo "Configuring lazygit..."
+    dest="{{path}}/lazygit/config.yml"
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install: lazygit/config.yml -> $dest"
+        just show-diff lazygit/config.yml "$dest"
+    else
+        mkdir -p "{{path}}/lazygit"
+        just backup-file "$dest" lazygit
+        cp -f lazygit/config.yml "$dest"
+        echo "✅ Lazygit configuration installed"
+    fi
 
 # Install secrets (API keys) from .env file
 install-secrets:
@@ -146,8 +266,12 @@ backup-nvim-config:
 install-nvim-config:
     @echo "Installing Neovim configuration..."
     @mkdir -p ~/.config
+    @if [ -d {{nvim_config_path}} ] && [ ! -L {{nvim_config_path}} ]; then \
+        echo "⚠️  Removing existing directory (backup should exist)..."; \
+        rm -rf {{nvim_config_path}}; \
+    fi
     @echo "🔗 Creating symlink: $(pwd)/nvim -> {{nvim_config_path}}"
-    @ln -sf $(pwd)/nvim {{nvim_config_path}}
+    @ln -sfn $(pwd)/nvim {{nvim_config_path}}
     @echo "✅ Neovim configuration installed"
 
 # Trigger Lazy plugin installation
@@ -334,9 +458,130 @@ check:
         echo "❌ Neovim configuration not installed"; \
     fi
 
+# Preview all changes without making them (dry-run)
+check-changes:
+    @echo "Previewing all configuration changes..."
+    @echo "=========================================="
+    DRY_RUN=1 just install-fish
+    @echo ""
+    DRY_RUN=1 just install-starship
+    @echo ""
+    DRY_RUN=1 just install-tmux
+    @echo ""
+    DRY_RUN=1 just install-gitconfig
+    @echo ""
+    @echo "=========================================="
+    @echo "Run 'just install-os-config' to apply these changes"
+
+# Show diff for a specific config
+diff-config config:
+    #!/usr/bin/env bash
+    diff_cmd=$(just get-diff-cmd)
+    case "{{config}}" in
+        fish)
+            for f in $(find fish -type f ! -name '*.template'); do
+                dest="$HOME/.config/$f"
+                if [ -f "$dest" ]; then
+                    echo "=== $f ==="
+                    $diff_cmd "$dest" "$f" 2>/dev/null || true
+                fi
+            done
+            ;;
+        git)
+            $diff_cmd ~/.config/git/config git/config 2>/dev/null || true
+            ;;
+        tmux)
+            echo "=== tmux.conf ==="
+            $diff_cmd ~/.tmux.conf tmux.conf 2>/dev/null || true
+            for f in tmux/*.conf; do
+                dest="$HOME/.config/tmux/$(basename $f)"
+                if [ -f "$dest" ]; then
+                    echo "=== $f ==="
+                    $diff_cmd "$dest" "$f" 2>/dev/null || true
+                fi
+            done
+            ;;
+        starship)
+            $diff_cmd ~/.config/starship.toml starship.toml 2>/dev/null || true
+            ;;
+        *)
+            echo "Unknown config: {{config}}"
+            echo "Available: fish, git, tmux, starship"
+            exit 1
+            ;;
+    esac
+
+# List all configuration backups
+list-backups:
+    @echo "Configuration backups in ~/.config-backups:"
+    @if [ -d ~/.config-backups ]; then \
+        find ~/.config-backups -mindepth 2 -maxdepth 2 -type d | sort; \
+    else \
+        echo "  No backups found"; \
+    fi
+
+# Restore a specific backup
+restore-backup config timestamp:
+    #!/usr/bin/env bash
+    backup_path="$HOME/.config-backups/{{config}}/{{timestamp}}"
+    if [ ! -d "$backup_path" ]; then
+        echo "Backup not found: $backup_path"
+        echo "Available backups:"
+        just list-backups
+        exit 1
+    fi
+    echo "Restoring {{config}} from {{timestamp}}..."
+    case "{{config}}" in
+        fish)
+            rm -rf ~/.config/fish
+            cp -a "$backup_path" ~/.config/fish
+            ;;
+        git)
+            cp -a "$backup_path/config" ~/.config/git/config
+            ;;
+        tmux)
+            if [ -f "$backup_path/.tmux.conf" ]; then
+                cp -a "$backup_path/.tmux.conf" ~/.tmux.conf
+            fi
+            if [ -d "$backup_path" ] && ls "$backup_path"/*.conf >/dev/null 2>&1; then
+                mkdir -p ~/.config/tmux
+                cp -a "$backup_path"/*.conf ~/.config/tmux/
+            fi
+            ;;
+        starship)
+            cp -a "$backup_path/starship.toml" ~/.config/starship.toml
+            ;;
+        *)
+            echo "Unknown config: {{config}}"
+            exit 1
+            ;;
+    esac
+    echo "✅ Restored successfully"
+
+# Clean old backups (keep last N per config)
+clean-backups keep="3":
+    #!/usr/bin/env bash
+    echo "Cleaning old backups (keeping last {{keep}})..."
+    for config_dir in ~/.config-backups/*/; do
+        if [ -d "$config_dir" ]; then
+            config=$(basename "$config_dir")
+            count=$(ls -1 "$config_dir" 2>/dev/null | wc -l)
+            if [ "$count" -gt "{{keep}}" ]; then
+                to_delete=$((count - {{keep}}))
+                echo "  $config: removing $to_delete old backup(s)"
+                ls -1 "$config_dir" | head -n "$to_delete" | while read backup; do
+                    rm -rf "$config_dir/$backup"
+                done
+            fi
+        fi
+    done
+    echo "✅ Cleanup complete"
+
 # Show help
 help:
     @echo "Available commands:"
+    @echo ""
+    @echo "Installation:"
     @echo "  just install              # Full installation"
     @echo "  just install-fish         # Install Fish configuration"
     @echo "  just install-starship     # Install Starship prompt"
@@ -345,14 +590,30 @@ help:
     @echo "  just install-nvim         # Install Neovim configuration"
     @echo "  just install-spell        # Install Spell CLI tool"
     @echo "  just install-secrets      # Install API keys from .env"
-    @echo "  just install-linux-ssh-tools  # Install Linux clipboard tools"
+    @echo ""
+    @echo "Preview & Diff:"
+    @echo "  just check-changes        # Preview ALL changes (dry-run)"
+    @echo "  just diff-config <name>   # Show diff for specific config"
+    @echo "                            # (fish, git, tmux, starship)"
+    @echo ""
+    @echo "Backup & Restore:"
+    @echo "  just list-backups         # List all configuration backups"
+    @echo "  just restore-backup <config> <timestamp>"
+    @echo "  just clean-backups [keep] # Remove old backups (default: keep 3)"
+    @echo ""
+    @echo "Maintenance:"
     @echo "  just update               # Update all configurations"
     @echo "  just update-nvim          # Update Neovim plugins"
-    @echo "  just switch-to-fish       # Instructions to switch to Fish"
     @echo "  just check                # Check system setup"
     @echo "  just check-deps           # Check dependencies"
-    @echo "  just check-ssh-session    # Check if running over SSH"
-    @echo "  just help                 # Show this help"
+    @echo ""
+    @echo "Environment Variables:"
+    @echo "  DRY_RUN=1                 # Preview changes without applying"
+    @echo "  BACKUP=0                  # Disable automatic backups"
+    @echo ""
+    @echo "Examples:"
+    @echo "  DRY_RUN=1 just install-fish    # Preview Fish install"
+    @echo "  BACKUP=0 just install-tmux     # Install without backup"
 
 # Default command
 default: help

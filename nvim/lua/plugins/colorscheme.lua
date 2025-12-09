@@ -1,6 +1,8 @@
--- Colorscheme plugin configuration
-
 return {
+  -- Disable the default tokyonight colorscheme
+  { "folke/tokyonight.nvim", enabled = false },
+
+  -- Mellifluous colorscheme with transparency
   {
     "ramojus/mellifluous.nvim",
     priority = 1000,
@@ -12,22 +14,23 @@ return {
           comments = { italic = true },
         },
         transparent_background = {
-          enabled = false,
+          enabled = true,
           floating_windows = true,
           telescope = true,
           file_tree = true,
           cursor_line = true,
           status_line = false,
         },
-        flat_background = {
-          line_numbers = true,
-          floating_windows = true,
-          file_tree = true,
-          cursor_line_number = true,
-        },
       })
-
       vim.cmd("colorscheme mellifluous")
     end,
+  },
+
+  -- Tell LazyVim to use mellifluous
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "mellifluous",
+    },
   },
 }

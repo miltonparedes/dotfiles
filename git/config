@@ -8,8 +8,13 @@
     navigate = true
     dark = true
     line-numbers = true
-    syntax-theme = Dracula
+    line-numbers-left-format = ""
+    syntax-theme = Visual Studio Dark+
     hyperlinks = true
+    minus-style = syntax "#2d1f1f"
+    minus-emph-style = syntax "#4d2a2a"
+    plus-style = syntax "#1f2d1f"
+    plus-emph-style = syntax "#2a4d2a"
 
 [merge]
     conflictstyle = diff3
