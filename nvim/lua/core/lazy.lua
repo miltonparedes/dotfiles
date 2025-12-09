@@ -17,6 +17,6 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup({
   spec = require('plugins.init'),
-  install = { colorscheme = { 'vscode' } },
+  install = { colorscheme = { 'mellifluous' } },
   checker = { enabled = true },
 })

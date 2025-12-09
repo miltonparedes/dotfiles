@@ -2,30 +2,32 @@
 
 return {
   {
-    "Mofiqul/vscode.nvim",
+    "ramojus/mellifluous.nvim",
     priority = 1000,
     config = function()
-      require("vscode").setup({
-        -- Alternatively set style in setup
-        style = "dark",
-        
-        -- Enable transparent background
-        transparent = false,
-        
-        -- Enable italic comment
-        italic_comments = true,
-        
-        -- Disable nvim-tree background color
-        disable_nvimtree_bg = true,
-        
-        -- Override colors (see ./lua/vscode/colors.lua)
-        color_overrides = {},
-        
-        -- Override highlight groups (see ./lua/vscode/theme.lua)
-        group_overrides = {},
+      require("mellifluous").setup({
+        dim_inactive = false,
+        color_set = "mellifluous",
+        styles = {
+          comments = { italic = true },
+        },
+        transparent_background = {
+          enabled = false,
+          floating_windows = true,
+          telescope = true,
+          file_tree = true,
+          cursor_line = true,
+          status_line = false,
+        },
+        flat_background = {
+          line_numbers = true,
+          floating_windows = true,
+          file_tree = true,
+          cursor_line_number = true,
+        },
       })
-      
-      vim.cmd("colorscheme vscode")
+
+      vim.cmd("colorscheme mellifluous")
     end,
   },
 }

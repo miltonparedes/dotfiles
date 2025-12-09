@@ -10,6 +10,9 @@ local modules = {
   'plugins.telescope',
   'plugins.gitsigns',
   'plugins.ui',
+  'plugins.python',
+  'plugins.typescript',
+  'plugins.golang',
 }
 
 local specs = {}

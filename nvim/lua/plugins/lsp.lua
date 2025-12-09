@@ -13,10 +13,12 @@ return {
       require("mason-lspconfig").setup({
         ensure_installed = {
           "lua_ls",
-          "tsserver",
+          "ts_ls",
           "html",
           "cssls",
           "pyright",
+          "ruff",
+          "gopls",
         },
       })
     end,
@@ -29,10 +31,12 @@ return {
 
       -- LSP servers setup
       lspconfig.lua_ls.setup({ capabilities = capabilities })
-      lspconfig.tsserver.setup({ capabilities = capabilities })
+      lspconfig.ts_ls.setup({ capabilities = capabilities })
       lspconfig.html.setup({ capabilities = capabilities })
       lspconfig.cssls.setup({ capabilities = capabilities })
       lspconfig.pyright.setup({ capabilities = capabilities })
+      lspconfig.ruff.setup({ capabilities = capabilities })
+      lspconfig.gopls.setup({ capabilities = capabilities })
 
       -- LSP keymaps
       vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover information" })

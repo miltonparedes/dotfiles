@@ -193,6 +193,31 @@ update-nvim:
     just update-nvim-plugins
     @echo "✅ Neovim update complete!"
 
+# Check if running over SSH
+check-ssh-session:
+    @if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then \
+        echo "📡 Running over SSH session"; \
+        echo "  SSH_CLIENT: $SSH_CLIENT"; \
+        echo "  SSH_TTY: $SSH_TTY"; \
+    else \
+        echo "💻 Local session detected"; \
+    fi
+
+# Install Linux clipboard tools for SSH/remote usage
+install-linux-ssh-tools:
+    @echo "Installing Linux SSH/clipboard tools..."
+    @if command -v dnf >/dev/null 2>&1; then \
+        sudo dnf install -y xclip wl-clipboard fd-find; \
+    elif command -v apt-get >/dev/null 2>&1; then \
+        sudo apt-get install -y xclip wl-clipboard fd-find; \
+    elif command -v pacman >/dev/null 2>&1; then \
+        sudo pacman -S --noconfirm xclip wl-clipboard fd; \
+    else \
+        echo "⚠️  Unknown package manager. Install xclip, wl-clipboard manually"; \
+    fi
+    @echo "✅ Linux SSH tools installed"
+    @echo "ℹ️  Neovim uses OSC52 for clipboard over SSH (works in modern terminals)"
+
 # Full installation
 install:
     @echo "Starting full installation..."
@@ -286,11 +311,13 @@ help:
     @echo "  just install-tmux         # Install TMUX configuration"
     @echo "  just install-nvim         # Install Neovim configuration"
     @echo "  just install-spell        # Install Spell CLI tool"
+    @echo "  just install-linux-ssh-tools  # Install Linux clipboard tools"
     @echo "  just update               # Update all configurations"
     @echo "  just update-nvim          # Update Neovim plugins"
     @echo "  just switch-to-fish       # Instructions to switch to Fish"
     @echo "  just check                # Check system setup"
     @echo "  just check-deps           # Check dependencies"
+    @echo "  just check-ssh-session    # Check if running over SSH"
     @echo "  just help                 # Show this help"
 
 # Default command

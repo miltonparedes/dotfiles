@@ -8,7 +8,7 @@ return {
     config = function()
       require("lualine").setup({
         options = {
-          theme = "vscode",
+          theme = "auto",
         },
       })
     end,
