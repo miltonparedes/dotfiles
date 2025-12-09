@@ -43,6 +43,13 @@ install-tmux:
     @echo "✅ TMUX configuration installed"
     @echo "Restart TMUX or run: tmux source-file ~/.tmux.conf"
 
+# Install git configuration (delta pager)
+install-gitconfig:
+    @echo "Installing git configuration..."
+    @mkdir -p ~/.config/git
+    @cp -f git/config ~/.config/git/config
+    @echo "Git configuration installed (delta pager enabled)"
+
 # Install Lazygit configuration
 lazygit-config path:
     @echo "Configuring lazygit..."
@@ -69,7 +76,7 @@ install-secrets:
 check-deps:
     @echo "Checking dependencies..."
     @missing=0; \
-    for cmd in fish starship tmux nvim git rg fzf zoxide eza bat; do \
+    for cmd in fish starship tmux nvim git rg fzf zoxide eza bat delta; do \
         if ! command -v $$cmd >/dev/null 2>&1; then \
             echo "❌ $$cmd is not installed"; \
             missing=1; \
@@ -167,6 +174,7 @@ install-mac-os-config:
     just install-fish
     just install-starship
     just install-tmux
+    just install-gitconfig
     just lazygit-config "~/Library/Application\ Support"
     just install-secrets
     @echo "✅ macOS configuration installed"
@@ -177,6 +185,7 @@ install-bluefin-config:
     just install-fish
     just install-starship
     just install-tmux
+    just install-gitconfig
     just lazygit-config "~/.config"
     just install-secrets
     @echo "✅ Bluefin/Fedora configuration installed"
@@ -314,6 +323,11 @@ check:
     else \
         echo "❌ TMUX configuration not installed"; \
     fi
+    @if [ -f ~/.config/git/config ]; then \
+        echo "✅ Git configuration installed (delta pager)"; \
+    else \
+        echo "❌ Git configuration not installed"; \
+    fi
     @if [ -L ~/.config/nvim ] || [ -d ~/.config/nvim ]; then \
         echo "✅ Neovim configuration installed"; \
     else \
@@ -327,6 +341,7 @@ help:
     @echo "  just install-fish         # Install Fish configuration"
     @echo "  just install-starship     # Install Starship prompt"
     @echo "  just install-tmux         # Install TMUX configuration"
+    @echo "  just install-gitconfig    # Install git config (delta pager)"
     @echo "  just install-nvim         # Install Neovim configuration"
     @echo "  just install-spell        # Install Spell CLI tool"
     @echo "  just install-secrets      # Install API keys from .env"
