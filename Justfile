@@ -161,14 +161,20 @@ install-gitconfig:
         echo "✅ Git configuration installed (delta pager enabled)"
     fi
 
-# Install Lazygit configuration
-lazygit-config path:
+# Install Lazygit configuration (auto-detects platform)
+install-lazygit:
     #!/usr/bin/env bash
-    echo "Configuring lazygit..."
-    expanded_path=$(eval echo "{{path}}")
-    dest_dir="$expanded_path/lazygit"
+    echo "Installing Lazygit configuration..."
+    # Auto-detect config path based on OS
+    if [[ "$(uname)" == "Darwin" ]]; then
+        config_base="$HOME/Library/Application Support"
+    else
+        config_base="$HOME/.config"
+    fi
+    dest_dir="$config_base/lazygit"
     dest_config="$dest_dir/config.yml"
     dest_script="$dest_dir/lazycommit.sh"
+
     if [ -n "{{dry_run}}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  lazygit/config.yml -> $dest_config"
@@ -180,9 +186,13 @@ lazygit-config path:
         cp -f lazygit/config.yml "$dest_config"
         cp -f lazygit/lazycommit.sh "$dest_script"
         chmod +x "$dest_script"
-        # Update script path in config based on actual destination (quote path for spaces)
-        sed -i '' "s|~/.config/lazygit/lazycommit.sh|'$dest_dir/lazycommit.sh'|" "$dest_config"
-        echo "✅ Lazygit configuration installed"
+        # Update script path in config based on actual destination
+        if [[ "$(uname)" == "Darwin" ]]; then
+            sed -i '' "s|~/.config/lazygit/lazycommit.sh|'$dest_dir/lazycommit.sh'|" "$dest_config"
+        else
+            sed -i "s|~/.config/lazygit/lazycommit.sh|'$dest_dir/lazycommit.sh'|" "$dest_config"
+        fi
+        echo "✅ Lazygit configuration installed to: $dest_dir"
     fi
 
 # Install secrets (API keys) from .env file
@@ -308,7 +318,7 @@ install-mac-os-config:
     just install-starship
     just install-tmux
     just install-gitconfig
-    just lazygit-config "~/Library/Application\ Support"
+    just install-lazygit
     just install-secrets
     @echo "✅ macOS configuration installed"
 
@@ -319,7 +329,7 @@ install-bluefin-config:
     just install-starship
     just install-tmux
     just install-gitconfig
-    just lazygit-config "~/.config"
+    just install-lazygit
     just install-secrets
     @echo "✅ Bluefin/Fedora configuration installed"
 
@@ -596,6 +606,7 @@ help:
     @echo "  just install-starship     # Install Starship prompt"
     @echo "  just install-tmux         # Install TMUX configuration"
     @echo "  just install-gitconfig    # Install git config (delta pager)"
+    @echo "  just install-lazygit      # Install Lazygit config (auto-detects OS)"
     @echo "  just install-nvim         # Install Neovim configuration"
     @echo "  just install-spell        # Install Spell CLI tool"
     @echo "  just install-secrets      # Install API keys from .env"
