@@ -132,6 +132,7 @@ install-tmux:
         echo "[DRY-RUN] Would install:"
         echo "  tmux.conf -> ~/.tmux.conf"
         echo "  tmux/*.conf -> ~/.config/tmux/"
+        echo "  tmux/*.sh -> ~/.config/tmux/ (scripts)"
         just show-diff tmux.conf ~/.tmux.conf
         for f in tmux/*.conf; do
             dest="$HOME/.config/tmux/$(basename $f)"
@@ -143,6 +144,8 @@ install-tmux:
         just backup-directory ~/.config/tmux tmux
         cp -f tmux.conf ~/.tmux.conf
         cp -f tmux/*.conf ~/.config/tmux/
+        cp -f tmux/*.sh ~/.config/tmux/ 2>/dev/null || true
+        chmod +x ~/.config/tmux/*.sh 2>/dev/null || true
         echo "✅ TMUX configuration installed"
         echo "Restart TMUX or run: tmux source-file ~/.tmux.conf"
     fi
@@ -260,13 +263,24 @@ install-nvim-deps:
         if ! command -v curl >/dev/null 2>&1; then brew install curl; fi; \
         if ! command -v rg >/dev/null 2>&1; then brew install ripgrep; fi; \
         if ! command -v nvim >/dev/null 2>&1; then brew install neovim; fi; \
+    elif command -v rpm-ostree >/dev/null 2>&1; then \
+        echo "Fedora Atomic/Bazzite detected - using Homebrew..."; \
+        if ! command -v brew >/dev/null 2>&1; then \
+            echo "Homebrew not installed. Install with:"; \
+            echo "  /bin/bash -c \"\$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""; \
+            exit 1; \
+        fi; \
+        if ! command -v git >/dev/null 2>&1; then brew install git; fi; \
+        if ! command -v curl >/dev/null 2>&1; then brew install curl; fi; \
+        if ! command -v rg >/dev/null 2>&1; then brew install ripgrep; fi; \
+        if ! command -v nvim >/dev/null 2>&1; then brew install neovim; fi; \
     elif command -v dnf >/dev/null 2>&1; then \
         if ! command -v git >/dev/null 2>&1; then sudo dnf install -y git; fi; \
         if ! command -v curl >/dev/null 2>&1; then sudo dnf install -y curl; fi; \
         if ! command -v rg >/dev/null 2>&1; then sudo dnf install -y ripgrep; fi; \
         if ! command -v nvim >/dev/null 2>&1; then sudo dnf install -y neovim; fi; \
     else \
-        echo "⚠️  Unknown package manager. Please install git, curl, ripgrep, and neovim manually"; \
+        echo "Unknown package manager. Please install git, curl, ripgrep, and neovim manually"; \
     fi
 
 # Backup existing Neovim configuration
