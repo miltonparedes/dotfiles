@@ -537,9 +537,18 @@ diff-config config:
         starship)
             $diff_cmd ~/.config/starship.toml starship.toml 2>/dev/null || true
             ;;
+        claude)
+            $diff_cmd ~/.claude/settings.json claude/settings.json 2>/dev/null || true
+            ;;
+        gemini)
+            echo "=== settings.json ==="
+            $diff_cmd ~/.gemini/settings.json gemini/settings.json 2>/dev/null || true
+            echo "=== extension-enablement.json ==="
+            $diff_cmd ~/.gemini/extensions/extension-enablement.json gemini/extension-enablement.json 2>/dev/null || true
+            ;;
         *)
             echo "Unknown config: {{config}}"
-            echo "Available: fish, git, tmux, starship"
+            echo "Available: fish, git, tmux, starship, claude, gemini"
             exit 1
             ;;
     esac
@@ -625,10 +634,16 @@ help:
     @echo "  just install-spell        # Install Spell CLI tool"
     @echo "  just install-secrets      # Install API keys from .env"
     @echo ""
+    @echo "Coding Agents:"
+    @echo "  just install-coding-agents # Install all coding agent configs"
+    @echo "  just install-claude        # Install Claude Code config"
+    @echo "  just install-gemini        # Install Gemini CLI config"
+    @echo "  just install-fish-private  # Setup private fish configs dir"
+    @echo ""
     @echo "Preview & Diff:"
     @echo "  just check-changes        # Preview ALL changes (dry-run)"
     @echo "  just diff-config <name>   # Show diff for specific config"
-    @echo "                            # (fish, git, tmux, starship)"
+    @echo "                            # (fish, git, tmux, starship, claude, gemini)"
     @echo ""
     @echo "Backup & Restore:"
     @echo "  just list-backups         # List all configuration backups"
@@ -648,6 +663,70 @@ help:
     @echo "Examples:"
     @echo "  DRY_RUN=1 just install-fish    # Preview Fish install"
     @echo "  BACKUP=0 just install-tmux     # Install without backup"
+
+# Install Claude Code configuration
+install-claude:
+    #!/usr/bin/env bash
+    echo "Installing Claude Code configuration..."
+    mkdir -p ~/.claude
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install: claude/settings.json -> ~/.claude/settings.json"
+        just show-diff claude/settings.json ~/.claude/settings.json
+    else
+        if [ ! -f ~/.claude/settings.json ]; then
+            cp {{justfile_directory()}}/claude/settings.json ~/.claude/settings.json
+            echo "✅ Claude settings installed"
+        else
+            echo "ℹ️  Claude settings already exist, skipping (use 'just diff-config claude' to compare)"
+        fi
+    fi
+    echo ""
+    echo "📖 Ver claude/mcp-servers.md para configurar MCPs"
+    echo "📁 Skills se mantienen en ~/.claude/skills/ (privados, no sincronizados)"
+
+# Install Gemini CLI configuration
+install-gemini:
+    #!/usr/bin/env bash
+    echo "Installing Gemini CLI configuration..."
+    mkdir -p ~/.gemini/extensions
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install:"
+        echo "  gemini/settings.json -> ~/.gemini/settings.json"
+        echo "  gemini/extension-enablement.json -> ~/.gemini/extensions/extension-enablement.json"
+        just show-diff gemini/settings.json ~/.gemini/settings.json
+    else
+        if [ ! -f ~/.gemini/settings.json ]; then
+            cp {{justfile_directory()}}/gemini/settings.json ~/.gemini/settings.json
+            echo "✅ Gemini settings installed"
+        else
+            echo "ℹ️  Gemini settings already exist, skipping"
+        fi
+        cp {{justfile_directory()}}/gemini/extension-enablement.json ~/.gemini/extensions/extension-enablement.json 2>/dev/null || true
+        echo "✅ Gemini extension config installed"
+    fi
+    echo ""
+    echo "📖 Instalar extensiones:"
+    echo "  gemini mcp add chrome-devtools -- npx chrome-devtools-mcp@latest"
+
+# Setup private fish configurations directory
+install-fish-private:
+    #!/usr/bin/env bash
+    echo "Setting up private fish configurations..."
+    mkdir -p ~/.config/fish/conf.d/private
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would create: ~/.config/fish/conf.d/private/"
+    else
+        echo "✅ Private configs directory ready"
+        echo ""
+        echo "📁 Copia tus configs privadas a ~/.config/fish/conf.d/private/"
+        echo "   Ejemplo: kavak.fish, proxyman.fish, local.fish"
+        echo ""
+        echo "📖 Ver fish/conf.d/private.fish.template para ejemplos"
+    fi
+
+# Install all coding agents configurations
+install-coding-agents: install-claude install-gemini install-aichat
+    @echo "✅ All coding agents configured!"
 
 # Default command
 default: help
