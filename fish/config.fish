@@ -31,3 +31,10 @@ set -g fish_history_size 10000
 
 # Load custom functions and completions
 # These are automatically loaded from functions/ and completions/ directories
+
+# Source private configurations (machine-specific, not tracked in git)
+for f in ~/.config/fish/conf.d/private/*.fish
+    if test -f $f
+        source $f
+    end
+end

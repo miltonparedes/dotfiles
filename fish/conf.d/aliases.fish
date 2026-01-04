@@ -87,3 +87,39 @@ alias weather='curl wttr.in'
 # Quick edit configs
 alias fishconfig='nvim ~/.config/fish/config.fish'
 alias nvimconfig='nvim ~/.config/nvim/init.lua'
+
+# TMUX shortcuts
+alias t='tmux -2'
+alias ta='tmux attach'
+alias tt='tmux attach -t'
+alias tl='tmux list-sessions'
+alias tn='tmux new -s'
+alias tk='tmux kill-session'
+
+# Coding Agents
+# Claude Code
+alias cc='claude'
+alias cc-yolo='claude --dangerously-skip-permissions'
+
+# Gemini CLI
+alias gem='gemini'
+
+# OpenCode
+alias co='opencode'
+
+# AIChat
+alias i='aichat'
+alias ie='aichat -e'
+
+# ccusage (Claude usage stats)
+alias ccu='ccusage'
+
+# Chrome DevTools MCP (remote debugging)
+# Use with: chrome-debug, then claude/gemini can control the browser
+if command -q flatpak
+    alias chrome-debug='flatpak run com.google.Chrome --remote-debugging-port=9222 --ozone-platform=wayland --user-data-dir=/tmp/chrome-debug'
+else if test (uname) = "Darwin"
+    alias chrome-debug='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug'
+else
+    alias chrome-debug='google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug'
+end
