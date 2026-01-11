@@ -724,6 +724,24 @@ install-fish-private:
         echo "📖 Ver fish/conf.d/private.fish.template para ejemplos"
     fi
 
+# Install AIChat configuration
+install-aichat:
+    #!/usr/bin/env bash
+    echo "Installing AIChat configuration..."
+    mkdir -p ~/.config/aichat
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install:"
+        echo "  aichat/config.yaml -> ~/.config/aichat/config.yaml"
+        just show-diff aichat/config.yaml ~/.config/aichat/config.yaml
+    else
+        if [ ! -f ~/.config/aichat/config.yaml ]; then
+            cp {{justfile_directory()}}/aichat/config.yaml ~/.config/aichat/config.yaml
+            echo "✅ AIChat configuration installed"
+        else
+            echo "ℹ️  AIChat config already exists, skipping"
+        fi
+    fi
+
 # Install all coding agents configurations
 install-coding-agents: install-claude install-gemini install-aichat
     @echo "✅ All coding agents configured!"
