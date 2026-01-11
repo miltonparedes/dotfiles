@@ -6,8 +6,9 @@ case "$(uname -s)" in
     # RAM: used/total (e.g. 6G/61G)
     ram=$(free -h | awk '/Mem:/ {gsub(/i/,"",$3); gsub(/i/,"",$2); printf "%s/%s", $3, $2}')
 
-    # CPU temp via sensors (k10temp Tctl)
-    cpu_temp=$(sensors 2>/dev/null | awk '/Tctl:/ {gsub(/\+/,""); printf "%.0f°", $2}')
+    # CPU temp via sensors (average of Tccd cores, fallback to Tctl)
+    cpu_temp=$(sensors 2>/dev/null | awk '/Tccd[0-9]:/ {gsub(/\+/,""); sum+=$2; count++} END {if(count>0) printf "%.0f°", sum/count}')
+    [ -z "$cpu_temp" ] && cpu_temp=$(sensors 2>/dev/null | awk '/Tctl:/ {gsub(/\+/,""); printf "%.0f°", $2}')
     [ -z "$cpu_temp" ] && cpu_temp=$(sensors 2>/dev/null | awk '/^CPU:/ {gsub(/\+/,""); printf "%.0f°", $2}')
 
     # GPU temp via nvidia-smi
