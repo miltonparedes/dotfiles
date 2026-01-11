@@ -1,9 +1,9 @@
 #!/bin/bash
-# Minimalista stats para tmux: RAM + CPU temp + GPU temp
+# Minimal tmux stats: RAM + CPU temp + GPU temp
 
 case "$(uname -s)" in
   Linux)
-    # RAM: usado/total (ej: 6G/61G)
+    # RAM: used/total (e.g. 6G/61G)
     ram=$(free -h | awk '/Mem:/ {gsub(/i/,"",$3); gsub(/i/,"",$2); printf "%s/%s", $3, $2}')
 
     # CPU temp via sensors (k10temp Tctl)
@@ -18,7 +18,7 @@ case "$(uname -s)" in
     ;;
 
   Darwin)
-    # RAM: usado/total via vm_stat + sysctl
+    # RAM: used/total via vm_stat + sysctl
     pages=$(vm_stat | awk '/Pages active/ {gsub(/\./,""); print $3}')
     page_size=$(sysctl -n hw.pagesize)
     total=$(sysctl -n hw.memsize)
@@ -26,18 +26,18 @@ case "$(uname -s)" in
     total_gb=$((total / 1024 / 1024 / 1024))
     ram="${used}G/${total_gb}G"
 
-    # CPU temp via macmon pipe (si está instalado)
+    # CPU temp via macmon pipe (if installed)
     if command -v macmon &>/dev/null; then
       cpu_temp=$(macmon pipe -s 1 2>/dev/null | jq -r '.temp.cpu_temp_avg // empty' | awk '{printf "%.0f°", $1}')
     fi
     [ -z "$cpu_temp" ] && cpu_temp="--"
 
-    # GPU integrado en Apple Silicon (mismo que CPU)
+    # GPU integrated in Apple Silicon (same as CPU)
     gpu_temp=""
     ;;
 esac
 
-# Output según argumentos
+# Output based on arguments
 case "$1" in
   ram)  echo "$ram" ;;
   cpu)  echo "$cpu_temp" ;;
