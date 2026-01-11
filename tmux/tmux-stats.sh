@@ -26,9 +26,9 @@ case "$(uname -s)" in
     total_gb=$((total / 1024 / 1024 / 1024))
     ram="${used}G/${total_gb}G"
 
-    # CPU temp via macmon (si está instalado)
+    # CPU temp via macmon pipe (si está instalado)
     if command -v macmon &>/dev/null; then
-      cpu_temp=$(macmon --json 2>/dev/null | jq -r '.cpu.temp_avg // empty' | awk '{printf "%.0f°", $1}')
+      cpu_temp=$(macmon pipe -s 1 2>/dev/null | jq -r '.temp.cpu_temp_avg // empty' | awk '{printf "%.0f°", $1}')
     fi
     [ -z "$cpu_temp" ] && cpu_temp="--"
 
