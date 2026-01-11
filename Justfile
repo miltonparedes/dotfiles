@@ -538,7 +538,10 @@ diff-config config:
             $diff_cmd ~/.config/starship.toml starship.toml 2>/dev/null || true
             ;;
         claude)
+            echo "=== settings.json ==="
             $diff_cmd ~/.claude/settings.json claude/settings.json 2>/dev/null || true
+            echo "=== statusline.sh ==="
+            $diff_cmd ~/.claude/statusline.sh claude/statusline.sh 2>/dev/null || true
             ;;
         gemini)
             echo "=== settings.json ==="
@@ -670,19 +673,22 @@ install-claude:
     echo "Installing Claude Code configuration..."
     mkdir -p ~/.claude
     if [ -n "{{dry_run}}" ]; then
-        echo "[DRY-RUN] Would install: claude/settings.json -> ~/.claude/settings.json"
+        echo "[DRY-RUN] Would install:"
+        echo "  claude/settings.json -> ~/.claude/settings.json"
+        echo "  claude/statusline.sh -> ~/.claude/statusline.sh"
         just show-diff claude/settings.json ~/.claude/settings.json
+        just show-diff claude/statusline.sh ~/.claude/statusline.sh
     else
-        if [ ! -f ~/.claude/settings.json ]; then
-            cp {{justfile_directory()}}/claude/settings.json ~/.claude/settings.json
-            echo "✅ Claude settings installed"
-        else
-            echo "ℹ️  Claude settings already exist, skipping (use 'just diff-config claude' to compare)"
-        fi
+        just backup-file ~/.claude/settings.json claude
+        just backup-file ~/.claude/statusline.sh claude
+        cp {{justfile_directory()}}/claude/settings.json ~/.claude/settings.json
+        cp {{justfile_directory()}}/claude/statusline.sh ~/.claude/statusline.sh
+        chmod +x ~/.claude/statusline.sh
+        echo "✅ Claude Code configuration installed"
     fi
     echo ""
-    echo "📖 Ver claude/mcp-servers.md para configurar MCPs"
-    echo "📁 Skills se mantienen en ~/.claude/skills/ (privados, no sincronizados)"
+    echo "See claude/mcp-servers.md to configure MCPs"
+    echo "Skills are kept in ~/.claude/skills/ (private, not synced)"
 
 # Install Gemini CLI configuration
 install-gemini:
