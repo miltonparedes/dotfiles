@@ -549,9 +549,13 @@ diff-config config:
             echo "=== extension-enablement.json ==="
             $diff_cmd ~/.gemini/extensions/extension-enablement.json gemini/extension-enablement.json 2>/dev/null || true
             ;;
+        codex)
+            echo "=== config.toml ==="
+            $diff_cmd ~/.codex/config.toml codex/config.toml 2>/dev/null || true
+            ;;
         *)
             echo "Unknown config: {{config}}"
-            echo "Available: fish, git, tmux, starship, claude, gemini"
+            echo "Available: fish, git, tmux, starship, claude, gemini, codex"
             exit 1
             ;;
     esac
@@ -641,6 +645,7 @@ help:
     @echo "  just install-coding-agents # Install all coding agent configs"
     @echo "  just install-claude        # Install Claude Code config"
     @echo "  just install-gemini        # Install Gemini CLI config"
+    @echo "  just install-codex         # Install Codex CLI config"
     @echo "  just install-fish-private  # Setup private fish configs dir"
     @echo ""
     @echo "Preview & Diff:"
@@ -748,8 +753,34 @@ install-aichat:
         fi
     fi
 
+# Install Codex CLI configuration
+install-codex:
+    #!/usr/bin/env bash
+    echo "Installing Codex CLI configuration..."
+    mkdir -p ~/.codex
+    if [ -n "{{dry_run}}" ]; then
+        echo "[DRY-RUN] Would install:"
+        echo "  codex/config.toml -> ~/.codex/config.toml"
+        just show-diff codex/config.toml ~/.codex/config.toml
+    else
+        if [ ! -f ~/.codex/config.toml ]; then
+            cp {{justfile_directory()}}/codex/config.toml ~/.codex/config.toml
+            echo "✅ Codex configuration installed"
+        else
+            echo "ℹ️  Codex config already exists"
+            echo "    To update, manually merge or run:"
+            echo "    just diff-config codex"
+        fi
+    fi
+    echo ""
+    echo "📖 Aliases disponibles (en fish):"
+    echo "  cx   - codex (full-auto + search por defecto)"
+    echo "  cxx  - codex exec (no interactivo)"
+    echo "  cxr  - resume última sesión"
+    echo "  cxw  - code review"
+
 # Install all coding agents configurations
-install-coding-agents: install-claude install-gemini install-aichat
+install-coding-agents: install-claude install-gemini install-aichat install-codex
     @echo "✅ All coding agents configured!"
 
 # Default command

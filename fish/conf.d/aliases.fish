@@ -157,6 +157,21 @@ alias gem='gemini'
 # co: OpenCode CLI
 alias co='opencode'
 
+# cx: Codex CLI (defaults to full-auto + search via config.toml)
+alias cx='codex'
+# cxx: Codex CLI exec mode (non-interactive)
+alias cxx='codex exec'
+# cxr: Codex CLI resume last session
+alias cxr='codex resume --last'
+# cxf: Codex CLI fork last session
+alias cxf='codex fork --last'
+# cxw: Codex CLI code review
+alias cxw='codex review'
+# cxa: Codex CLI apply last diff
+alias cxa='codex apply'
+# cxy: Codex CLI danger mode (no approvals, no sandbox)
+alias cxy='codex --dangerously-bypass-approvals-and-sandbox'
+
 # i: AIChat interactive
 alias i='aichat'
 # ie: AIChat execute mode
