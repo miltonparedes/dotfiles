@@ -12,16 +12,42 @@
 if command -q tmux
     function ta --description 'Attach to tmux session'
         if test (count $argv) -eq 0
-            tmux attach
+            # Get the most recent session (first in list)
+            set -l sessions (tmux list-sessions -F '#{session_name}' 2>/dev/null)
+            if test (count $sessions) -eq 0
+                echo "No tmux sessions available"
+                return 1
+            else if test (count $sessions) -eq 1
+                tmux attach-session -t $sessions[1]
+            else
+                # Multiple sessions: show list and attach to most recent
+                echo "Available sessions:"
+                tmux list-sessions
+                echo ""
+                echo "Attaching to: $sessions[1]"
+                tmux attach-session -t $sessions[1]
+            end
         else
-            tmux attach -t $argv[1]
+            tmux attach-session -t $argv[1]
         end
     end
     function tad --description 'Attach to tmux session (detach others)'
         if test (count $argv) -eq 0
-            tmux attach -d
+            set -l sessions (tmux list-sessions -F '#{session_name}' 2>/dev/null)
+            if test (count $sessions) -eq 0
+                echo "No tmux sessions available"
+                return 1
+            else if test (count $sessions) -eq 1
+                tmux attach-session -d -t $sessions[1]
+            else
+                echo "Available sessions:"
+                tmux list-sessions
+                echo ""
+                echo "Attaching to: $sessions[1] (detaching others)"
+                tmux attach-session -d -t $sessions[1]
+            end
         else
-            tmux attach -d -t $argv[1]
+            tmux attach-session -d -t $argv[1]
         end
     end
     alias ts='tmux new-session -s'
