@@ -21,44 +21,44 @@ get-diff-cmd:
 [private]
 backup-file dest config_name:
     #!/usr/bin/env bash
-    if [ "{{backup_enabled}}" = "1" ] && [ -e "{{dest}}" ]; then
+    if [ "{{ backup_enabled }}" = "1" ] && [ -e "{{ dest }}" ]; then
         timestamp=$(date +%Y%m%d_%H%M%S)
-        backup_path="$HOME/.config-backups/{{config_name}}/$timestamp"
+        backup_path="$HOME/.config-backups/{{ config_name }}/$timestamp"
         mkdir -p "$backup_path"
-        cp -a "{{dest}}" "$backup_path/"
-        echo "  📦 Backup: {{dest}} -> $backup_path"
+        cp -a "{{ dest }}" "$backup_path/"
+        echo "  📦 Backup: {{ dest }} -> $backup_path"
     fi
 
 # Helper: Backup a directory before overwriting
 [private]
 backup-directory dest config_name:
     #!/usr/bin/env bash
-    if [ "{{backup_enabled}}" = "1" ] && [ -d "{{dest}}" ]; then
+    if [ "{{ backup_enabled }}" = "1" ] && [ -d "{{ dest }}" ]; then
         timestamp=$(date +%Y%m%d_%H%M%S)
-        backup_path="$HOME/.config-backups/{{config_name}}/$timestamp"
+        backup_path="$HOME/.config-backups/{{ config_name }}/$timestamp"
         mkdir -p "$backup_path"
-        cp -a "{{dest}}/." "$backup_path/"
-        echo "  📦 Backup: {{dest}} -> $backup_path"
+        cp -a "{{ dest }}/." "$backup_path/"
+        echo "  📦 Backup: {{ dest }} -> $backup_path"
     fi
 
 # Helper: Show diff between source and destination
 [private]
 show-diff src dest:
     #!/usr/bin/env bash
-    if [ -e "{{dest}}" ]; then
+    if [ -e "{{ dest }}" ]; then
         diff_cmd=$(just get-diff-cmd)
         echo ""
-        echo "📋 Changes for {{dest}}:"
-        $diff_cmd "{{dest}}" "{{src}}" 2>/dev/null || true
+        echo "📋 Changes for {{ dest }}:"
+        $diff_cmd "{{ dest }}" "{{ src }}" 2>/dev/null || true
     else
-        echo "  [NEW] {{dest}} (file does not exist yet)"
+        echo "  [NEW] {{ dest }} (file does not exist yet)"
     fi
 
 # Install or update custom CLI tool (Spell)
 install-spell:
     #!/usr/bin/env bash
     echo "Inscribing or updating the Spell CLI..."
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install: spell/* -> ~/.config/spell/"
         echo "Files that would be copied:"
         find spell -type f -exec echo "  {}" \;
@@ -87,7 +87,7 @@ install-brew-essential-cli-packages:
 install-fish:
     #!/usr/bin/env bash
     echo "Installing Fish shell configuration..."
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install: fish/ -> ~/.config/fish/"
         echo ""
         echo "Files that would be copied:"
@@ -114,7 +114,7 @@ install-fish:
 install-starship:
     #!/usr/bin/env bash
     echo "Installing Starship configuration..."
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install: starship.toml -> ~/.config/starship.toml"
         just show-diff starship.toml ~/.config/starship.toml
     else
@@ -128,7 +128,7 @@ install-starship:
 install-tmux:
     #!/usr/bin/env bash
     echo "Installing TMUX configuration..."
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  tmux.conf -> ~/.tmux.conf"
         echo "  tmux/*.conf -> ~/.config/tmux/"
@@ -154,7 +154,7 @@ install-tmux:
 install-gitconfig:
     #!/usr/bin/env bash
     echo "Installing git configuration..."
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install: git/config -> ~/.config/git/config"
         just show-diff git/config ~/.config/git/config
     else
@@ -178,7 +178,7 @@ install-lazygit:
     dest_config="$dest_dir/config.yml"
     dest_script="$dest_dir/lazycommit.sh"
 
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  lazygit/config.yml -> $dest_config"
         echo "  lazygit/lazycommit.sh -> $dest_script"
@@ -286,10 +286,10 @@ install-nvim-deps:
 # Backup existing Neovim configuration
 backup-nvim-config:
     @echo "Backing up existing Neovim configuration..."
-    @if [ -e {{nvim_config_path}} ]; then \
-        backup_dir="{{nvim_config_path}}.backup.$(date +%Y%m%d_%H%M%S)"; \
+    @if [ -e {{ nvim_config_path }} ]; then \
+        backup_dir="{{ nvim_config_path }}.backup.$(date +%Y%m%d_%H%M%S)"; \
         echo "📦 Creating backup: $backup_dir"; \
-        mv {{nvim_config_path}} "$backup_dir"; \
+        mv {{ nvim_config_path }} "$backup_dir"; \
         echo "✅ Backup created successfully"; \
     else \
         echo "ℹ️  No existing Neovim configuration found"; \
@@ -299,12 +299,12 @@ backup-nvim-config:
 install-nvim-config:
     @echo "Installing Neovim configuration..."
     @mkdir -p ~/.config
-    @if [ -d {{nvim_config_path}} ] && [ ! -L {{nvim_config_path}} ]; then \
+    @if [ -d {{ nvim_config_path }} ] && [ ! -L {{ nvim_config_path }} ]; then \
         echo "⚠️  Removing existing directory (backup should exist)..."; \
-        rm -rf {{nvim_config_path}}; \
+        rm -rf {{ nvim_config_path }}; \
     fi
-    @echo "🔗 Creating symlink: $(pwd)/nvim -> {{nvim_config_path}}"
-    @ln -sfn $(pwd)/nvim {{nvim_config_path}}
+    @echo "🔗 Creating symlink: $(pwd)/nvim -> {{ nvim_config_path }}"
+    @ln -sfn $(pwd)/nvim {{ nvim_config_path }}
     @echo "✅ Neovim configuration installed"
 
 # Trigger Lazy plugin installation
@@ -510,7 +510,7 @@ check-changes:
 diff-config config:
     #!/usr/bin/env bash
     diff_cmd=$(just get-diff-cmd)
-    case "{{config}}" in
+    case "{{ config }}" in
         fish)
             for f in $(find fish -type f ! -name '*.template'); do
                 dest="$HOME/.config/$f"
@@ -554,7 +554,7 @@ diff-config config:
             $diff_cmd ~/.codex/config.toml codex/config.toml 2>/dev/null || true
             ;;
         *)
-            echo "Unknown config: {{config}}"
+            echo "Unknown config: {{ config }}"
             echo "Available: fish, git, tmux, starship, claude, gemini, codex"
             exit 1
             ;;
@@ -572,15 +572,15 @@ list-backups:
 # Restore a specific backup
 restore-backup config timestamp:
     #!/usr/bin/env bash
-    backup_path="$HOME/.config-backups/{{config}}/{{timestamp}}"
+    backup_path="$HOME/.config-backups/{{ config }}/{{ timestamp }}"
     if [ ! -d "$backup_path" ]; then
         echo "Backup not found: $backup_path"
         echo "Available backups:"
         just list-backups
         exit 1
     fi
-    echo "Restoring {{config}} from {{timestamp}}..."
-    case "{{config}}" in
+    echo "Restoring {{ config }} from {{ timestamp }}..."
+    case "{{ config }}" in
         fish)
             rm -rf ~/.config/fish
             cp -a "$backup_path" ~/.config/fish
@@ -601,7 +601,7 @@ restore-backup config timestamp:
             cp -a "$backup_path/starship.toml" ~/.config/starship.toml
             ;;
         *)
-            echo "Unknown config: {{config}}"
+            echo "Unknown config: {{ config }}"
             exit 1
             ;;
     esac
@@ -610,13 +610,13 @@ restore-backup config timestamp:
 # Clean old backups (keep last N per config)
 clean-backups keep="3":
     #!/usr/bin/env bash
-    echo "Cleaning old backups (keeping last {{keep}})..."
+    echo "Cleaning old backups (keeping last {{ keep }})..."
     for config_dir in ~/.config-backups/*/; do
         if [ -d "$config_dir" ]; then
             config=$(basename "$config_dir")
             count=$(ls -1 "$config_dir" 2>/dev/null | wc -l)
-            if [ "$count" -gt "{{keep}}" ]; then
-                to_delete=$((count - {{keep}}))
+            if [ "$count" -gt "{{ keep }}" ]; then
+                to_delete=$((count - {{ keep }}))
                 echo "  $config: removing $to_delete old backup(s)"
                 ls -1 "$config_dir" | head -n "$to_delete" | while read backup; do
                     rm -rf "$config_dir/$backup"
@@ -677,7 +677,7 @@ install-claude:
     #!/usr/bin/env bash
     echo "Installing Claude Code configuration..."
     mkdir -p ~/.claude
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  claude/settings.json -> ~/.claude/settings.json"
         echo "  claude/statusline.sh -> ~/.claude/statusline.sh"
@@ -686,8 +686,8 @@ install-claude:
     else
         just backup-file ~/.claude/settings.json claude
         just backup-file ~/.claude/statusline.sh claude
-        cp {{justfile_directory()}}/claude/settings.json ~/.claude/settings.json
-        cp {{justfile_directory()}}/claude/statusline.sh ~/.claude/statusline.sh
+        cp {{ justfile_directory() }}/claude/settings.json ~/.claude/settings.json
+        cp {{ justfile_directory() }}/claude/statusline.sh ~/.claude/statusline.sh
         chmod +x ~/.claude/statusline.sh
         echo "✅ Claude Code configuration installed"
     fi
@@ -700,19 +700,19 @@ install-gemini:
     #!/usr/bin/env bash
     echo "Installing Gemini CLI configuration..."
     mkdir -p ~/.gemini/extensions
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  gemini/settings.json -> ~/.gemini/settings.json"
         echo "  gemini/extension-enablement.json -> ~/.gemini/extensions/extension-enablement.json"
         just show-diff gemini/settings.json ~/.gemini/settings.json
     else
         if [ ! -f ~/.gemini/settings.json ]; then
-            cp {{justfile_directory()}}/gemini/settings.json ~/.gemini/settings.json
+            cp {{ justfile_directory() }}/gemini/settings.json ~/.gemini/settings.json
             echo "✅ Gemini settings installed"
         else
             echo "ℹ️  Gemini settings already exist, skipping"
         fi
-        cp {{justfile_directory()}}/gemini/extension-enablement.json ~/.gemini/extensions/extension-enablement.json 2>/dev/null || true
+        cp {{ justfile_directory() }}/gemini/extension-enablement.json ~/.gemini/extensions/extension-enablement.json 2>/dev/null || true
         echo "✅ Gemini extension config installed"
     fi
     echo ""
@@ -724,7 +724,7 @@ install-fish-private:
     #!/usr/bin/env bash
     echo "Setting up private fish configurations..."
     mkdir -p ~/.config/fish/conf.d/private
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would create: ~/.config/fish/conf.d/private/"
     else
         echo "✅ Private configs directory ready"
@@ -740,13 +740,13 @@ install-aichat:
     #!/usr/bin/env bash
     echo "Installing AIChat configuration..."
     mkdir -p ~/.config/aichat
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  aichat/config.yaml -> ~/.config/aichat/config.yaml"
         just show-diff aichat/config.yaml ~/.config/aichat/config.yaml
     else
         if [ ! -f ~/.config/aichat/config.yaml ]; then
-            cp {{justfile_directory()}}/aichat/config.yaml ~/.config/aichat/config.yaml
+            cp {{ justfile_directory() }}/aichat/config.yaml ~/.config/aichat/config.yaml
             echo "✅ AIChat configuration installed"
         else
             echo "ℹ️  AIChat config already exists, skipping"
@@ -758,13 +758,13 @@ install-codex:
     #!/usr/bin/env bash
     echo "Installing Codex CLI configuration..."
     mkdir -p ~/.codex
-    if [ -n "{{dry_run}}" ]; then
+    if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  codex/config.toml -> ~/.codex/config.toml"
         just show-diff codex/config.toml ~/.codex/config.toml
     else
         if [ ! -f ~/.codex/config.toml ]; then
-            cp {{justfile_directory()}}/codex/config.toml ~/.codex/config.toml
+            cp {{ justfile_directory() }}/codex/config.toml ~/.codex/config.toml
             echo "✅ Codex configuration installed"
         else
             echo "ℹ️  Codex config already exists"
