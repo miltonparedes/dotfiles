@@ -105,3 +105,14 @@ end
 if not set -q SSH_AUTH_SOCK
     eval (ssh-agent -c) > /dev/null
 end
+
+# Atuin - Shell history search
+if command -q atuin
+    atuin init fish | source
+end
+
+# Kiro IDE integration
+if test "$TERM_PROGRAM" = "kiro"
+    and command -q kiro
+    . (kiro --locate-shell-integration-path fish)
+end

@@ -26,8 +26,8 @@ set -gx LC_ALL en_US.UTF-8
 # History configuration
 set -g fish_history_size 10000
 
-# Vi mode configuration (optional, comment out if you prefer emacs mode)
-# fish_vi_key_bindings
+# Vi mode configuration
+fish_vi_key_bindings
 
 # Load custom functions and completions
 # These are automatically loaded from functions/ and completions/ directories
