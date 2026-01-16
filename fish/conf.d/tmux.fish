@@ -57,8 +57,12 @@ if command -q tmux
     alias tmuxconf='nvim ~/.tmux.conf'
     
     # Quick session management
-    alias tn='tmux new -s (basename $PWD)'
-    alias tm='tmux new -s main'
+    function tn --description 'New tmux session named after current directory'
+        tmux new-session -s (basename $PWD)
+    end
+    function tm --description 'New or attach to main tmux session'
+        tmux new-session -A -s main
+    end
 end
 
 # Function to create or attach to project-specific tmux session
