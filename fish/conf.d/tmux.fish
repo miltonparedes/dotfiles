@@ -57,8 +57,12 @@ if command -q tmux
     alias tmuxconf='nvim ~/.tmux.conf'
     
     # Quick session management
-    function tn --description 'New tmux session named after current directory'
-        tmux new-session -s (basename $PWD)
+    function tn --description 'New tmux session (named after directory or custom name)'
+        if test (count $argv) -gt 0
+            tmux new-session -A -s $argv[1]
+        else
+            tmux new-session -A -s (basename $PWD)
+        end
     end
     function tm --description 'New or attach to main tmux session'
         tmux new-session -A -s main
