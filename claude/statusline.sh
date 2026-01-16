@@ -5,7 +5,8 @@
 input=$(cat)
 
 # === Workspace (using wt, folder name only) ===
-wt_info=$(wt list statusline --claude-code 2>/dev/null | sed 's|https\?://[^ ]*||g; s|/[^ ]*/||; s/\x1b\[0m /\x1b[0m/; s/  */ /g' | tr -d '\n' || echo "workspace")
+# sed pipeline: remove URLs, strip path prefix, clean ANSI space, remove ~ after ANSI (macOS), collapse spaces
+wt_info=$(wt list statusline --claude-code 2>/dev/null | sed 's|https\?://[^ ]*||g; s|/[^ ]*/||; s/\x1b\[0m /\x1b[0m/; s/\x1b\[0m~/\x1b[0m/; s/  */ /g' | tr -d '\n' || echo "workspace")
 
 # === Model (short name only) ===
 full_model=$(echo "$input" | jq -r '.model.display_name // "Claude"')
