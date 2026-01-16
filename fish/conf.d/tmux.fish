@@ -10,8 +10,20 @@
 
 # TMUX aliases
 if command -q tmux
-    alias ta='tmux attach -t'
-    alias tad='tmux attach -d -t'
+    function ta --description 'Attach to tmux session'
+        if test (count $argv) -eq 0
+            tmux attach
+        else
+            tmux attach -t $argv[1]
+        end
+    end
+    function tad --description 'Attach to tmux session (detach others)'
+        if test (count $argv) -eq 0
+            tmux attach -d
+        else
+            tmux attach -d -t $argv[1]
+        end
+    end
     alias ts='tmux new-session -s'
     alias tl='tmux list-sessions'
     alias tksv='tmux kill-server'
