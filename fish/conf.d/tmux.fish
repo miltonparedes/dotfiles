@@ -12,7 +12,6 @@
 if command -q tmux
     function ta --description 'Attach to tmux session'
         if test (count $argv) -eq 0
-            # Get the most recent session (first in list)
             set -l sessions (tmux list-sessions -F '#{session_name}' 2>/dev/null)
             if test (count $sessions) -eq 0
                 echo "No tmux sessions available"
@@ -20,7 +19,6 @@ if command -q tmux
             else if test (count $sessions) -eq 1
                 tmux attach-session -t $sessions[1]
             else
-                # Multiple sessions: show list and attach to most recent
                 echo "Available sessions:"
                 tmux list-sessions
                 echo ""
@@ -55,17 +53,34 @@ if command -q tmux
     alias tksv='tmux kill-server'
     alias tkss='tmux kill-session -t'
     alias tmuxconf='nvim ~/.tmux.conf'
-    
+
     # Quick session management
     function tn --description 'New tmux session (named after directory or custom name)'
+        set -l name
         if test (count $argv) -gt 0
-            tmux new-session -A -s $argv[1]
+            set name $argv[1]
         else
-            tmux new-session -A -s (basename $PWD)
+            set name (basename $PWD)
+        end
+
+        if set -q TMUX
+            if not tmux has-session -t $name 2>/dev/null
+                tmux new-session -d -s $name
+            end
+            tmux switch-client -t $name
+        else
+            tmux new-session -A -s $name
         end
     end
     function tm --description 'New or attach to main tmux session'
-        tmux new-session -A -s main
+        if set -q TMUX
+            if not tmux has-session -t main 2>/dev/null
+                tmux new-session -d -s main
+            end
+            tmux switch-client -t main
+        else
+            tmux new-session -A -s main
+        end
     end
 end
 

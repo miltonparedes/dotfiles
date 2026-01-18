@@ -133,16 +133,8 @@ alias nvimconfig='nvim ~/.config/nvim/init.lua'
 
 # ─── Tmux ─────────────────────────────────────────────────
 # t: start tmux with 256 colors
+# tmux aliases moved to tmux.fish
 alias t='tmux -2'
-# ta: attach to session
-alias ta='tmux attach'
-# tt: attach to named session
-alias tt='tmux attach -t'
-# tl: list sessions
-alias tl='tmux list-sessions'
-# tn: new named session
-alias tn='tmux new -s'
-# tk: kill session
 alias tk='tmux kill-session'
 
 # ─── Coding Agents ────────────────────────────────────────
