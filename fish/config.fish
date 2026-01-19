@@ -9,12 +9,20 @@ set -gx VISUAL nvim
 set -g fish_greeting
 
 # Configure PATH
-# Detect Homebrew based on CPU architecture
+# Common user bin directory (Linux/macOS)
+fish_add_path ~/.local/bin
+
+# Detect Homebrew based on OS and CPU architecture
 if test (uname) = "Darwin"
     if test (uname -m) = "arm64"
         fish_add_path /opt/homebrew/bin
     else
         fish_add_path /usr/local/bin
+    end
+else if test (uname) = "Linux"
+    # Linuxbrew
+    if test -d /home/linuxbrew/.linuxbrew/bin
+        fish_add_path /home/linuxbrew/.linuxbrew/bin
     end
 end
 

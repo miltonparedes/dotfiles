@@ -57,13 +57,18 @@ else if test -f /usr/local/opt/asdf/libexec/asdf.fish
     source /usr/local/opt/asdf/libexec/asdf.fish
 end
 
-# Homebrew (macOS)
+# Homebrew / Linuxbrew
 if test (uname) = "Darwin"
-    # Set up Homebrew environment
+    # macOS Homebrew
     if test -x /opt/homebrew/bin/brew
         eval (/opt/homebrew/bin/brew shellenv)
     else if test -x /usr/local/bin/brew
         eval (/usr/local/bin/brew shellenv)
+    end
+else if test (uname) = "Linux"
+    # Linuxbrew
+    if test -x /home/linuxbrew/.linuxbrew/bin/brew
+        eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
     end
 end
 
