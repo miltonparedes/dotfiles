@@ -16,6 +16,8 @@ if command -q fzf
     # Load FZF key bindings for fish
     if test -f /opt/homebrew/opt/fzf/shell/key-bindings.fish
         source /opt/homebrew/opt/fzf/shell/key-bindings.fish
+    else if test -f /usr/local/opt/fzf/shell/key-bindings.fish
+        source /usr/local/opt/fzf/shell/key-bindings.fish
     else if test -f /usr/share/fzf/shell/key-bindings.fish
         source /usr/share/fzf/shell/key-bindings.fish
     else if test -f ~/.fzf/shell/key-bindings.fish
@@ -51,14 +53,16 @@ if test -f ~/.asdf/asdf.fish
     source ~/.asdf/asdf.fish
 else if test -f /opt/homebrew/opt/asdf/libexec/asdf.fish
     source /opt/homebrew/opt/asdf/libexec/asdf.fish
+else if test -f /usr/local/opt/asdf/libexec/asdf.fish
+    source /usr/local/opt/asdf/libexec/asdf.fish
 end
 
 # Homebrew (macOS)
 if test (uname) = "Darwin"
     # Set up Homebrew environment
-    if test -d /opt/homebrew
+    if test -x /opt/homebrew/bin/brew
         eval (/opt/homebrew/bin/brew shellenv)
-    else if test -d /usr/local/Homebrew
+    else if test -x /usr/local/bin/brew
         eval (/usr/local/bin/brew shellenv)
     end
 end

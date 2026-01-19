@@ -9,8 +9,14 @@ set -gx VISUAL nvim
 set -g fish_greeting
 
 # Configure PATH
-fish_add_path /usr/local/bin
-fish_add_path /opt/homebrew/bin
+# Detect Homebrew based on CPU architecture
+if test (uname) = "Darwin"
+    if test (uname -m) = "arm64"
+        fish_add_path /opt/homebrew/bin
+    else
+        fish_add_path /usr/local/bin
+    end
+end
 
 # Source all configuration files in conf.d/
 # Fish automatically does this, but we ensure the path is correct
