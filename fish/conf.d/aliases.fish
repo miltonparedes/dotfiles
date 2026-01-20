@@ -43,7 +43,8 @@ alias fgrep='fgrep --color=auto'
 # ─── Shortcuts ────────────────────────────────────────────
 # j: just command runner
 alias j='just'
-# lg: lazygit TUI
+# lazygit: TUI (COLORTERM needed for delta true color)
+alias lazygit='COLORTERM=truecolor command lazygit'
 alias lg='lazygit'
 
 # ─── SSH ──────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 git:
   pagers:
     - colorArg: always
-      pager: delta --dark --paging=never --line-numbers
+      pager: delta --dark --paging=never --line-numbers --true-color=always --hunk-header-style=omit
 
 customCommands:
   - key: G
