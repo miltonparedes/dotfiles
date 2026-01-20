@@ -55,6 +55,7 @@ if command -q tmux
     alias tmuxconf='nvim ~/.tmux.conf'
 
     # Quick session management
+    # On Linux with systemd, sessions persist after SSH disconnect
     function tn --description 'New tmux session (named after directory or custom name)'
         set -l name
         if test (count $argv) -gt 0
@@ -68,8 +69,14 @@ if command -q tmux
                 tmux new-session -d -s $name
             end
             tmux switch-client -t $name
+        else if tmux has-session -t $name 2>/dev/null
+            tmux attach-session -t $name
         else
-            tmux new-session -A -s $name
+            if test (uname) = Linux; and command -q systemd-run
+                systemd-run --user --scope tmux new-session -s $name
+            else
+                tmux new-session -s $name
+            end
         end
     end
     function tm --description 'New or attach to main tmux session'
@@ -78,8 +85,15 @@ if command -q tmux
                 tmux new-session -d -s main
             end
             tmux switch-client -t main
+        else if tmux has-session -t main 2>/dev/null
+            tmux attach-session -t main
         else
-            tmux new-session -A -s main
+            # On Linux with systemd, use systemd-run to persist session after SSH disconnect
+            if test (uname) = Linux; and command -q systemd-run
+                systemd-run --user --scope tmux new-session -s main
+            else
+                tmux new-session -s main
+            end
         end
     end
 end
