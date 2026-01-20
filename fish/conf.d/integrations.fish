@@ -125,3 +125,47 @@ if test "$TERM_PROGRAM" = "kiro"
     and command -q kiro
     . (kiro --locate-shell-integration-path fish)
 end
+
+# =============================================================================
+# JavaScript/TypeScript Runtimes (macOS & Linux)
+# =============================================================================
+
+# Bun - Fast JavaScript runtime, bundler, and package manager
+# Install: curl -fsSL https://bun.sh/install | bash
+if test -d ~/.bun/bin
+    set -gx BUN_INSTALL "$HOME/.bun"
+    fish_add_path $BUN_INSTALL/bin
+end
+
+# Deno - Secure JavaScript/TypeScript runtime
+# Install: curl -fsSL https://deno.land/install.sh | sh
+if test -d ~/.deno/bin
+    set -gx DENO_INSTALL "$HOME/.deno"
+    fish_add_path $DENO_INSTALL/bin
+end
+
+# =============================================================================
+# Infrastructure & DevOps Tools (macOS & Linux)
+# =============================================================================
+
+# Pulumi - Infrastructure as Code
+# Install: curl -fsSL https://get.pulumi.com | sh
+if test -d ~/.pulumi/bin
+    fish_add_path ~/.pulumi/bin
+end
+
+# =============================================================================
+# AI & Development Tools (macOS & Linux)
+# =============================================================================
+
+# OpenCode - AI-powered terminal coding assistant
+# Install: See https://github.com/opencode-ai/opencode
+if test -d ~/.opencode/bin
+    fish_add_path ~/.opencode/bin
+end
+
+# LazyWork - Workflow automation tool
+# Installed via package manager or manually to ~/.local/bin
+if command -q lazywork
+    lazywork shell init fish | source
+end
