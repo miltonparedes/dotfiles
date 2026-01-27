@@ -70,8 +70,6 @@ abbr -a al la
 # ─── Quick Commands ───────────────────────────────────────
 # h: command history
 abbr -a h history
-# k: kubernetes CLI
-abbr -a k kubectl
 # tf: terraform
 abbr -a tf terraform
 # py: python
