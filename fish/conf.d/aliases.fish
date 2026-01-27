@@ -169,7 +169,7 @@ alias i='aichat'
 alias ie='aichat -e'
 
 # ccu: Claude Code usage stats
-alias ccu='ccusage'
+alias ccu='bunx ccusage'
 
 # ─── Chrome DevTools ──────────────────────────────────────
 # chrome-debug: launch Chrome with remote debugging
