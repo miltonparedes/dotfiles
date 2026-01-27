@@ -12,7 +12,7 @@ setup_workspace_aliases
 
 # Quick navigation to common directories
 alias work="z ~/Workspaces"
-alias dots="z ~/Workspaces/M/dotfiles"
+alias dots="z dotfiles"
 alias proj="z ~/Projects"
 alias dl="z ~/Downloads"
 alias docs="z ~/Documents"
