@@ -139,10 +139,8 @@ alias t='tmux -2'
 alias tk='tmux kill-session'
 
 # ─── Coding Agents ────────────────────────────────────────
-# cc: Claude Code CLI
-alias cc='claude'
-# cc-yolo: Claude Code without permission prompts
-alias cc-yolo='claude --dangerously-skip-permissions'
+# cc: Claude Code CLI without permission prompts
+alias cc='claude --dangerously-skip-permissions'
 
 # gem: Gemini CLI
 alias gem='gemini'
