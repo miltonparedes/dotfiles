@@ -1,14 +1,4 @@
 # Workspace Navigation Setup
-# Load workspace aliases on shell startup
-
-# Ensure zoxide is available before setting up workspace navigation
-if not command -q zoxide
-    # Silent fail - zoxide may not be installed on all systems
-    return
-end
-
-# Setup workspace aliases
-setup_workspace_aliases
 
 # Quick navigation to common directories
 alias work="z ~/Workspaces"
