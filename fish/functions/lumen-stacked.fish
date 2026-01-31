@@ -1,4 +1,4 @@
-function lumen-stacked --description 'Select commits with fzf and view in stacked mode'
+function lumen-stacked --description 'Select commits with fzf and view with lumen'
     set -l range (git log --oneline -30 | fzf --multi --reverse \
         --header "TAB: multi-select | ENTER: confirmar")
 
@@ -10,8 +10,10 @@ function lumen-stacked --description 'Select commits with fzf and view in stacke
     set -l last_sha (echo $range[-1] | cut -d' ' -f1)
 
     if test "$first_sha" = "$last_sha"
-        lumen diff $first_sha --stacked
+        # Single commit: compare with its parent
+        lumen diff $first_sha
     else
+        # Multiple commits: stacked mode for range
         lumen diff $last_sha..$first_sha --stacked
     end
 end
