@@ -1,293 +1,129 @@
 # Dotfiles
 
-## 🚀 Quick Start
+Configuration for Fish, Starship, TMUX, Neovim and development tools.
+
+Works on macOS (Homebrew) and Fedora/Bluefin (DNF).
+
+## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/dotfiles.git ~/Workspaces/M/dotfiles
-cd ~/Workspaces/M/dotfiles
-
-# Full installation
+git clone https://github.com/USERNAME/dotfiles.git ~/dotfiles
+cd ~/dotfiles
 ./install.sh
-# or
-just install
 ```
 
-## ✨ Features
+The script installs `just` if missing and runs the full installation.
 
-- **Fish Shell**: Modern, user-friendly shell with autosuggestions and syntax highlighting
-- **Starship**: Blazing-fast, customizable prompt that works across shells
-- **TMUX**: Terminal multiplexer with custom theme and keybindings
-- **Neovim**: Fully configured with LSP, Treesitter, and modern plugins
-- **Cross-platform**: Works seamlessly on macOS and Bluefin/Fedora
-- **SSH-ready**: Optimized for remote development workflows
-
-## 🐟 Fish Shell
-
-This configuration uses **Fish** as the primary shell, replacing bash/zsh with a more modern alternative:
-
-- **Autosuggestions**: Type faster with intelligent command suggestions
-- **Syntax highlighting**: See errors before running commands
-- **Smart abbreviations**: Expand shortcuts inline for easy editing
-- **No configuration needed**: Works great out of the box
-
-### Make Fish your default shell
+### Per-component installation
 
 ```bash
-# Add Fish to valid shells
-echo $(which fish) | sudo tee -a /etc/shells
+just install-fish         # Fish shell
+just install-starship     # Prompt
+just install-tmux         # Terminal multiplexer
+just install-nvim         # Neovim (symlink)
+just install-gitconfig    # Git with delta
+just install-lazygit      # Lazygit
+just install-spell        # Spell CLI
+```
 
-# Change default shell
+### Coding agents
+
+```bash
+just install-claude       # Claude Code
+just install-gemini       # Gemini CLI
+just install-codex        # Codex CLI
+just install-aichat       # AIChat
+just install-coding-agents # All
+```
+
+### Preview and backups
+
+```bash
+just check-changes              # Preview changes without applying
+DRY_RUN=1 just install-fish     # Dry-run a component
+just diff-config tmux           # Diff specific config
+just list-backups               # List backups
+just restore-backup fish <ts>   # Restore backup
+```
+
+Backups are created automatically in `~/.config-backups/`.
+
+## Structure
+
+```
+fish/
+  config.fish              # Main config
+  conf.d/                  # Auto-loaded
+    aliases.fish
+    abbreviations.fish
+    integrations.fish      # fzf, zoxide, starship
+    tmux.fish
+    workspaces.fish
+  functions/               # Custom functions
+
+nvim/                      # LazyVim config (symlink to ~/.config/nvim)
+tmux.conf                  # TMUX config
+starship.toml              # Prompt config
+git/config                 # Git config with delta
+lazygit/                   # Lazygit config
+aichat/                    # AIChat config
+claude/                    # Claude Code settings
+gemini/                    # Gemini CLI settings
+codex/                     # Codex CLI config
+spell/                     # Spell CLI (justfiles)
+cli.Brewfile               # Homebrew packages
+```
+
+## Fish shell
+
+Set as default shell:
+
+```bash
+echo $(which fish) | sudo tee -a /etc/shells
 chsh -s $(which fish)
-
-# Or use the helper command
-just switch-to-fish
 ```
 
-## 🌟 Starship Prompt
+Useful abbreviations (expand with space):
+- `g` -> `git`
+- `ga` -> `git add`
+- `gc` -> `git commit`
+- `gp` -> `git push`
 
-Starship provides a minimal, blazing-fast, and infinitely customizable prompt:
+## TMUX
 
-- Git status and branch information
-- Command duration for long-running processes
-- Python virtual environment detection
-- SSH session indicators
-- Consistent across Fish, Bash, and Zsh
+Prefix: `Ctrl-a`
 
-## 🖥️ TMUX Configuration
+Main shortcuts:
+- `Ctrl-a |` vertical split
+- `Ctrl-a -` horizontal split
+- `Ctrl-a z` zoom pane
+- Click to switch panes
 
-Enhanced TMUX setup with:
+Fish functions:
+- `ta <session>` attach
+- `ts <name>` new session
+- `tl` list sessions
 
-- **Custom prefix**: `Ctrl-a` instead of `Ctrl-b`
-- **Mouse support**: Click to switch panes and windows
-- **Theme**: tmux-power with network speed indicators
-- **Smart session management**: Project-specific sessions
-- **1-indexed**: Windows and panes start at 1
+## CLI tools
 
-### TMUX Shortcuts
-
-```bash
-ta <session>   # Attach to session
-ts <name>      # New session
-tl             # List sessions
-tp             # Project-specific session (auto-named)
-```
-
-## 📦 Installation
-
-### Prerequisites
-
-The installer will check for these automatically:
-
-- **macOS**: Homebrew
-- **Fedora/Bluefin**: DNF package manager
-- **Git**: For cloning repositories
-
-### Full Installation
-
-```bash
-# Clone and install everything
-git clone https://github.com/USERNAME/dotfiles.git ~/Workspaces/M/dotfiles
-cd ~/Workspaces/M/dotfiles
-
-# Run full installation
-just install
-```
-
-### Component Installation
-
-```bash
-just install-fish         # Fish shell configuration only
-just install-starship     # Starship prompt only
-just install-tmux         # TMUX configuration only
-just install-nvim         # Neovim configuration only
-just install-spell        # Spell CLI tool
-```
-
-### Safe Installation (Dry-Run & Backup)
-
-Preview changes before applying:
-
-```bash
-# Preview ALL changes without modifying anything
-just check-changes
-
-# Preview specific config
-DRY_RUN=1 just install-fish
-
-# Show diff for a specific config
-just diff-config git
-just diff-config tmux
-```
-
-Backups are created automatically in `~/.config-backups/`. Manage them with:
-
-```bash
-just list-backups                      # List all backups
-just restore-backup fish 20241209_123456  # Restore from backup
-just clean-backups 3                   # Keep only last 3 backups per config
-```
-
-Disable backups (not recommended):
-
-```bash
-BACKUP=0 just install-fish
-```
-
-### Update Components
-
-```bash
-just update              # Update all configurations
-just update-nvim         # Update Neovim plugins only
-```
-
-## 🛠️ CLI Tools
-
-Essential CLI tools installed via Homebrew:
-
-- **just**: Task runner (like make, but better)
-- **uv**: Fast Python package manager
-- **bat**: cat with syntax highlighting
-- **eza**: Modern ls replacement
-- **fd**: User-friendly find
-- **ripgrep**: Blazing fast grep
-- **fzf**: Fuzzy finder
-- **zoxide**: Smarter cd command
-- **lazygit**: Terminal UI for git
-- **gh**: GitHub CLI
-- **glab**: GitLab CLI
-- **btop**: Resource monitor
-- **aichat**: AI chat in terminal
-
-Install all with:
+See `cli.Brewfile` for full list. Install with:
 
 ```bash
 just install-brew-essential-cli-packages
 ```
 
-## ⚙️ Configuration Files
+Main tools: bat, eza, fd, ripgrep, fzf, zoxide, lazygit, gh, btop.
 
-```
-dotfiles/
-├── fish/                  # Fish shell configuration
-│   ├── config.fish       # Main config
-│   ├── conf.d/          # Auto-loaded configs
-│   │   ├── aliases.fish
-│   │   ├── abbreviations.fish
-│   │   ├── integrations.fish
-│   │   └── tmux.fish
-│   └── functions/       # Custom functions
-├── starship.toml        # Starship prompt config
-├── tmux.conf            # TMUX configuration
-├── nvim/                # Neovim configuration
-├── cli.Brewfile         # Homebrew packages
-└── Justfile            # Task definitions
-```
-
-## 🔍 Verification
-
-Check your setup:
+## Verify installation
 
 ```bash
-# Check all dependencies
-just check
-
-# Fish-specific verification
-fish -c "check_fish_setup"
+just check           # Check dependencies and configs
+just check-deps      # Dependencies only
 ```
 
-## 🚀 Workflow Tips
-
-### Fish Productivity
-
-1. **Abbreviations**: Type `gaa` and space to expand to `git add --all`
-2. **Directory navigation**: Use `z` to jump to frecent directories
-3. **Fuzzy history**: Press `Ctrl+R` for interactive history search
-4. **Smart completions**: Press `Tab` for context-aware suggestions
-
-### TMUX Workflow
-
-1. **Project sessions**: Run `tp` in any project directory
-2. **Split panes**: `Ctrl-a |` (vertical) or `Ctrl-a -` (horizontal)
-3. **Navigate panes**: Click with mouse or `Ctrl-a` + arrow keys
-4. **Zoom pane**: `Ctrl-a z` to focus/unfocus current pane
-
-### Remote Development
-
-Perfect for SSH workflows:
+## Update
 
 ```bash
-# On remote server
-just install
-
-# Start TMUX session
-tmux new -s dev
-
-# Your complete environment is ready!
+just update          # Everything
+just update-nvim     # Neovim plugins only
 ```
-
-## 🔧 Customization
-
-### Add Custom Aliases
-
-Edit `fish/conf.d/aliases.fish`:
-
-```fish
-alias mycommand='actual-command --with-options'
-```
-
-### Modify Starship Prompt
-
-Edit `starship.toml` to customize your prompt.
-
-### TMUX Keybindings
-
-Edit `tmux.conf` to add custom keybindings.
-
-## 📚 Documentation
-
-- [Fish Documentation](https://fishshell.com/docs/current/)
-- [Starship Documentation](https://starship.rs/)
-- [TMUX Documentation](https://github.com/tmux/tmux/wiki)
-- [Just Documentation](https://github.com/casey/just)
-
-## 🐛 Troubleshooting
-
-### Fish not recognized as valid shell
-
-```bash
-echo $(which fish) | sudo tee -a /etc/shells
-```
-
-### TMUX plugins not loading
-
-```bash
-# Install TPM (TMUX Plugin Manager)
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-# In TMUX, press Ctrl-a I to install plugins
-```
-
-### Starship not showing
-
-```bash
-# Verify Starship is installed
-starship --version
-
-# Reinstall Fish config
-just install-fish
-```
-
-### Commands not found
-
-```bash
-# Ensure Homebrew packages are installed
-just install-brew-essential-cli-packages
-
-# Reload Fish configuration
-source ~/.config/fish/config.fish
-```
-
-## 📝 License
-
-MIT - Feel free to use and modify for your needs!
