@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#!/usr/bin/env bash
 saved_stty=$(stty -g 2>/dev/null || true)
 
 cleanup() {
@@ -8,28 +9,32 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-recent_commits=$(git log -n 6 --pretty=format:'%h %s')
+if [ -z "$GEMINI_API_KEY" ]; then
+  secrets_file="$HOME/.config/fish/conf.d/secrets.fish"
+  if [ -f "$secrets_file" ]; then
+    GEMINI_API_KEY=$(awk -F'"' '/GEMINI_API_KEY/ {print $2; exit}' "$secrets_file")
+  fi
+fi
+
+if [ -z "$GEMINI_API_KEY" ]; then
+  echo "Gemini error: GEMINI_API_KEY is not set" >&2
+  exit 1
+fi
+
+model=${GEMINI_MODEL:-gemini-3-flash-preview}
+
+recent_commits=$(git log -n 6 --pretty=format:'%s')
 diff_content=$(git diff --cached)
 
-prompt="You are a Git commit message expert. Generate 6 semantic commit messages.
+prompt_base="You are a Git commit message expert. Generate 3 concise commit messages.
 
 RULES:
-- Format: <type>: <summary> (NO scopes, NO parentheses)
-- Max 50 characters per message
+- Plain summary line only (no prefixes like feat:, no bullets, no quotes)
+- Max 72 characters per message
 - Use imperative mood (add, fix, update - not added, fixed, updated)
+- Avoid trailing periods
 - Match the style of recent commits below
 - Each message should offer a different perspective on the changes
-
-TYPE SELECTION:
-feat: new features only
-fix: bug fixes only
-docs: documentation only
-style: formatting, whitespace only
-refactor: code restructuring without behavior change
-test: test changes only
-chore: maintenance, dependencies, configs
-perf: performance improvements
-ci: CI/CD changes
 
 RECENT COMMITS (match this style):
 $recent_commits
@@ -37,8 +42,18 @@ $recent_commits
 CHANGES TO ANALYZE:
 $diff_content"
 
-payload=$(jq -n \
-  --arg prompt "$prompt" \
+prompt_json="$prompt_base
+
+OUTPUT FORMAT:
+Return a JSON object with a \"commits\" array of exactly 3 strings"
+
+prompt_text="$prompt_base
+
+OUTPUT FORMAT:
+Return exactly 3 lines, one message per line, no numbering"
+
+payload_json=$(jq -n \
+  --arg prompt "$prompt_json" \
   '{
     contents: [{ parts: [{ text: $prompt }] }],
     generationConfig: {
@@ -48,16 +63,9 @@ payload=$(jq -n \
         properties: {
           commits: {
             type: "array",
-            minItems: 6,
-            maxItems: 6,
-            items: {
-              type: "object",
-              properties: {
-                type: { type: "string", enum: ["feat","fix","docs","style","refactor","test","chore","perf","ci"] },
-                message: { type: "string" }
-              },
-              required: ["type","message"]
-            }
+            minItems: 3,
+            maxItems: 3,
+            items: { type: "string" }
           }
         },
         required: ["commits"]
@@ -65,9 +73,60 @@ payload=$(jq -n \
     }
   }')
 
-curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$GEMINI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$payload" \
-  | jq -r '.candidates[0].content.parts[0].text | fromjson | .commits[] | "\(.type): \(.message)"' \
-  | fzf --height 41% --border --ansi --preview "echo {}" --preview-window=up:wrap \
+payload_text=$(jq -n \
+  --arg prompt "$prompt_text" \
+  '{
+    contents: [{ parts: [{ text: $prompt }] }],
+    generationConfig: {
+      responseMimeType: "text/plain"
+    }
+  }')
+
+request() {
+  curl -sS "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$GEMINI_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "$1"
+}
+
+error_exit() {
+  echo "Gemini error: $1" >&2
+  exit 1
+}
+
+generate_from_text() {
+  local response error_message text
+  response=$(request "$payload_text")
+  error_message=$(jq -r '.error.message? // empty' <<<"$response")
+  if [ -n "$error_message" ]; then
+    error_exit "$error_message"
+  fi
+  text=$(jq -r '.candidates[0].content.parts[0].text // empty' <<<"$response")
+  if [ -z "$text" ] || [ "$text" = "null" ]; then
+    error_exit "empty response"
+  fi
+  printf '%s\n' "$text" | awk 'NF { print; count++ } count==3 { exit }'
+}
+
+generate_from_json() {
+  local response error_message commits_json commits
+  response=$(request "$payload_json")
+  error_message=$(jq -r '.error.message? // empty' <<<"$response")
+  if [ -n "$error_message" ]; then
+    return 1
+  fi
+  commits_json=$(jq -r '.candidates[0].content.parts[0].text // empty' <<<"$response")
+  if [ -z "$commits_json" ] || [ "$commits_json" = "null" ]; then
+    return 1
+  fi
+  commits=$(printf '%s\n' "$commits_json" | jq -r 'fromjson | .commits[]' 2>/dev/null)
+  if [ -z "$commits" ]; then
+    return 1
+  fi
+  printf '%s\n' "$commits"
+}
+
+commit_list=$(generate_from_json || generate_from_text)
+
+printf '%s\n' "$commit_list" \
+  | fzf --height 30% --border --ansi --preview "echo {}" --preview-window=up:wrap \
   | (read -r message && git commit --no-verify -m "$message")
