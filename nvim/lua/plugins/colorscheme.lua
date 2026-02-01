@@ -143,6 +143,59 @@ local function apply_vscode_syntax()
   hl(0, "@markup.link.label", { fg = vscode.light_blue, underline = true })
   hl(0, "@markup.link.url", { fg = vscode.front, underline = true })
 
+  -- Texto normal en markdown (paragraphs)
+  hl(0, "@markup", { fg = vscode.front })
+  hl(0, "@markup.raw", { fg = vscode.orange })
+  hl(0, "@text", { fg = vscode.front })
+  hl(0, "@text.literal", { fg = vscode.orange })
+  hl(0, "@spell", { fg = vscode.front })
+  hl(0, "@nospell", {})
+
+  -- Spell checking (underline instead of color change)
+  hl(0, "SpellBad", { sp = vscode.red, undercurl = true, fg = "NONE", bg = "NONE" })
+  hl(0, "SpellCap", { sp = vscode.yellow, undercurl = true, fg = "NONE", bg = "NONE" })
+  hl(0, "SpellLocal", { sp = vscode.blue, undercurl = true, fg = "NONE", bg = "NONE" })
+  hl(0, "SpellRare", { sp = vscode.pink, undercurl = true, fg = "NONE", bg = "NONE" })
+
+  -- Listas
+  hl(0, "@markup.list", { fg = vscode.blue })
+  hl(0, "@markup.list.checked", { fg = vscode.green })
+  hl(0, "@markup.list.unchecked", { fg = vscode.gray })
+
+  -- Blockquotes
+  hl(0, "@markup.quote", { fg = vscode.green, italic = true })
+
+  -- Código en bloques (fence)
+  hl(0, "@markup.raw.block", { fg = vscode.orange })
+
+  -- Enlaces (grupo padre)
+  hl(0, "@markup.link", { fg = vscode.light_blue })
+
+  -- Math y environments (LaTeX)
+  hl(0, "@markup.math", { fg = vscode.accent_blue })
+  hl(0, "@markup.environment", { fg = vscode.blue })
+
+  -- Legacy markdown groups (fallback)
+  hl(0, "markdownCode", { fg = vscode.orange })
+  hl(0, "markdownCodeBlock", { fg = vscode.orange })
+  hl(0, "markdownCodeDelimiter", { fg = vscode.gray })
+  hl(0, "markdownBlockquote", { fg = vscode.green, italic = true })
+  hl(0, "markdownListMarker", { fg = vscode.blue })
+  hl(0, "markdownOrderedListMarker", { fg = vscode.blue })
+  hl(0, "markdownRule", { fg = vscode.blue })
+  hl(0, "markdownHeadingDelimiter", { fg = vscode.blue })
+  hl(0, "markdownUrl", { fg = vscode.front, underline = true })
+  hl(0, "markdownLinkText", { fg = vscode.light_blue, underline = true })
+
+  -- Render-markdown.nvim highlights (respetar transparencia)
+  hl(0, "RenderMarkdownCode", { bg = "NONE" })
+  hl(0, "RenderMarkdownH1Bg", { bg = "NONE" })
+  hl(0, "RenderMarkdownH2Bg", { bg = "NONE" })
+  hl(0, "RenderMarkdownH3Bg", { bg = "NONE" })
+  hl(0, "RenderMarkdownH4Bg", { bg = "NONE" })
+  hl(0, "RenderMarkdownH5Bg", { bg = "NONE" })
+  hl(0, "RenderMarkdownH6Bg", { bg = "NONE" })
+
   -- LSP Semantic Tokens
   hl(0, "@lsp.type.type", { link = "@type" })
   hl(0, "@lsp.type.typeParameter", { link = "@type" })

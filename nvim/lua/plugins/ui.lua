@@ -6,4 +6,21 @@ return {
       opts.sections.lualine_z = {}
     end,
   },
+  {
+    "folke/snacks.nvim",
+    opts = {
+      picker = {
+        sources = {
+          explorer = {
+            hidden = true,
+            ignored = true,
+          },
+          files = {
+            hidden = true,
+            ignored = false,
+          },
+        },
+      },
+    },
+  },
 }
