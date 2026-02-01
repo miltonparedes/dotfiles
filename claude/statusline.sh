@@ -4,6 +4,9 @@
 
 input=$(cat)
 
+# Session ID for per-session cache isolation
+session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
+
 # === Workspace (using wt, folder name only) ===
 # sed pipeline: remove URLs, strip path prefix, clean ANSI space, remove ~ after ANSI (macOS), collapse spaces
 wt_info=$(wt list statusline --claude-code 2>/dev/null | sed 's|https\?://[^ ]*||g; s|/[^ ]*/||; s/\x1b\[0m /\x1b[0m/; s/\x1b\[0m~/\x1b[0m/; s/  */ /g' | tr -d '\n' || echo "workspace")
@@ -20,8 +23,8 @@ esac
 # === Context Window ===
 # Context usage = tokens being SENT to Claude (not output tokens being generated now)
 # Output tokens from previous responses are already included in input as conversation history
-# Cache file to avoid 0% -> N% jumps between messages
-CACHE_FILE="/tmp/claude_statusline_ctx_${USER:-claude}"
+# Cache file to avoid 0% -> N% jumps between messages (per-session)
+CACHE_FILE="/tmp/claude_statusline_ctx_${USER:-claude}_${session_id}"
 context_size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000' 2>/dev/null)
 usage=$(echo "$input" | jq '.context_window.current_usage' 2>/dev/null)
 
