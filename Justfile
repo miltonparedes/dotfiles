@@ -813,15 +813,23 @@ install-fonts:
 
 # Install Ghostty terminal configuration
 install-ghostty:
-    @echo "Installing Ghostty configuration..."
-    @mkdir -p ~/.config
-    @if [ -d ~/.config/ghostty ] && [ ! -L ~/.config/ghostty ]; then \
-        echo "⚠️  Backing up existing Ghostty config..."; \
-        mv ~/.config/ghostty ~/.config/ghostty.backup; \
+    #!/usr/bin/env bash
+    echo "Installing Ghostty configuration..."
+    mkdir -p ~/.config/ghostty
+    if [ -n "{{ dry_run }}" ]; then
+        echo "[DRY-RUN] Would install:"
+        echo "  ghostty/config -> ~/.config/ghostty/config"
+        just show-diff ghostty/config ~/.config/ghostty/config
+    else
+        if [ ! -f ~/.config/ghostty/config ]; then
+            cp {{ justfile_directory() }}/ghostty/config ~/.config/ghostty/config
+            echo "✅ Ghostty configuration installed"
+        else
+            echo "ℹ️  Ghostty config already exists"
+            echo "    To update, manually merge or run:"
+            echo "    just diff-config ghostty"
+        fi
     fi
-    @echo "🔗 Creating symlink: $(pwd)/ghostty -> ~/.config/ghostty"
-    @ln -sfn $(pwd)/ghostty ~/.config/ghostty
-    @echo "✅ Ghostty configuration installed"
 
 # Install all coding agents configurations
 install-coding-agents: install-claude install-gemini install-aichat install-codex
