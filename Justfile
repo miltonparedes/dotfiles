@@ -345,16 +345,18 @@ install-mac-os-config:
     just install-secrets
     @echo "✅ macOS configuration installed"
 
-# Install configuration for Bluefin/Fedora
-install-bluefin-config:
-    @echo "Installing configuration for Bluefin/Fedora..."
+# Install configuration for ublue (Bazzite, Bluefin, Aurora, etc.)
+install-ublue-config:
+    @echo "Installing configuration for ublue..."
+    just install-fonts
     just install-fish
     just install-starship
     just install-tmux
     just install-gitconfig
     just install-lazygit
+    just install-ghostty
     just install-secrets
-    @echo "✅ Bluefin/Fedora configuration installed"
+    @echo "✅ ublue configuration installed"
 
 # Install OS-specific configuration
 install-os-config:
@@ -362,9 +364,12 @@ install-os-config:
     @if [ "$(uname)" = "Darwin" ]; then \
         echo "macOS detected."; \
         just install-mac-os-config; \
-    elif [ -f /etc/fedora-release ] || [ -f /etc/os-release ] && grep -qi fedora /etc/os-release; then \
-        echo "Bluefin/Fedora detected."; \
-        just install-bluefin-config; \
+    elif [ -f /etc/os-release ] && grep -qiE "(bazzite|bluefin|aurora)" /etc/os-release; then \
+        echo "ublue detected."; \
+        just install-ublue-config; \
+    elif [ -f /etc/fedora-release ]; then \
+        echo "Fedora detected."; \
+        just install-ublue-config; \
     else \
         echo "Unrecognized operating system"; \
         echo "Manually run: just install-fish && just install-starship && just install-tmux"; \
@@ -787,6 +792,36 @@ install-codex:
     echo "  cxx  - codex exec (no interactivo)"
     echo "  cxr  - resume última sesión"
     echo "  cxw  - code review"
+
+# Install JetBrains Mono Nerd Font (for terminal and nvim icons)
+install-fonts:
+    #!/usr/bin/env bash
+    echo "Installing JetBrains Mono Nerd Font..."
+    FONT_DIR="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+    if [ -d "$FONT_DIR" ] && [ "$(ls -A $FONT_DIR 2>/dev/null)" ]; then
+        echo "ℹ️  JetBrains Mono Nerd Font already installed"
+    else
+        mkdir -p "$FONT_DIR"
+        cd "$FONT_DIR"
+        echo "📥 Downloading from GitHub releases..."
+        curl -sOL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz
+        tar -xf JetBrainsMono.tar.xz
+        rm JetBrainsMono.tar.xz
+        fc-cache -fv ~/.local/share/fonts > /dev/null 2>&1
+        echo "✅ JetBrains Mono Nerd Font installed"
+    fi
+
+# Install Ghostty terminal configuration
+install-ghostty:
+    @echo "Installing Ghostty configuration..."
+    @mkdir -p ~/.config
+    @if [ -d ~/.config/ghostty ] && [ ! -L ~/.config/ghostty ]; then \
+        echo "⚠️  Backing up existing Ghostty config..."; \
+        mv ~/.config/ghostty ~/.config/ghostty.backup; \
+    fi
+    @echo "🔗 Creating symlink: $(pwd)/ghostty -> ~/.config/ghostty"
+    @ln -sfn $(pwd)/ghostty ~/.config/ghostty
+    @echo "✅ Ghostty configuration installed"
 
 # Install all coding agents configurations
 install-coding-agents: install-claude install-gemini install-aichat install-codex
