@@ -93,6 +93,8 @@ install-fish:
         echo "Files that would be copied:"
         find fish -type f ! -name '*.template' -exec echo "  {}" \;
         echo ""
+        echo "[DRY-RUN] Would install secrets from .env into ~/.config/fish/conf.d/secrets.fish"
+        echo ""
         echo "Checking for changes in existing files:"
         for f in $(find fish -type f ! -name '*.template'); do
             dest="$HOME/.config/$f"
@@ -106,6 +108,7 @@ install-fish:
         mkdir -p ~/.config/fish
         just backup-directory ~/.config/fish fish
         rsync -av --exclude '*.template' fish/ ~/.config/fish/
+        just install-secrets
         echo "✅ Fish configuration installed successfully"
         echo "Run 'fish' to start using Fish shell"
     fi
@@ -176,24 +179,30 @@ install-lazygit:
     fi
     dest_dir="$config_base/lazygit"
     dest_config="$dest_dir/config.yml"
-    dest_script="$dest_dir/lazycommit.sh"
+    dest_commit_script="$dest_dir/lazycommit-commit.sh"
+    dest_prompt_checkpoint="$dest_dir/lazycommit.prompts.checkpoint.yaml"
+    dest_prompt_final="$dest_dir/lazycommit.prompts.final.yaml"
 
     if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  lazygit/config.yml -> $dest_config"
-        echo "  lazygit/lazycommit.sh -> $dest_script"
+        echo "  lazygit/lazycommit-commit.sh -> $dest_commit_script"
+        echo "  lazygit/lazycommit.prompts.checkpoint.yaml -> $dest_prompt_checkpoint"
+        echo "  lazygit/lazycommit.prompts.final.yaml -> $dest_prompt_final"
         just show-diff lazygit/config.yml "$dest_config"
     else
         mkdir -p "$dest_dir"
         just backup-file "$dest_config" lazygit
         cp -f lazygit/config.yml "$dest_config"
-        cp -f lazygit/lazycommit.sh "$dest_script"
-        chmod +x "$dest_script"
-        # Update script path in config based on actual destination
+        cp -f lazygit/lazycommit-commit.sh "$dest_commit_script"
+        cp -f lazygit/lazycommit.prompts.checkpoint.yaml "$dest_prompt_checkpoint"
+        cp -f lazygit/lazycommit.prompts.final.yaml "$dest_prompt_final"
+        chmod +x "$dest_commit_script"
+        # Update lazygit paths in config based on actual destination
         if [[ "$(uname)" == "Darwin" ]]; then
-            sed -i '' "s|~/.config/lazygit/lazycommit.sh|'$dest_dir/lazycommit.sh'|" "$dest_config"
+            sed -i '' "s|~/.config/lazygit/|$dest_dir/|g" "$dest_config"
         else
-            sed -i "s|~/.config/lazygit/lazycommit.sh|'$dest_dir/lazycommit.sh'|" "$dest_config"
+            sed -i "s|~/.config/lazygit/|$dest_dir/|g" "$dest_config"
         fi
         echo "✅ Lazygit configuration installed to: $dest_dir"
     fi
