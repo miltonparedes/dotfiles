@@ -13,7 +13,7 @@ sandbox_mode = "workspace-write"
 # Enable web search by default
 # Equivalent to: codex --search
 [features]
-web_search_request = true
+web_search = "live"
 
 # Network access for web search
 [sandbox_workspace_write]
