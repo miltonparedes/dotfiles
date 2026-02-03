@@ -23,7 +23,6 @@ just install-tmux         # Terminal multiplexer
 just install-nvim         # Neovim (symlink)
 just install-gitconfig    # Git with delta
 just install-lazygit      # Lazygit
-just install-spell        # Spell CLI
 ```
 
 ### Coding agents
@@ -70,7 +69,8 @@ aichat/                    # AIChat config
 claude/                    # Claude Code settings
 gemini/                    # Gemini CLI settings
 codex/                     # Codex CLI config
-spell/                     # Spell CLI (justfiles)
+code/                      # VSCode settings
+zed/                       # Zed editor settings
 cli.Brewfile               # Homebrew packages
 ```
 

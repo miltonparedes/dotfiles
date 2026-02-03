@@ -1,6 +1,5 @@
 config_dir := "~/.config"
 fish_config := "~/.config/fish"
-spell_cli_path := "~/.config/spell/cli.just"
 nvim_config_path := config_dir + "/nvim"
 backup_dir := "~/.config-backups"
 dry_run := env_var_or_default("DRY_RUN", "")
@@ -52,27 +51,6 @@ show-diff src dest:
         $diff_cmd "{{ dest }}" "{{ src }}" 2>/dev/null || true
     else
         echo "  [NEW] {{ dest }} (file does not exist yet)"
-    fi
-
-# Install or update custom CLI tool (Spell)
-install-spell:
-    #!/usr/bin/env bash
-    echo "Inscribing or updating the Spell CLI..."
-    if [ -n "{{ dry_run }}" ]; then
-        echo "[DRY-RUN] Would install: spell/* -> ~/.config/spell/"
-        echo "Files that would be copied:"
-        find spell -type f -exec echo "  {}" \;
-        if [ -d ~/.config/fish ]; then
-            echo "[DRY-RUN] Would create: ~/.config/fish/conf.d/spell.fish"
-        fi
-    else
-        mkdir -p ~/.config/spell
-        just backup-directory ~/.config/spell spell
-        cp -rf spell/* ~/.config/spell/
-        if [ -d ~/.config/fish ]; then
-            echo "alias spell 'just --justfile ~/.config/spell/cli.just --working-directory ~'" > ~/.config/fish/conf.d/spell.fish
-        fi
-        echo "✅ Spell CLI inscribed or updated. Restart your terminal or run 'reload' in Fish"
     fi
 
 # Install Homebrew packages
@@ -427,10 +405,6 @@ install:
         echo "Error installing OS-specific configuration"; \
         exit 1; \
     fi
-    @if ! just install-spell; then \
-        echo "Error installing Spell CLI"; \
-        exit 1; \
-    fi
     @if ! just install-nvim; then \
         echo "Error installing Neovim configuration"; \
         exit 1; \
@@ -652,7 +626,6 @@ help:
     @echo "  just install-gitconfig    # Install git config (delta pager)"
     @echo "  just install-lazygit      # Install Lazygit config (auto-detects OS)"
     @echo "  just install-nvim         # Install Neovim configuration"
-    @echo "  just install-spell        # Install Spell CLI tool"
     @echo "  just install-secrets      # Install API keys from .env"
     @echo ""
     @echo "Coding Agents:"
