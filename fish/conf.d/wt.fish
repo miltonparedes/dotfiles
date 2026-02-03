@@ -6,29 +6,24 @@ if type -q wt; command wt config shell init fish | source; end
 # ═══════════════════════════════════════════════════════════
 
 # ─── Navegacion ────────────────────────────────────────────
-# wts: switch to worktree (most frequent operation)
-function wts --description 'Switch to worktree'
+# ws: switch to worktree (most frequent operation)
+function ws --description 'Switch to worktree'
     wt switch $argv
 end
 
-# wts-: switch to previous worktree (like cd -)
-function wts- --description 'Switch to previous worktree'
+# ws-: switch to previous worktree (like cd -)
+function ws- --description 'Switch to previous worktree'
     wt switch -
 end
 
-# wts^: switch to default branch (main/master)
-function 'wts^' --description 'Switch to default branch'
+# ws^: switch to default branch (main/master)
+function 'ws^' --description 'Switch to default branch'
     wt switch '^'
 end
 
 # wtl: list all worktrees with status
 function wtl --description 'List worktrees'
     wt list $argv
-end
-
-# ws: interactive selector with live preview (ultra-short for frequent use)
-function ws --description 'Interactive worktree selector'
-    wt select
 end
 
 # ─── Creacion ──────────────────────────────────────────────
