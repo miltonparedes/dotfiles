@@ -47,10 +47,6 @@ alias j='just'
 alias lazygit='COLORTERM=truecolor command lazygit'
 alias lg='lazygit'
 
-# ─── SSH ──────────────────────────────────────────────────
-# sb: ssh to box server
-alias sb='ssh box'
-
 # ─── Git ──────────────────────────────────────────────────
 # g: git shortcut
 alias g='git'
