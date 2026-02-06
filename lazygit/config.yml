@@ -12,7 +12,7 @@ customCommands:
       - type: menuFromCommand
         title: AI Commits (checkpoint)
         key: Msg
-        command: "~/.config/lazygit/lazycommit-commit.sh ~/.config/lazygit/lazycommit.prompts.checkpoint.yaml"
+        command: "'~/.config/lazygit/lazycommit-commit.sh' '~/.config/lazygit/lazycommit.prompts.checkpoint.yaml'"
         filter: '^(?P<raw>.+)$'
         valueFormat: "{{ .raw }}"
         labelFormat: "{{ .raw | green }}"
@@ -24,7 +24,7 @@ customCommands:
       - type: menuFromCommand
         title: AI Commits (final)
         key: Msg
-        command: "~/.config/lazygit/lazycommit-commit.sh ~/.config/lazygit/lazycommit.prompts.final.yaml"
+        command: "'~/.config/lazygit/lazycommit-commit.sh' '~/.config/lazygit/lazycommit.prompts.final.yaml'"
         filter: '^(?P<raw>.+)$'
         valueFormat: "{{ .raw }}"
         labelFormat: "{{ .raw | green }}"

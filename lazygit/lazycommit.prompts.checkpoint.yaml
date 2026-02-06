@@ -1,7 +1,7 @@
 language: English
 system_message: "You are a helpful assistant that generates git commit messages."
 commit_message_template: |-
-  Based on the following git diff, generate 10 non-semantic git commit messages.
+  Based on the following git diff, generate 3 non-semantic git commit messages.
   RULES:
   - Plain summary line only (no prefixes like feat:, no scope)
   - Max 72 characters

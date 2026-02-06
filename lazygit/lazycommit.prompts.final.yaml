@@ -1,7 +1,7 @@
 language: English
 system_message: "You are a helpful assistant that generates git commit messages."
 commit_message_template: |-
-  Based on the following git diff, generate 10 conventional commit messages in the format "type: summary".
+  Based on the following git diff, generate 3 conventional commit messages in the format "type: summary".
   RULES:
   - Use conventional types: feat, fix, chore, docs, refactor, test, perf, build, ci, style, revert
   - Do NOT include a scope
