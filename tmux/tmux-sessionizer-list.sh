@@ -6,11 +6,13 @@
 mode="$1"
 target="$2"
 
+n=1
+
 if [ "$mode" = "windows" ]; then
-  # Strip potential tree prefix from target (e.g. "┊ " or "  ")
-  clean_target="${target##* }"
-  [ -z "$clean_target" ] && clean_target="$target"
-  tmux list-windows -t "$clean_target" -F "$clean_target:#{window_index}  #{window_name} #{?window_active,(active),}"
+  tmux list-windows -t "$target" -F "$target:#{window_index}  #{window_name} #{?window_active,(active),}" | while IFS= read -r line; do
+    printf "%s \033[2m%d\033[0m %s\n" "$(echo "$line" | awk '{print $1}')" "$n" "$(echo "$line" | cut -d' ' -f2-)"
+    ((n++))
+  done
 else
   # Collect all session names
   sessions=()
@@ -44,9 +46,10 @@ else
 
     if [[ -n "$parent" ]]; then
       suffix="${name#"$parent"-}"
-      printf "%s  \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$suffix" "$windows" "$tag"
+      printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "$suffix" "$windows" "$tag"
     else
-      printf "%s  \033[1m%s\033[0m  %sw%s\n" "$name" "$name" "$windows" "$tag"
+      printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
     fi
+    ((n++))
   done
 fi
