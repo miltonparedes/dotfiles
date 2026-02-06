@@ -48,11 +48,11 @@ if command -q tmux
             tmux attach-session -d -t $argv[1]
         end
     end
-    alias ts='tmux new-session -s'
-    alias tl='tmux list-sessions'
-    alias tksv='tmux kill-server'
-    alias tkss='tmux kill-session -t'
-    alias tmuxconf='nvim ~/.tmux.conf'
+    alias ts 'tmux new-session -s'
+    alias tl 'tmux list-sessions'
+    alias tksv 'tmux kill-server'
+    alias tkss 'tmux kill-session -t'
+    alias tmuxconf 'nvim ~/.tmux.conf'
 
     # Quick session management
     # On Linux with systemd, sessions persist after SSH disconnect
@@ -112,4 +112,4 @@ function tmux-project --description 'Create or attach to a project-specific tmux
 end
 
 # Alias for the function
-alias tp='tmux-project'
+alias tp tmux-project

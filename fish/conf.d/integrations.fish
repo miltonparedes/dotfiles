@@ -33,9 +33,9 @@ if command -q zoxide
     zoxide init fish | source
     
     # Additional zoxide aliases
-    alias zi='zoxide query -i'  # Interactive selection
-    alias zq='zoxide query'      # Query database
-    alias za='zoxide add'        # Add directory manually
+    alias zi 'zoxide query -i'  # Interactive selection
+    alias zq 'zoxide query'      # Query database
+    alias za 'zoxide add'        # Add directory manually
 end
 
 # Starship Prompt - Modern cross-shell prompt
@@ -101,8 +101,8 @@ end
 # bat (better cat) configuration
 if command -q bat
     set -gx BAT_THEME "OneHalfDark"
-    alias cat='bat --style=plain'
-    alias catn='bat --style=numbers'
+    alias cat 'bat --style=plain'
+    alias catn 'bat --style=numbers'
 end
 
 # ripgrep configuration
