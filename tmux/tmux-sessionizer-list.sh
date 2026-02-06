@@ -6,47 +6,35 @@
 mode="$1"
 target="$2"
 
-n=1
-
 if [ "$mode" = "windows" ]; then
-  tmux list-windows -t "$target" -F "$target:#{window_index}  #{window_name} #{?window_active,(active),}" | while IFS= read -r line; do
-    printf "%s \033[2m%d\033[0m %s\n" "$(echo "$line" | awk '{print $1}')" "$n" "$(echo "$line" | cut -d' ' -f2-)"
+  n=1
+  while IFS=' ' read -r tgt rest; do
+    printf "%s \033[2m%d\033[0m %s\n" "$tgt" "$n" "$rest"
     ((n++))
-  done
+  done < <(tmux list-windows -t "$target" -F "$target:#{window_index}  #{window_name} #{?window_active,(active),}")
 else
-  # Collect all session names
-  sessions=()
-  while IFS= read -r line; do
-    sessions+=("$line")
+  # Single tmux call, parse with bash builtins only
+  names=()
+  data=()
+  while IFS=' ' read -r name windows attached; do
+    names+=("$name")
+    data+=("$name $windows $attached")
   done < <(tmux list-sessions -F '#{session_name} #{session_windows} #{?session_attached,1,0}' | sort)
 
-  # Extract just names for parent detection
-  names=()
-  for entry in "${sessions[@]}"; do
-    names+=("$(echo "$entry" | awk '{print $1}')")
-  done
-
-  for entry in "${sessions[@]}"; do
-    name=$(echo "$entry" | awk '{print $1}')
-    windows=$(echo "$entry" | awk '{print $2}')
-    attached=$(echo "$entry" | awk '{print $3}')
-
+  n=1
+  for entry in "${data[@]}"; do
+    read -r name windows attached <<< "$entry"
     tag=""
     [ "$attached" = "1" ] && tag=" (attached)"
 
-    # Find longest matching parent session
+    # Find longest matching parent
     parent=""
     for other in "${names[@]}"; do
-      if [[ "$name" != "$other" && "$name" == "$other"-* ]]; then
-        if [[ ${#other} -gt ${#parent} ]]; then
-          parent="$other"
-        fi
-      fi
+      [[ "$name" != "$other" && "$name" == "$other"-* && ${#other} -gt ${#parent} ]] && parent="$other"
     done
 
     if [[ -n "$parent" ]]; then
-      suffix="${name#"$parent"-}"
-      printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "$suffix" "$windows" "$tag"
+      printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$parent"-}" "$windows" "$tag"
     else
       printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
     fi
