@@ -48,6 +48,12 @@ if command -q tmux
             tmux attach-session -d -t $argv[1]
         end
     end
+    # Pane layouts
+    # t2: split current window into 2 vertical panes
+    alias t2 'tmux split-window -h'
+    # t4: split current window into 4 panes (grid)
+    alias t4 'tmux split-window -h \; split-window -v \; select-pane -t 0 \; split-window -v'
+
     alias ts 'tmux new-session -s'
     alias tl 'tmux list-sessions'
     alias tksv 'tmux kill-server'
