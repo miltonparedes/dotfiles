@@ -41,4 +41,8 @@ selected=$(
 [ -z "$selected" ] && exit 0
 
 target=$(echo "$selected" | awk '{print $1}')
+
+# Virtual group headers are not switchable
+[[ "$target" == __group__:* ]] && exit 0
+
 tmux switch-client -t "$target"
