@@ -660,42 +660,39 @@ help:
     @echo "  BACKUP=0 just install-tmux     # Install without backup"
 
 # Install Claude Code configuration
+agents_repo := env_var_or_default("AGENTS_REPO", "~/Workspaces/P/agents")
+
 install-claude:
     #!/usr/bin/env bash
     echo "Installing Claude Code configuration..."
     mkdir -p ~/.claude
-    mkdir -p ~/.claude/skills
     if [ -n "{{ dry_run }}" ]; then
         echo "[DRY-RUN] Would install:"
         echo "  claude/settings.json -> ~/.claude/settings.json"
         echo "  claude/statusline.sh -> ~/.claude/statusline.sh"
-        echo "  claude/skills/* -> ~/.claude/skills/"
         just show-diff claude/settings.json ~/.claude/settings.json
         just show-diff claude/statusline.sh ~/.claude/statusline.sh
-        echo ""
-        echo "Skills that would be installed:"
-        for skill_dir in {{ justfile_directory() }}/claude/skills/*/; do
-            if [ -d "$skill_dir" ]; then
-                skill_name=$(basename "$skill_dir")
-                echo "  $skill_name/"
-            fi
-        done
     else
         just backup-file ~/.claude/settings.json claude
         just backup-file ~/.claude/statusline.sh claude
         cp {{ justfile_directory() }}/claude/settings.json ~/.claude/settings.json
         cp {{ justfile_directory() }}/claude/statusline.sh ~/.claude/statusline.sh
         chmod +x ~/.claude/statusline.sh
-        # Install skills (each skill is a directory with SKILL.md)
-        for skill_dir in {{ justfile_directory() }}/claude/skills/*/; do
-            if [ -d "$skill_dir" ]; then
-                skill_name=$(basename "$skill_dir")
-                mkdir -p ~/.claude/skills/"$skill_name"
-                cp -r "$skill_dir"* ~/.claude/skills/"$skill_name"/
-                echo "  ✅ Skill installed: $skill_name"
-            fi
-        done
         echo "✅ Claude Code configuration installed"
+    fi
+    # Delegate skills/agents/hooks to agents repo
+    agents_dir="{{ agents_repo }}"
+    agents_dir="${agents_dir/#\~/$HOME}"
+    if [ -f "$agents_dir/src/install.ts" ]; then
+        echo ""
+        echo "Installing skills, agents, and hooks from agents repo..."
+        if [ -n "{{ dry_run }}" ]; then
+            bun "$agents_dir/src/install.ts" install --dry-run
+        else
+            bun "$agents_dir/src/install.ts" install
+        fi
+    else
+        echo "  ℹ️  Agents repo not found at $agents_dir — skipping skills/agents/hooks"
     fi
     echo ""
     echo "See claude/mcp-servers.md to configure MCPs"
