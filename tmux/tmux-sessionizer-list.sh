@@ -35,39 +35,20 @@ else
     data+=("$name $windows $attached")
   done < <(tmux list-sessions -F '#{session_name} #{session_windows} #{?session_attached,1,0}' | sort)
 
-  # Count sessions per prefix and check if prefix is a real session
-  # (bash 3.x compatible — no associative arrays)
-  prefixes=()
-  prefix_counts=()
-  prefix_real=()
-
-  for name in "${names[@]}"; do
-    pfx="${name%%-*}"
-    # Find if this prefix is already tracked
-    found=-1
-    for i in "${!prefixes[@]}"; do
-      if [[ "${prefixes[$i]}" == "$pfx" ]]; then
-        found=$i
-        break
-      fi
+  # Find the longest dash-boundary prefix of $1 shared with at least one other session
+  _find_group_prefix() {
+    local name="$1"
+    local tmp="$name"
+    while [[ "$tmp" == *-* ]]; do
+      tmp="${tmp%-*}"
+      for other in "${names[@]}"; do
+        if [[ "$other" != "$name" && ( "$other" == "$tmp" || "$other" == "$tmp"-* ) ]]; then
+          echo "$tmp"
+          return
+        fi
+      done
     done
-    if (( found == -1 )); then
-      prefixes+=("$pfx")
-      prefix_counts+=(1)
-      if [[ "$name" == "$pfx" ]]; then prefix_real+=(1); else prefix_real+=(0); fi
-    else
-      prefix_counts[$found]=$(( ${prefix_counts[$found]} + 1 ))
-      [[ "$name" == "$pfx" ]] && prefix_real[$found]=1
-    fi
-  done
-
-  # Helper: look up prefix info by name
-  _pfx_index() {
-    local p="$1"
-    for i in "${!prefixes[@]}"; do
-      [[ "${prefixes[$i]}" == "$p" ]] && echo "$i" && return
-    done
-    echo -1
+    echo ""
   }
 
   n=1
@@ -76,46 +57,44 @@ else
     read -r name windows attached <<< "$entry"
     tag=""
     [ "$attached" = "1" ] && tag=" (attached)"
-    pfx="${name%%-*}"
-    pi=$(_pfx_index "$pfx")
 
-    if (( pi >= 0 && ${prefix_counts[$pi]} >= 2 )); then
-      # This session belongs to a group
+    # Find longest matching real parent session
+    parent=""
+    for other in "${names[@]}"; do
+      [[ "$name" != "$other" && "$name" == "$other"-* && ${#other} -gt ${#parent} ]] && parent="$other"
+    done
 
-      # Find longest matching real parent session
-      parent=""
-      for other in "${names[@]}"; do
-        [[ "$name" != "$other" && "$name" == "$other"-* && ${#other} -gt ${#parent} ]] && parent="$other"
-      done
+    # Check if this session is itself a parent of others
+    has_children=0
+    for other in "${names[@]}"; do
+      [[ "$other" != "$name" && "$other" == "$name"-* ]] && has_children=1 && break
+    done
 
-      # Check if this session is itself a parent of others
-      has_children=0
-      for other in "${names[@]}"; do
-        [[ "$other" != "$name" && "$other" == "$name"-* ]] && has_children=1 && break
-      done
-
-      if [[ -z "$parent" && "$name" != "$pfx" && "${prefix_real[$pi]}" == "0" && "$has_children" == "0" ]]; then
-        # No real parent exists — emit virtual header if not yet emitted
+    if [[ -n "$parent" ]]; then
+      # Real parent exists — show as child
+      printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$parent"-}" "$windows" "$tag"
+    elif (( has_children )); then
+      # This IS the parent session
+      printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
+    else
+      # No real parent, no children — check for virtual group
+      gpfx=$(_find_group_prefix "$name")
+      if [[ -n "$gpfx" ]]; then
+        # Emit virtual group header once
         already_emitted=0
         for v in "${emitted_virtual[@]}"; do
-          [[ "$v" == "$pfx" ]] && already_emitted=1 && break
+          [[ "$v" == "$gpfx" ]] && already_emitted=1 && break
         done
         if (( ! already_emitted )); then
-          printf "__group__:%s \033[2;3m%s\033[0m\n" "$pfx" "$pfx"
-          emitted_virtual+=("$pfx")
+          printf "__group__:%s \033[2;3m%s\033[0m\n" "$gpfx" "$gpfx"
+          emitted_virtual+=("$gpfx")
         fi
         # Print as child of virtual group
-        printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$pfx"-}" "$windows" "$tag"
-      elif [[ -n "$parent" ]]; then
-        # Real parent exists — show as child (existing behavior)
-        printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$parent"-}" "$windows" "$tag"
+        printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$gpfx"-}" "$windows" "$tag"
       else
-        # This IS the parent session (or prefix matches itself)
+        # Standalone session
         printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
       fi
-    else
-      # Standalone session — no group
-      printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
     fi
     ((n++))
   done
