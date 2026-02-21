@@ -1,0 +1,11 @@
+shell-integration = fish
+command = /usr/bin/fish --login --interactive
+shell-integration-features = sudo
+
+font-family = JetBrainsMono Nerd Font
+font-size = 12
+
+theme = Mellifluous
+mouse-hide-while-typing = true
+window-padding-balance = true
+macos-option-as-alt = left

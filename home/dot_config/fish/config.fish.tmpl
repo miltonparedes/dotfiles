@@ -1,0 +1,53 @@
+# Fish Shell Configuration
+# Main configuration file for fish shell
+
+# Set environment variables
+set -gx EDITOR nvim
+set -gx VISUAL nvim
+
+# Set fish greeting (empty to disable)
+set -g fish_greeting
+
+# Configure PATH
+# Common user bin directory (Linux/macOS)
+fish_add_path ~/.local/bin
+
+# Detect Homebrew based on OS and CPU architecture
+{{- if eq .chezmoi.os "darwin" }}
+{{-   if eq .chezmoi.arch "arm64" }}
+fish_add_path /opt/homebrew/bin
+{{-   else }}
+fish_add_path /usr/local/bin
+{{-   end }}
+{{- else if eq .chezmoi.os "linux" }}
+if test -d /home/linuxbrew/.linuxbrew/bin
+    fish_add_path /home/linuxbrew/.linuxbrew/bin
+end
+{{- end }}
+
+# Source all configuration files in conf.d/
+# Fish automatically does this, but we ensure the path is correct
+set -g fish_config_dir ~/.config/fish
+
+# Colors for ls command (if using GNU ls)
+set -gx LSCOLORS "ExGxBxDxCxEgEdxbxgxcxd"
+
+# Set language environment
+set -gx LANG en_US.UTF-8
+set -gx LC_ALL en_US.UTF-8
+
+# History configuration
+set -g fish_history_size 10000
+
+# Vi mode configuration
+fish_vi_key_bindings
+
+# Load custom functions and completions
+# These are automatically loaded from functions/ and completions/ directories
+
+# Source private configurations (machine-specific, not tracked in git)
+for f in ~/.config/fish/conf.d/private/*.fish
+    if test -f $f
+        source $f
+    end
+end

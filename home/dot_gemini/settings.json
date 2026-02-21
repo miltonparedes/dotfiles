@@ -1,0 +1,26 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "gemini-api-key"
+    }
+  },
+  "ui": {
+    "theme": "GitHub",
+    "hideBanner": true,
+    "footer": {
+      "hideContextPercentage": true
+    },
+    "showMemoryUsage": false
+  },
+  "general": {
+    "previewFeatures": true,
+    "vimMode": true,
+    "enablePromptCompletion": true
+  },
+  "output": {
+    "format": "text"
+  },
+  "tools": {
+    "autoAccept": false
+  }
+}
