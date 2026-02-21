@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tmux session/window navigator with fzf
-# Two-level tree: Sessions → Windows with live preview
+# Two-level tree: Sessions → Windows
 # Sessions are grouped by project (worktrees shown indented)
 #
 # Keybindings:
@@ -18,7 +18,7 @@ selected=$(
         --no-sort \
         --ansi \
         --cycle \
-        --with-nth=2.. \
+        --with-nth=$'{2..}\033[2m {1}\033[0m' \
         --prompt='Sessions › ' \
         --header='→ expand  ← back  enter switch  alt+N jump' \
         --bind='alt-1:pos(1)+accept' \
@@ -30,19 +30,14 @@ selected=$(
         --bind='alt-7:pos(7)+accept' \
         --bind='alt-8:pos(8)+accept' \
         --bind='alt-9:pos(9)+accept' \
-        --preview="$SCRIPT_DIR/tmux-sessionizer-preview.sh {1}" \
         --border=none \
-        --preview-window=down:60%:wrap:border-top \
-        --bind="right:reload($SCRIPT_DIR/tmux-sessionizer-list.sh windows {1})+change-prompt(Windows › )+change-preview($SCRIPT_DIR/tmux-sessionizer-preview.sh {1})+first" \
-        --bind="tab:reload($SCRIPT_DIR/tmux-sessionizer-list.sh windows {1})+change-prompt(Windows › )+change-preview($SCRIPT_DIR/tmux-sessionizer-preview.sh {1})+first" \
-        --bind="left:reload($SCRIPT_DIR/tmux-sessionizer-list.sh sessions)+change-prompt(Sessions › )+change-preview($SCRIPT_DIR/tmux-sessionizer-preview.sh {1})+first"
+        --bind="right:reload($SCRIPT_DIR/tmux-sessionizer-list.sh windows {1})+change-prompt(Windows › )+first" \
+        --bind="tab:reload($SCRIPT_DIR/tmux-sessionizer-list.sh windows {1})+change-prompt(Windows › )+first" \
+        --bind="left:reload($SCRIPT_DIR/tmux-sessionizer-list.sh sessions)+change-prompt(Sessions › )+first"
 )
 
 [ -z "$selected" ] && exit 0
 
 target=$(echo "$selected" | awk '{print $1}')
-
-# Virtual group headers are not switchable
-[[ "$target" == __group__:* ]] && exit 0
 
 tmux switch-client -t "$target"

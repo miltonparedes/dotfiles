@@ -8,24 +8,10 @@ target="$2"
 
 if [ "$mode" = "windows" ]; then
   n=1
-  if [[ "$target" == __group__:* ]]; then
-    # Virtual group: list windows from all sessions sharing this prefix
-    prefix="${target#__group__:}"
-    while IFS=' ' read -r sess_name _rest; do
-      [[ "$sess_name" == "$prefix"-* || "$sess_name" == "$prefix" ]] || continue
-      label="${sess_name#"$prefix"-}"
-      [ "$label" = "$sess_name" ] && label="$sess_name"
-      while IFS=' ' read -r windex wname wactive; do
-        printf "%s:%s \033[2m%d\033[0m \033[2m%s›\033[0m %s %s\n" "$sess_name" "$windex" "$n" "$label" "$wname" "$wactive"
-        ((n++))
-      done < <(tmux list-windows -t "$sess_name" -F '#{window_index} #{window_name} #{?window_active,(active),}')
-    done < <(tmux list-sessions -F '#{session_name} x' | sort)
-  else
-    while IFS=' ' read -r tgt rest; do
-      printf "%s \033[2m%d\033[0m %s\n" "$tgt" "$n" "$rest"
-      ((n++))
-    done < <(tmux list-windows -t "$target" -F "$target:#{window_index}  #{window_name} #{?window_active,(active),}")
-  fi
+  while IFS=' ' read -r tgt rest; do
+    printf "%s \033[2m%d\033[0m %s\n" "$tgt" "$n" "$rest"
+    ((n++))
+  done < <(tmux list-windows -t "$target" -F "$target:#{window_index}  #{window_name} #{?window_active,(active),}")
 else
   # Single tmux call, parse with bash builtins only
   names=()
@@ -33,7 +19,14 @@ else
   while IFS=' ' read -r name windows attached; do
     names+=("$name")
     data+=("$name $windows $attached")
-  done < <(tmux list-sessions -F '#{session_name} #{session_windows} #{?session_attached,1,0}' | sort)
+  done < <(tmux list-sessions -F '#{session_name} #{session_windows} #{?session_attached,1,0}' |
+    awk 'BEGIN { low = sprintf("%c", 1) }
+    {
+      key = $1
+      if (key ~ /-main$/) key = substr(key, 1, length(key) - 4) low "main"
+      else if (key ~ /-master$/) key = substr(key, 1, length(key) - 6) low "master"
+      print key "\t" $0
+    }' | LC_ALL=C sort -k1,1 | cut -f2-)
 
   # Find the longest dash-boundary prefix of $1 shared with at least one other session
   _find_group_prefix() {
@@ -72,28 +65,30 @@ else
 
     if [[ -n "$parent" ]]; then
       # Real parent exists — show as child
-      printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$parent"-}" "$windows" "$tag"
+      printf "%s \033[2m%d ┊\033[0m %s  \033[2m%sw%s\033[0m\n" "$name" "$n" "${name#"$parent"-}" "$windows" "$tag"
     elif (( has_children )); then
       # This IS the parent session
-      printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
+      printf "%s \033[2m%d\033[0m %s  \033[2m%sw%s\033[0m\n" "$name" "$n" "$name" "$windows" "$tag"
     else
       # No real parent, no children — check for virtual group
       gpfx=$(_find_group_prefix "$name")
       if [[ -n "$gpfx" ]]; then
-        # Emit virtual group header once
         already_emitted=0
         for v in "${emitted_virtual[@]}"; do
           [[ "$v" == "$gpfx" ]] && already_emitted=1 && break
         done
+        suffix="${name#"$gpfx"-}"
         if (( ! already_emitted )); then
-          printf "__group__:%s \033[2;3m%s\033[0m\n" "$gpfx" "$gpfx"
           emitted_virtual+=("$gpfx")
+          # First child: show group prefix dim before ┊
+          printf "%s \033[2m%d %s ┊\033[0m %s  \033[2m%sw%s\033[0m\n" "$name" "$n" "$gpfx" "$suffix" "$windows" "$tag"
+        else
+          # Subsequent children: spaces for alignment
+          printf "%s \033[2m%d %*s ┊\033[0m %s  \033[2m%sw%s\033[0m\n" "$name" "$n" "${#gpfx}" "" "$suffix" "$windows" "$tag"
         fi
-        # Print as child of virtual group
-        printf "%s \033[2m%d\033[0m \033[2m┊\033[0m \033[36m%s\033[0m  %sw%s\n" "$name" "$n" "${name#"$gpfx"-}" "$windows" "$tag"
       else
         # Standalone session
-        printf "%s \033[2m%d\033[0m \033[1m%s\033[0m  %sw%s\n" "$name" "$n" "$name" "$windows" "$tag"
+        printf "%s \033[2m%d\033[0m %s  \033[2m%sw%s\033[0m\n" "$name" "$n" "$name" "$windows" "$tag"
       fi
     fi
     ((n++))
