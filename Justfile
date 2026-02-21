@@ -312,12 +312,20 @@ update-nvim-plugins:
         echo "⚠️  Plugin update may have encountered issues"; \
     fi
 
+# Build and install mux (TUI tmux session manager)
+install-mux:
+    #!/usr/bin/env bash
+    echo "Building mux..."
+    cd mux && GOPROXY=direct go build -ldflags="-s -w" -o "$(go env GOPATH)/bin/mux" .
+    echo "✅ mux installed to $(go env GOPATH)/bin/mux"
+
 # Install configuration for macOS
 install-mac-os-config:
     @echo "Installing configuration for macOS..."
     just install-fish
     just install-starship
     just install-tmux
+    just install-mux
     just install-gitconfig
     just install-lazygit
     just install-secrets
@@ -330,6 +338,7 @@ install-ublue-config:
     just install-fish
     just install-starship
     just install-tmux
+    just install-mux
     just install-gitconfig
     just install-lazygit
     just install-ghostty

@@ -1,0 +1,103 @@
+package tmux
+
+import (
+	"fmt"
+	"os/exec"
+	"strconv"
+	"strings"
+)
+
+// ListSessions returns all tmux sessions.
+func ListSessions() ([]Session, error) {
+	out, err := exec.Command("tmux", "list-sessions", "-F",
+		"#{session_name} #{session_windows} #{?session_attached,1,0}").Output()
+	if err != nil {
+		return nil, fmt.Errorf("list-sessions: %w", err)
+	}
+	var sessions []Session
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		if line == "" {
+			continue
+		}
+		parts := strings.Fields(line)
+		if len(parts) < 3 {
+			continue
+		}
+		wins, _ := strconv.Atoi(parts[1])
+		sessions = append(sessions, Session{
+			Name:     parts[0],
+			Windows:  wins,
+			Attached: parts[2] == "1",
+		})
+	}
+	return sessions, nil
+}
+
+// ListWindows returns windows for a given session.
+func ListWindows(session string) ([]Window, error) {
+	out, err := exec.Command("tmux", "list-windows", "-t", session, "-F",
+		"#{window_index} #{window_name} #{?window_active,1,0}").Output()
+	if err != nil {
+		return nil, fmt.Errorf("list-windows: %w", err)
+	}
+	var windows []Window
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		if line == "" {
+			continue
+		}
+		parts := strings.Fields(line)
+		if len(parts) < 3 {
+			continue
+		}
+		idx, _ := strconv.Atoi(parts[0])
+		windows = append(windows, Window{
+			SessionName: session,
+			Index:       idx,
+			Name:        parts[1],
+			Active:      parts[2] == "1",
+		})
+	}
+	return windows, nil
+}
+
+// SwitchClient switches the current tmux client to the given target.
+func SwitchClient(target string) error {
+	return exec.Command("tmux", "switch-client", "-t", target).Run()
+}
+
+// KillSession kills the named session.
+func KillSession(name string) error {
+	return exec.Command("tmux", "kill-session", "-t", name).Run()
+}
+
+// RenameSession renames a session from old to new.
+func RenameSession(old, new string) error {
+	return exec.Command("tmux", "rename-session", "-t", old, new).Run()
+}
+
+// NewSession creates a detached session with the given name.
+func NewSession(name string) error {
+	return exec.Command("tmux", "new-session", "-d", "-s", name).Run()
+}
+
+// SendKeys sends keystrokes to a tmux target pane.
+func SendKeys(target string, keys string) error {
+	return exec.Command("tmux", "send-keys", "-t", target, keys, "Enter").Run()
+}
+
+// SplitWindow creates a horizontal split running the given command.
+func SplitWindow(command string) error {
+	return exec.Command("tmux", "split-window", "-h", command).Run()
+}
+
+// NewWindowWithCommand creates a new window running the given command.
+func NewWindowWithCommand(name, command string) error {
+	return exec.Command("tmux", "new-window", "-n", name, command).Run()
+}
+
+// DisplayPopup opens a tmux popup running the given command.
+func DisplayPopup(command, width, height string) error {
+	return exec.Command("tmux", "display-popup",
+		"-d", "#{pane_current_path}",
+		"-w", width, "-h", height, "-E", command).Run()
+}
