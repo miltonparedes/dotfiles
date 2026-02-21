@@ -71,9 +71,6 @@ type CreateSessionInDirMsg struct {
 	Dir  string
 }
 
-// ReturnToPaletteMsg signals that the current sub-action is done and the palette should reopen.
-type ReturnToPaletteMsg struct{}
-
 // RunPopupMsg runs a command in a tmux popup and exits.
 type RunPopupMsg struct {
 	Command string

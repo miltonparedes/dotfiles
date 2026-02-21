@@ -135,6 +135,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 		case "esc":
+			if m.paletteReturn && !isEditing {
+				return m, m.returnToPalette()
+			}
 			switch m.view {
 			case viewWindows:
 				m.view = viewSessions
@@ -173,15 +176,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.paletteActive = false
 		return m.executeCommand(msg.ID)
 
-	case messages.ReturnToPaletteMsg:
-		m.paletteReturn = false
-		if m.mode == ModePalette {
-			return m, tea.Quit
-		}
-		m.paletteActive = true
-		m.palette.Reset()
-		return m, nil
-
 	case messages.SwitchSessionMsg:
 		tmux.SwitchClient(msg.Name)
 		return m, tea.Quit
@@ -196,6 +190,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case messages.BackToSessionsMsg:
+		if m.paletteReturn {
+			return m, m.returnToPalette()
+		}
 		m.view = viewSessions
 		return m, nil
 
@@ -232,6 +229,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.SwitchViewMsg:
 		switch msg.View {
 		case "sessions":
+			if m.paletteReturn {
+				return m, m.returnToPalette()
+			}
 			m.view = viewSessions
 			return m, nil
 		case "worktrees":
@@ -254,18 +254,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case viewSessions:
 		m.sessions, cmd = m.sessions.Update(msg)
 		if m.paletteReturn && !m.sessions.IsEditing() {
-			m.paletteReturn = false
-			if m.mode == ModePalette {
-				return m, tea.Quit
-			}
-			m.paletteActive = true
-			m.palette.Reset()
-			return m, nil
+			return m, m.returnToPalette()
 		}
 	case viewWindows:
 		m.windows, cmd = m.windows.Update(msg)
 	case viewWorktrees:
 		m.worktreeView, cmd = m.worktreeView.Update(msg)
+		if m.paletteReturn && !m.worktreeView.IsEditing() {
+			return m, m.returnToPalette()
+		}
 	case viewAgents:
 		m.agentsView, cmd = m.agentsView.Update(msg)
 	}
@@ -289,26 +286,37 @@ func (m Model) View() string {
 	}
 }
 
+// returnToPalette reactivates the palette or quits if in palette-only mode.
+// Must be called on the m being returned (value receiver — mutations stay local).
+func (m *Model) returnToPalette() tea.Cmd {
+	m.paletteReturn = false
+	if m.mode == ModePalette {
+		return tea.Quit
+	}
+	m.paletteActive = true
+	m.palette.Reset()
+	return nil
+}
+
 func (m Model) executeCommand(id string) (tea.Model, tea.Cmd) {
+	m.paletteReturn = true
+
 	switch id {
 	// Session commands
 	case "open_project":
 		m.view = viewSessions
-		m.paletteReturn = true
 		km := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'n'}}
 		var cmd tea.Cmd
 		m.sessions, cmd = m.sessions.Update(km)
 		return m, cmd
 	case "kill_session":
 		m.view = viewSessions
-		m.paletteReturn = true
 		km := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'d'}}
 		var cmd tea.Cmd
 		m.sessions, cmd = m.sessions.Update(km)
 		return m, cmd
 	case "rename_session":
 		m.view = viewSessions
-		m.paletteReturn = true
 		km := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'r'}}
 		var cmd tea.Cmd
 		m.sessions, cmd = m.sessions.Update(km)
