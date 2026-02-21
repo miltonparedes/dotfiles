@@ -94,11 +94,11 @@ func BuildTree(sessions []tmux.Session, repoRoots map[string]string) []*TreeNode
 
 		groupName := filepath.Base(repoRoot)
 
-		// Check if any session is named exactly like the group
+		// Check if any session is named exactly like the group (normalized)
 		var rootSession *tmux.Session
 		var children []tmux.Session
 		for i := range group {
-			if group[i].Name == groupName {
+			if normalize(group[i].Name) == normalize(groupName) {
 				rootSession = &group[i]
 			} else {
 				children = append(children, group[i])
@@ -126,7 +126,7 @@ func BuildTree(sessions []tmux.Session, repoRoots map[string]string) []*TreeNode
 		}
 
 		for _, cs := range children {
-			childName := strings.TrimPrefix(cs.Name, groupName+"-")
+			childName := trimNormalizedPrefix(cs.Name, groupName)
 			parent.Children = append(parent.Children, &TreeNode{
 				Kind:        KindSession,
 				Name:        childName,
@@ -140,17 +140,23 @@ func BuildTree(sessions []tmux.Session, repoRoots map[string]string) []*TreeNode
 	}
 
 	// Process no-repo sessions with findRealParent fallback
+	normMap := make(map[string]string, len(noRepo)) // normalized → original
 	nameSet := make(map[string]bool, len(noRepo))
 	for _, s := range noRepo {
-		nameSet[s.Name] = true
+		norm := normalize(s.Name)
+		nameSet[norm] = true
+		if _, exists := normMap[norm]; !exists {
+			normMap[norm] = s.Name
+		}
 	}
 	parentOf := make(map[string]string)
 	childrenOf := make(map[string][]string)
 	for _, s := range noRepo {
-		p := findRealParent(s.Name, nameSet)
-		if p != "" {
-			parentOf[s.Name] = p
-			childrenOf[p] = append(childrenOf[p], s.Name)
+		normParent := findRealParent(normalize(s.Name), nameSet)
+		if normParent != "" {
+			origParent := normMap[normParent]
+			parentOf[s.Name] = origParent
+			childrenOf[origParent] = append(childrenOf[origParent], s.Name)
 		}
 	}
 
@@ -174,7 +180,7 @@ func BuildTree(sessions []tmux.Session, repoRoots map[string]string) []*TreeNode
 				cs := sesMap[cname]
 				node.Children = append(node.Children, &TreeNode{
 					Kind:        KindSession,
-					Name:        strings.TrimPrefix(cname, s.Name+"-"),
+					Name:        trimNormalizedPrefix(cname, normalize(s.Name)),
 					SessionName: cname,
 					Windows:     cs.Windows,
 					Attached:    cs.Attached,
@@ -215,17 +221,35 @@ func Flatten(roots []*TreeNode) []*TreeNode {
 	return out
 }
 
+// normalize replaces _ and spaces with - so grouping treats all separators equally.
+func normalize(name string) string {
+	s := strings.ReplaceAll(name, "_", "-")
+	s = strings.ReplaceAll(s, " ", "-")
+	return s
+}
+
+// trimNormalizedPrefix removes a normalized prefix from a raw session name.
+// It works because _, space, and - are all single-byte characters, so the
+// normalized prefix length matches the raw prefix length.
+func trimNormalizedPrefix(rawName, normPrefix string) string {
+	normName := normalize(rawName)
+	normWithSep := normPrefix + "-"
+	if strings.HasPrefix(normName, normWithSep) {
+		return rawName[len(normWithSep):]
+	}
+	return rawName
+}
+
 // sortKey produces a key where -main/-master sort first within their prefix group.
 func sortKey(name string) string {
-	if strings.HasSuffix(name, "-main") {
-		pfx := name[:len(name)-5]
-		return pfx + "\x01main"
+	norm := normalize(name)
+	if strings.HasSuffix(norm, "-main") {
+		return norm[:len(norm)-5] + "\x01main"
 	}
-	if strings.HasSuffix(name, "-master") {
-		pfx := name[:len(name)-7]
-		return pfx + "\x01master"
+	if strings.HasSuffix(norm, "-master") {
+		return norm[:len(norm)-7] + "\x01master"
 	}
-	return name
+	return norm
 }
 
 // findRealParent returns the longest existing session name that is a dash-prefix of name.
@@ -280,7 +304,9 @@ func resolveRepoRoots(sessions []tmux.Session) map[string]string {
 			continue
 		}
 		base := filepath.Base(root)
-		if s.Name == base || strings.HasPrefix(s.Name, base+"-") {
+		normName := normalize(s.Name)
+		normBase := normalize(base)
+		if normName == normBase || strings.HasPrefix(normName, normBase+"-") {
 			roots[s.Name] = root
 		}
 	}

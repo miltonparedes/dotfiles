@@ -223,3 +223,115 @@ func TestBuildTree_EmptyInput(t *testing.T) {
 		t.Errorf("expected 0 roots for nil input, got %d", len(roots))
 	}
 }
+
+func TestBuildTree_UnderscoreRepoGrouping(t *testing.T) {
+	// Sessions with underscores should group when they share a repo root
+	sessions := []tmux.Session{
+		{Name: "myrepo_main", Windows: 1},
+		{Name: "myrepo_feature", Windows: 1},
+	}
+	repoRoots := map[string]string{
+		"myrepo_main":    "/home/user/myrepo",
+		"myrepo_feature": "/home/user/myrepo",
+	}
+
+	roots := BuildTree(sessions, repoRoots)
+
+	if len(roots) != 1 {
+		t.Fatalf("expected 1 root, got %d", len(roots))
+	}
+	if len(roots[0].Children) != 2 {
+		t.Fatalf("expected 2 children, got %d", len(roots[0].Children))
+	}
+	// main should sort first due to normalize in sortKey
+	if roots[0].Children[0].SessionName != "myrepo_main" {
+		t.Errorf("expected first child 'myrepo_main', got %q", roots[0].Children[0].SessionName)
+	}
+	if roots[0].Children[0].Name != "main" {
+		t.Errorf("expected child display name 'main', got %q", roots[0].Children[0].Name)
+	}
+}
+
+func TestBuildTree_NoRepoFallbackUnderscoreParentChild(t *testing.T) {
+	sessions := []tmux.Session{
+		{Name: "myapp", Windows: 1},
+		{Name: "myapp_feature", Windows: 1},
+	}
+
+	roots := BuildTree(sessions, nil)
+
+	if len(roots) != 1 {
+		t.Fatalf("expected 1 root, got %d", len(roots))
+	}
+	if roots[0].Kind != KindSession {
+		t.Fatalf("expected real session parent, got %v", roots[0].Kind)
+	}
+	if roots[0].SessionName != "myapp" {
+		t.Fatalf("expected parent 'myapp', got %q", roots[0].SessionName)
+	}
+	if len(roots[0].Children) != 1 {
+		t.Fatalf("expected 1 child, got %d", len(roots[0].Children))
+	}
+	if roots[0].Children[0].Name != "feature" {
+		t.Errorf("expected child display name 'feature', got %q", roots[0].Children[0].Name)
+	}
+}
+
+func TestNormalize(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"foo-bar", "foo-bar"},
+		{"foo_bar", "foo-bar"},
+		{"foo bar", "foo-bar"},
+		{"a_b-c d", "a-b-c-d"},
+	}
+	for _, tt := range tests {
+		got := normalize(tt.input)
+		if got != tt.want {
+			t.Errorf("normalize(%q) = %q, want %q", tt.input, got, tt.want)
+		}
+	}
+}
+
+func TestTrimNormalizedPrefix(t *testing.T) {
+	tests := []struct {
+		rawName    string
+		normPrefix string
+		want       string
+	}{
+		{"api-tests", "api", "tests"},
+		{"api_tests", "api", "tests"},
+		{"project-worktree-1", "project-worktree", "1"},
+		{"project_worktree_2", "project-worktree", "2"},
+		{"unrelated", "api", "unrelated"},
+	}
+	for _, tt := range tests {
+		got := trimNormalizedPrefix(tt.rawName, tt.normPrefix)
+		if got != tt.want {
+			t.Errorf("trimNormalizedPrefix(%q, %q) = %q, want %q",
+				tt.rawName, tt.normPrefix, got, tt.want)
+		}
+	}
+}
+
+func TestSortKey_UnderscoreMain(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{"api-main", "api\x01main"},
+		{"api_main", "api\x01main"},
+		{"api-master", "api\x01master"},
+		{"api_master", "api\x01master"},
+		{"api-tests", "api-tests"},
+		{"api_tests", "api-tests"},
+	}
+	for _, tt := range tests {
+		got := sortKey(tt.name)
+		if got != tt.want {
+			t.Errorf("sortKey(%q) = %q, want %q", tt.name, got, tt.want)
+		}
+	}
+}

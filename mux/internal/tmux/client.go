@@ -41,7 +41,7 @@ func ListSessions() ([]Session, error) {
 // ListWindows returns windows for a given session.
 func ListWindows(session string) ([]Window, error) {
 	out, err := exec.Command("tmux", "list-windows", "-t", session, "-F",
-		"#{window_index} #{window_name} #{?window_active,1,0}").Output()
+		"#{window_index}\t#{window_name}\t#{?window_active,1,0}").Output()
 	if err != nil {
 		return nil, fmt.Errorf("list-windows: %w", err)
 	}
@@ -50,7 +50,7 @@ func ListWindows(session string) ([]Window, error) {
 		if line == "" {
 			continue
 		}
-		parts := strings.Fields(line)
+		parts := strings.SplitN(line, "\t", 3)
 		if len(parts) < 3 {
 			continue
 		}
