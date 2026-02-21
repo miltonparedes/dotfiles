@@ -8,7 +8,17 @@ import (
 
 // List returns all worktrees via `wt list --format=json`.
 func List() ([]Worktree, error) {
-	out, err := exec.Command("wt", "list", "--format=json").Output()
+	return ListInDir("")
+}
+
+// ListInDir returns all worktrees for the repo at the given directory.
+// If dir is empty, it uses the current working directory.
+func ListInDir(dir string) ([]Worktree, error) {
+	cmd := exec.Command("wt", "list", "--format=json")
+	if dir != "" {
+		cmd.Dir = dir
+	}
+	out, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("wt list: %w", err)
 	}

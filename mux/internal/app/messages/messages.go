@@ -65,6 +65,15 @@ type SwitchViewMsg struct {
 	View string // "sessions", "worktrees", "agents"
 }
 
+// CreateSessionInDirMsg creates a new session in the given directory and switches to it.
+type CreateSessionInDirMsg struct {
+	Name string
+	Dir  string
+}
+
+// ReturnToPaletteMsg signals that the current sub-action is done and the palette should reopen.
+type ReturnToPaletteMsg struct{}
+
 // RunPopupMsg runs a command in a tmux popup and exits.
 type RunPopupMsg struct {
 	Command string

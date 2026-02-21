@@ -1,6 +1,8 @@
 package sessions
 
 import (
+	"os/exec"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -25,41 +27,27 @@ type TreeNode struct {
 	Children    []*TreeNode
 	Expanded    bool
 	Depth       int
+	Added       int // working tree lines added
+	Deleted     int // working tree lines deleted
 }
 
-// BuildTree groups sessions using the same algorithm as tmux-sessionizer-list.sh.
+// BuildTree groups sessions by git repository root.
 //
-// Rules:
-//  1. Real parent-child: session "foo" exists AND session "foo-bar" exists
-//     → "foo-bar" becomes a child of "foo".
-//  2. Virtual groups: sessions share a dash prefix (e.g. "api-main", "api-tests")
-//     but "api" does NOT exist → virtual header "api", both as children.
-//  3. Sorting: -main and -master float to top within their group.
-func BuildTree(sessions []tmux.Session) []*TreeNode {
+// Sessions that share the same repo root (including worktrees) are grouped together.
+// For groups with 2+ sessions, the display name is the repo directory basename.
+// Sessions without a repo root fall back to parent-child grouping by name prefix.
+// Sorting: -main/-master float to top within their group.
+func BuildTree(sessions []tmux.Session, repoRoots map[string]string) []*TreeNode {
+	if repoRoots == nil {
+		repoRoots = make(map[string]string)
+	}
+
 	// Sort: -main/-master first within same prefix, then lexicographic.
 	sorted := make([]tmux.Session, len(sessions))
 	copy(sorted, sessions)
 	sort.Slice(sorted, func(i, j int) bool {
-		ki := sortKey(sorted[i].Name)
-		kj := sortKey(sorted[j].Name)
-		return ki < kj
+		return sortKey(sorted[i].Name) < sortKey(sorted[j].Name)
 	})
-
-	nameSet := make(map[string]bool, len(sorted))
-	for _, s := range sorted {
-		nameSet[s.Name] = true
-	}
-
-	// For each session, find its longest real parent.
-	parentOf := make(map[string]string)
-	childrenOf := make(map[string][]string)
-	for _, s := range sorted {
-		parent := findRealParent(s.Name, nameSet)
-		if parent != "" {
-			parentOf[s.Name] = parent
-			childrenOf[parent] = append(childrenOf[parent], s.Name)
-		}
-	}
 
 	// Build session lookup
 	sesMap := make(map[string]tmux.Session)
@@ -67,70 +55,111 @@ func BuildTree(sessions []tmux.Session) []*TreeNode {
 		sesMap[s.Name] = s
 	}
 
-	// For sessions without a real parent and without children, check virtual groups.
-	type virtualChild struct {
-		prefix string
-	}
-	virtualGroupOf := make(map[string]string) // session -> virtual prefix
-	emittedVirtual := make(map[string]bool)
-
+	// Group sessions by repo root
+	repoGroups := make(map[string][]tmux.Session)
+	var noRepo []tmux.Session
 	for _, s := range sorted {
-		if parentOf[s.Name] != "" || len(childrenOf[s.Name]) > 0 {
-			continue
-		}
-		pfx := findGroupPrefix(s.Name, nameSet, sorted)
-		if pfx != "" {
-			virtualGroupOf[s.Name] = pfx
+		root := repoRoots[s.Name]
+		if root != "" {
+			repoGroups[root] = append(repoGroups[root], s)
+		} else {
+			noRepo = append(noRepo, s)
 		}
 	}
 
-	// Assemble top-level nodes
 	var roots []*TreeNode
-	processed := make(map[string]bool)
 
-	for _, s := range sorted {
-		if processed[s.Name] {
+	// Process repo groups in sorted order
+	repoKeys := make([]string, 0, len(repoGroups))
+	for k := range repoGroups {
+		repoKeys = append(repoKeys, k)
+	}
+	sort.Strings(repoKeys)
+
+	for _, repoRoot := range repoKeys {
+		group := repoGroups[repoRoot]
+
+		if len(group) == 1 {
+			s := group[0]
+			roots = append(roots, &TreeNode{
+				Kind:        KindSession,
+				Name:        s.Name,
+				SessionName: s.Name,
+				Windows:     s.Windows,
+				Attached:    s.Attached,
+				Depth:       0,
+			})
 			continue
 		}
 
-		// Skip children of real parents (they'll be nested)
-		if parentOf[s.Name] != "" {
-			continue
-		}
+		groupName := filepath.Base(repoRoot)
 
-		// Check if this belongs to a virtual group
-		if pfx, ok := virtualGroupOf[s.Name]; ok {
-			if emittedVirtual[pfx] {
-				continue
+		// Check if any session is named exactly like the group
+		var rootSession *tmux.Session
+		var children []tmux.Session
+		for i := range group {
+			if group[i].Name == groupName {
+				rootSession = &group[i]
+			} else {
+				children = append(children, group[i])
 			}
-			emittedVirtual[pfx] = true
+		}
 
-			header := &TreeNode{
+		var parent *TreeNode
+		if rootSession != nil {
+			parent = &TreeNode{
+				Kind:        KindSession,
+				Name:        groupName,
+				SessionName: rootSession.Name,
+				Windows:     rootSession.Windows,
+				Attached:    rootSession.Attached,
+				Expanded:    true,
+				Depth:       0,
+			}
+		} else {
+			parent = &TreeNode{
 				Kind:     KindGroupHeader,
-				Name:     pfx,
+				Name:     groupName,
 				Expanded: true,
 				Depth:    0,
 			}
-			// Gather all sessions in this virtual group
-			for _, s2 := range sorted {
-				if virtualGroupOf[s2.Name] == pfx {
-					child := &TreeNode{
-						Kind:        KindSession,
-						Name:        strings.TrimPrefix(s2.Name, pfx+"-"),
-						SessionName: s2.Name,
-						Windows:     s2.Windows,
-						Attached:    s2.Attached,
-						Depth:       1,
-					}
-					header.Children = append(header.Children, child)
-					processed[s2.Name] = true
-				}
-			}
-			roots = append(roots, header)
+		}
+
+		for _, cs := range children {
+			childName := strings.TrimPrefix(cs.Name, groupName+"-")
+			parent.Children = append(parent.Children, &TreeNode{
+				Kind:        KindSession,
+				Name:        childName,
+				SessionName: cs.Name,
+				Windows:     cs.Windows,
+				Attached:    cs.Attached,
+				Depth:       1,
+			})
+		}
+		roots = append(roots, parent)
+	}
+
+	// Process no-repo sessions with findRealParent fallback
+	nameSet := make(map[string]bool, len(noRepo))
+	for _, s := range noRepo {
+		nameSet[s.Name] = true
+	}
+	parentOf := make(map[string]string)
+	childrenOf := make(map[string][]string)
+	for _, s := range noRepo {
+		p := findRealParent(s.Name, nameSet)
+		if p != "" {
+			parentOf[s.Name] = p
+			childrenOf[p] = append(childrenOf[p], s.Name)
+		}
+	}
+
+	processed := make(map[string]bool)
+	for _, s := range noRepo {
+		if processed[s.Name] || parentOf[s.Name] != "" {
 			continue
 		}
 
-		// Real parent node with children
 		if len(childrenOf[s.Name]) > 0 {
 			node := &TreeNode{
 				Kind:        KindSession,
@@ -143,15 +172,14 @@ func BuildTree(sessions []tmux.Session) []*TreeNode {
 			}
 			for _, cname := range childrenOf[s.Name] {
 				cs := sesMap[cname]
-				child := &TreeNode{
+				node.Children = append(node.Children, &TreeNode{
 					Kind:        KindSession,
 					Name:        strings.TrimPrefix(cname, s.Name+"-"),
 					SessionName: cname,
 					Windows:     cs.Windows,
 					Attached:    cs.Attached,
 					Depth:       1,
-				}
-				node.Children = append(node.Children, child)
+				})
 				processed[cname] = true
 			}
 			roots = append(roots, node)
@@ -159,7 +187,6 @@ func BuildTree(sessions []tmux.Session) []*TreeNode {
 			continue
 		}
 
-		// Standalone session
 		roots = append(roots, &TreeNode{
 			Kind:        KindSession,
 			Name:        s.Name,
@@ -218,29 +245,44 @@ func findRealParent(name string, nameSet map[string]bool) string {
 	return best
 }
 
-// findGroupPrefix finds the longest dash-boundary prefix of name shared
-// with at least one other session (that also has no real parent and no children).
-func findGroupPrefix(name string, nameSet map[string]bool, all []tmux.Session) string {
-	tmp := name
-	for {
-		idx := strings.LastIndex(tmp, "-")
-		if idx < 0 {
-			return ""
+// resolveRepoRoot returns the git repository root for a directory,
+// resolving worktrees to the common repo root. Returns "" if not a git repo.
+func resolveRepoRoot(dir string) string {
+	if dir == "" {
+		return ""
+	}
+	out, err := exec.Command("git", "-C", dir, "rev-parse", "--git-common-dir").Output()
+	if err != nil {
+		return ""
+	}
+	commonDir := strings.TrimSpace(string(out))
+	if commonDir == "" {
+		return ""
+	}
+	if !filepath.IsAbs(commonDir) {
+		commonDir = filepath.Join(dir, commonDir)
+	}
+	return filepath.Dir(filepath.Clean(commonDir))
+}
+
+// resolveRepoRoots resolves the git repo root for each session with a path.
+// Only includes a session if its name matches the repo basename (exact or dash-prefix),
+// to avoid false grouping when a session's path doesn't reflect its actual project.
+// Returns a map from session name to repo root.
+func resolveRepoRoots(sessions []tmux.Session) map[string]string {
+	roots := make(map[string]string)
+	for _, s := range sessions {
+		if s.Path == "" {
+			continue
 		}
-		tmp = tmp[:idx]
-		// Does any OTHER session match this prefix?
-		for _, other := range all {
-			if other.Name == name {
-				continue
-			}
-			// The other must not be a real session with that exact prefix name
-			// (that would be a real parent, not a virtual group)
-			if other.Name == tmp {
-				continue
-			}
-			if strings.HasPrefix(other.Name, tmp+"-") {
-				return tmp
-			}
+		root := resolveRepoRoot(s.Path)
+		if root == "" {
+			continue
+		}
+		base := filepath.Base(root)
+		if s.Name == base || strings.HasPrefix(s.Name, base+"-") {
+			roots[s.Name] = root
 		}
 	}
+	return roots
 }

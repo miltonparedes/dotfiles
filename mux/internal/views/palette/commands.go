@@ -34,11 +34,12 @@ func DefaultCommands() []Command {
 			Category:    "Session",
 		},
 		{
-			ID:          "new_session",
-			Title:       "New Session",
-			Description: "Create a new detached session",
+			ID:          "open_project",
+			Title:       "Open Project",
+			Description: "Open a recent project as a new session",
 			Category:    "Session",
 		},
+
 
 		// Worktree
 		{

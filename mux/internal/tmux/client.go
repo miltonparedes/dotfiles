@@ -10,7 +10,7 @@ import (
 // ListSessions returns all tmux sessions.
 func ListSessions() ([]Session, error) {
 	out, err := exec.Command("tmux", "list-sessions", "-F",
-		"#{session_name} #{session_windows} #{?session_attached,1,0}").Output()
+		"#{session_name}\t#{session_windows}\t#{?session_attached,1,0}\t#{session_path}").Output()
 	if err != nil {
 		return nil, fmt.Errorf("list-sessions: %w", err)
 	}
@@ -19,15 +19,20 @@ func ListSessions() ([]Session, error) {
 		if line == "" {
 			continue
 		}
-		parts := strings.Fields(line)
+		parts := strings.SplitN(line, "\t", 4)
 		if len(parts) < 3 {
 			continue
 		}
 		wins, _ := strconv.Atoi(parts[1])
+		var path string
+		if len(parts) >= 4 {
+			path = parts[3]
+		}
 		sessions = append(sessions, Session{
 			Name:     parts[0],
 			Windows:  wins,
 			Attached: parts[2] == "1",
+			Path:     path,
 		})
 	}
 	return sessions, nil
@@ -75,9 +80,9 @@ func RenameSession(old, new string) error {
 	return exec.Command("tmux", "rename-session", "-t", old, new).Run()
 }
 
-// NewSession creates a detached session with the given name.
-func NewSession(name string) error {
-	return exec.Command("tmux", "new-session", "-d", "-s", name).Run()
+// NewSessionInDir creates a detached session with the given name and working directory.
+func NewSessionInDir(name, dir string) error {
+	return exec.Command("tmux", "new-session", "-d", "-s", name, "-c", dir).Run()
 }
 
 // SendKeys sends keystrokes to a tmux target pane.

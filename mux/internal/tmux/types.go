@@ -5,6 +5,7 @@ type Session struct {
 	Name     string
 	Windows  int
 	Attached bool
+	Path     string // session working directory
 }
 
 // Window represents a tmux window within a session.

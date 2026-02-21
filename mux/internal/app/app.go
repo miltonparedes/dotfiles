@@ -34,16 +34,17 @@ const (
 )
 
 type Model struct {
-	mode          Mode
-	view          activeView
-	sessions      sessions.Model
-	windows       windows.Model
-	worktreeView  worktrees.Model
-	agentsView    agentsview.Model
-	palette       palette.Model
-	paletteActive bool
-	width         int
-	height        int
+	mode           Mode
+	view           activeView
+	sessions       sessions.Model
+	windows        windows.Model
+	worktreeView   worktrees.Model
+	agentsView     agentsview.Model
+	palette        palette.Model
+	paletteActive  bool
+	paletteReturn  bool // return to palette after sub-action completes
+	width          int
+	height         int
 }
 
 func New(mode Mode) Model {
@@ -172,6 +173,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.paletteActive = false
 		return m.executeCommand(msg.ID)
 
+	case messages.ReturnToPaletteMsg:
+		m.paletteReturn = false
+		if m.mode == ModePalette {
+			return m, tea.Quit
+		}
+		m.paletteActive = true
+		m.palette.Reset()
+		return m, nil
+
 	case messages.SwitchSessionMsg:
 		tmux.SwitchClient(msg.Name)
 		return m, tea.Quit
@@ -195,6 +205,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.ReloadSessionsMsg:
 		m.view = viewSessions
 		return m, m.sessions.Reload()
+
+	case messages.CreateSessionInDirMsg:
+		tmux.NewSessionInDir(msg.Name, msg.Dir)
+		tmux.SwitchClient(msg.Name)
+		return m, tea.Quit
 
 	case messages.SwitchWorktreeMsg:
 		worktree.SwitchTo(msg.Branch)
@@ -238,6 +253,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.view {
 	case viewSessions:
 		m.sessions, cmd = m.sessions.Update(msg)
+		if m.paletteReturn && !m.sessions.IsEditing() {
+			m.paletteReturn = false
+			if m.mode == ModePalette {
+				return m, tea.Quit
+			}
+			m.paletteActive = true
+			m.palette.Reset()
+			return m, nil
+		}
 	case viewWindows:
 		m.windows, cmd = m.windows.Update(msg)
 	case viewWorktrees:
@@ -268,20 +292,23 @@ func (m Model) View() string {
 func (m Model) executeCommand(id string) (tea.Model, tea.Cmd) {
 	switch id {
 	// Session commands
-	case "new_session":
+	case "open_project":
 		m.view = viewSessions
+		m.paletteReturn = true
 		km := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'n'}}
 		var cmd tea.Cmd
 		m.sessions, cmd = m.sessions.Update(km)
 		return m, cmd
 	case "kill_session":
 		m.view = viewSessions
+		m.paletteReturn = true
 		km := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'d'}}
 		var cmd tea.Cmd
 		m.sessions, cmd = m.sessions.Update(km)
 		return m, cmd
 	case "rename_session":
 		m.view = viewSessions
+		m.paletteReturn = true
 		km := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'r'}}
 		var cmd tea.Cmd
 		m.sessions, cmd = m.sessions.Update(km)
