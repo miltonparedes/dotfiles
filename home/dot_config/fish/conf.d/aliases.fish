@@ -146,6 +146,8 @@ alias co opencode
 
 # cx: Codex CLI (defaults to full-auto + search via config.toml)
 alias cx codex
+# codex-yolo: Codex CLI with full-auto and search
+alias codex-yolo 'codex --search --full-auto'
 # cxx: Codex CLI exec mode (non-interactive)
 alias cxx 'codex exec'
 # cxr: Codex CLI resume last session

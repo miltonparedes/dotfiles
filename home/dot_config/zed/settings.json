@@ -1,0 +1,308 @@
+{
+  "agent_servers": {
+    "factory-droid": {
+      "type": "registry"
+    }
+  },
+  "edit_predictions": {
+    "provider": "zed"
+  },
+  "buffer_font_family": "JetBrains Mono",
+  "session": {
+    "trust_all_worktrees": true
+  },
+  "inline_code_actions": true,
+  "gutter": {
+    "line_numbers": true,
+    "folds": true,
+    "runnables": false,
+    "breakpoints": false
+  },
+  "use_system_window_tabs": true,
+  "languages": {
+    "YAML": {
+      "format_on_save": "on",
+      "tab_size": 2
+    },
+    "JSON": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "language_server"
+    },
+    "JSONC": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "language_server"
+    }
+  },
+  "preview_tabs": {
+    "enable_keep_preview_on_code_navigation": true
+  },
+  "debugger": {
+    "format_dap_log_messages": true,
+    "log_dap_communications": true,
+    "save_breakpoints": true,
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "context_servers": {},
+  "ssh_connections": [
+    {
+      "host": "box",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/milton/.factory/./"
+          ]
+        },
+        {
+          "paths": [
+            "/home/milton/Workspaces/K/ai-core-engineering-rules"
+          ]
+        },
+        {
+          "paths": [
+            "/home/milton/Workspaces/K/python-sdk-auth"
+          ]
+        },
+        {
+          "paths": [
+            "/var/home/milton/.config/fish"
+          ]
+        },
+        {
+          "paths": [
+            "/var/home/milton/Workspaces/K/customer-service-bot-backend"
+          ]
+        },
+        {
+          "paths": [
+            "~/Workspaces/A/abantu"
+          ]
+        },
+        {
+          "paths": [
+            "~/Workspaces/H/hal"
+          ]
+        },
+        {
+          "paths": [
+            "~/Workspaces/K/ai-purchase-api"
+          ]
+        },
+        {
+          "paths": [
+            "~/Workspaces/K/ai-supply-lead-managers-api"
+          ]
+        },
+        {
+          "paths": [
+            "~/Workspaces/K/supply-origination-bot-backend"
+          ]
+        }
+      ]
+    }
+  ],
+  "vim_mode": true,
+  "git_panel": {
+    "tree_view": true,
+    "dock": "right"
+  },
+  "agent": {
+    "favorite_models": [
+      {
+        "provider": "anthropic",
+        "model": "claude-opus-4-6-thinking-latest",
+        "enable_thinking": false
+      },
+      {
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6-1m-context-thinking-latest",
+        "enable_thinking": false
+      },
+      {
+        "provider": "google",
+        "model": "gemini-3.1-pro-preview",
+        "enable_thinking": false
+      }
+    ],
+    "tool_permissions": {
+      "default": "allow"
+    },
+    "use_modifier_to_send": false,
+    "inline_assistant_model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-5-latest"
+    },
+    "play_sound_when_agent_done": true,
+    "profiles": {
+      "write": {
+        "name": "Write",
+        "tools": {
+          "copy_path": true,
+          "create_directory": true,
+          "delete_path": true,
+          "diagnostics": true,
+          "edit_file": true,
+          "fetch": true,
+          "list_directory": true,
+          "project_notifications": false,
+          "move_path": true,
+          "now": true,
+          "find_path": true,
+          "read_file": true,
+          "grep": true,
+          "terminal": true,
+          "thinking": true,
+          "web_search": true
+        },
+        "enable_all_context_servers": true,
+        "context_servers": {
+          "notion-tasks": {
+            "tools": {
+              "API-update-a-database": false,
+              "API-update-a-block": false,
+              "API-retrieve-a-page-property": false,
+              "API-retrieve-a-page": false,
+              "API-retrieve-a-database": false,
+              "API-retrieve-a-comment": false,
+              "API-retrieve-a-block": false,
+              "API-post-search": false,
+              "API-post-page": false,
+              "API-post-database-query": false,
+              "API-patch-page": false,
+              "API-patch-block-children": false,
+              "API-get-users": false,
+              "API-get-user": false,
+              "API-get-self": false,
+              "API-get-block-children": false,
+              "API-delete-a-block": false,
+              "API-create-a-database": false,
+              "API-create-a-comment": false
+            }
+          }
+        }
+      },
+      "architech": {
+        "name": "Architech",
+        "tools": {
+          "terminal": true,
+          "batch_tool": true,
+          "code_symbols": true,
+          "copy_path": true,
+          "create_file": true,
+          "delete_path": true,
+          "diagnostics": true,
+          "edit_file": true,
+          "edit_files": false,
+          "fetch": true,
+          "list_directory": true,
+          "move_path": true,
+          "now": true,
+          "find_path": true,
+          "read_file": true,
+          "grep": true,
+          "symbol_info": true,
+          "thinking": true
+        },
+        "enable_all_context_servers": true,
+        "context_servers": {}
+      },
+      "ask": {
+        "name": "Ask",
+        "tools": {
+          "web_search": true,
+          "terminal": false,
+          "diagnostics": true,
+          "fetch": true,
+          "list_directory": true,
+          "now": true,
+          "find_path": true,
+          "read_file": true,
+          "grep": true,
+          "thinking": true,
+          "batch_tool": true
+        },
+        "enable_all_context_servers": false,
+        "context_servers": {
+          "notion-tasks": {
+            "tools": {
+              "API-update-a-database": false,
+              "API-post-page": false,
+              "API-post-search": true,
+              "API-retrieve-a-block": true,
+              "API-retrieve-a-page-property": true,
+              "API-retrieve-a-page": true,
+              "API-retrieve-a-database": true,
+              "API-retrieve-a-comment": true,
+              "API-get-user": true,
+              "API-get-users": false
+            }
+          },
+          "mcp-server-context7": {
+            "tools": {
+              "resolve-library-id": true,
+              "get-library-docs": true
+            }
+          },
+          "context7": {
+            "tools": {
+              "resolve-library-id": true,
+              "get-library-docs": true
+            }
+          },
+          "mcp-server-sequential-thinking": {
+            "tools": {
+              "sequentialthinking": true
+            }
+          }
+        }
+      }
+    },
+    "default_profile": "ask",
+    "default_model": {
+      "enable_thinking": true,
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview"
+    },
+    "dock": "left",
+    "default_width": 450
+  },
+  "project_panel": {
+    "dock": "right",
+    "auto_fold_dirs": false
+  },
+  "theme": "VSCode Dark Polished",
+  "ui_font_size": 13.0,
+  "buffer_font_size": 13.0,
+  "show_wrap_guides": true,
+  "wrap_guides": [
+    88,
+    120
+  ],
+  "soft_wrap": "editor_width",
+  "show_whitespaces": "all",
+  "relative_line_numbers": "enabled",
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware",
+    "background_coloring": "indent_aware"
+  },
+  "terminal": {
+    "dock": "bottom",
+    "font_family": "Hack",
+    "font_size": 13,
+    "line_height": {
+      "custom": 1.2
+    }
+  },
+  "auto_install_extensions": {
+    "html": true
+  }
+}

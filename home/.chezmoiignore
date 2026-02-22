@@ -6,7 +6,7 @@ LICENSE
 .config/ghostty/**
 {{ end }}
 
-# Lazygit: path depends on OS
+# macOS-only apps
 {{ if ne .chezmoi.os "darwin" }}
 Library/**
 {{ end }}
