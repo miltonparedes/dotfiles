@@ -69,6 +69,12 @@ setup_chezmoi_source() {
         return 0
     fi
 
+    if [[ -e "$chezmoi_dir" ]] && [[ ! -L "$chezmoi_dir" ]]; then
+        print_error "$chezmoi_dir exists and is not a symlink"
+        print_status "Move/remove it and rerun bootstrap"
+        exit 1
+    fi
+
     print_status "Setting up chezmoi source symlink..."
     mkdir -p "$(dirname "$chezmoi_dir")"
     ln -sfn "$SCRIPT_DIR" "$chezmoi_dir"

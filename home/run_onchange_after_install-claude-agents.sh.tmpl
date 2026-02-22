@@ -4,6 +4,10 @@
 agents_dir="{{ .agents_repo }}"
 agents_dir="${agents_dir/#\~/$HOME}"
 if [ -f "$agents_dir/src/install.ts" ]; then
+    if ! command -v bun >/dev/null 2>&1; then
+        echo "Error: bun is required to install Claude agents from $agents_dir" >&2
+        exit 1
+    fi
     echo "Installing Claude agents from $agents_dir..."
     bun "$agents_dir/src/install.ts" install
 fi
