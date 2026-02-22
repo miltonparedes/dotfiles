@@ -1,4 +1,0 @@
-model: gemini
-clients:
-  - type: gemini
-    api_key: ${GEMINI_API_KEY}
