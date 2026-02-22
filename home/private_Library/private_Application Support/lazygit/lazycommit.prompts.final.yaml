@@ -1,0 +1,18 @@
+language: English
+system_message: "You are a helpful assistant that generates git commit messages."
+commit_message_template: |-
+  Based on the following git diff, generate 3 conventional commit messages in the format "type: summary".
+  RULES:
+  - Use conventional types: feat, fix, chore, docs, refactor, test, perf, build, ci, style, revert
+  - Do NOT include a scope
+  - Max 72 characters
+  - Use imperative mood
+  - Avoid trailing periods
+  - No bullets, no numbering, no quotes
+
+  %s
+pr_title_template: |-
+  Based on the following git diff, generate 10 pull request title suggestions.
+  Each title should be on a new line, without any numbering or bullet points:
+
+  %s

@@ -1,0 +1,9 @@
+#!/bin/bash
+# Install Claude agents from agents repo if available
+# {{ .agents_repo }}
+agents_dir="{{ .agents_repo }}"
+agents_dir="${agents_dir/#\~/$HOME}"
+if [ -f "$agents_dir/src/install.ts" ]; then
+    echo "Installing Claude agents from $agents_dir..."
+    bun "$agents_dir/src/install.ts" install
+fi
