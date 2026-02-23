@@ -100,7 +100,7 @@ show_help() {
     echo "After bootstrap, use:"
     echo "  chezmoi apply -v      # Apply all configs"
     echo "  chezmoi diff          # Preview changes"
-    echo "  just install          # Full install (brew + chezmoi + mux + nvim)"
+    echo "  just install          # Full install (brew + chezmoi + kitmux + nvim)"
 }
 
 APPLY_FLAG=false

@@ -8,12 +8,12 @@ apply:
 diff:
     chezmoi diff
 
-# Full installation: brew + chezmoi + mux + nvim
+# Full installation: brew + chezmoi + kitmux + nvim
 install:
     @echo "Starting full installation..."
     just install-brew-essential-cli-packages
     chezmoi apply -v
-    just install-mux
+    just install-kitmux
     just install-nvim-plugins
     @echo "Installation complete!"
     @echo ""
@@ -30,12 +30,12 @@ install-brew-essential-cli-packages:
     brew upgrade
     brew cleanup
 
-# Build and install mux (TUI tmux session manager)
-install-mux:
+# Build and install kitmux (TUI tmux session manager)
+install-kitmux:
     #!/usr/bin/env bash
-    echo "Building mux..."
-    cd mux && GOPROXY=direct go build -ldflags="-s -w" -o "$(go env GOPATH)/bin/mux" .
-    echo "mux installed to $(go env GOPATH)/bin/mux"
+    echo "Building kitmux..."
+    cd ~/Workspaces/M/kitmux && GOPROXY=direct go build -ldflags="-s -w" -o "$(go env GOPATH)/bin/kitmux" .
+    echo "kitmux installed to $(go env GOPATH)/bin/kitmux"
 
 # Trigger Lazy plugin installation
 install-nvim-plugins:
@@ -166,9 +166,9 @@ help:
     @echo "  just diff                 # chezmoi diff"
     @echo ""
     @echo "Installation:"
-    @echo "  just install              # Full install (brew + chezmoi + mux + nvim)"
+    @echo "  just install              # Full install (brew + chezmoi + kitmux + nvim)"
     @echo "  just install-brew-essential-cli-packages  # Homebrew packages"
-    @echo "  just install-mux          # Build mux session manager"
+    @echo "  just install-kitmux       # Build kitmux session manager"
     @echo "  just install-nvim-plugins # Install Neovim plugins"
     @echo "  just install-nvim-deps    # Install Neovim dependencies"
     @echo "  just install-fonts        # Install JetBrains Mono Nerd Font"
