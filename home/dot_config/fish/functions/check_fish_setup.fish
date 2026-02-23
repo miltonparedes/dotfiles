@@ -104,7 +104,7 @@ function check_fish_setup --description 'Verify Fish shell installation and conf
     for tool in $tools
         if not command -q $tool
             set missing_count (math $missing_count + 1)
-    echo "  just apply            # Apply all configurations (chezmoi)"
+        end
     end
 
     if test $missing_count -eq 0
@@ -117,7 +117,7 @@ function check_fish_setup --description 'Verify Fish shell installation and conf
     # Final recommendation
     echo ""
     echo "Quick commands:"
-    echo "  just install-fish     # Install/update Fish configuration"
+    echo "  just apply            # Apply all configurations (chezmoi)"
     echo "  just switch-to-fish   # Switch to Fish shell"
     echo "  lsrepo               # List workspace aliases"
     echo "  reload               # Reload Fish configuration"
