@@ -13,3 +13,13 @@ Library/**
 {{ if ne .chezmoi.os "linux" }}
 .config/lazygit/**
 {{ end }}
+
+# nvm.fish on Linux is managed by fisher, not chezmoi
+{{ if eq .chezmoi.os "linux" }}
+.config/fish/conf.d/nvm.fish
+{{ end }}
+
+# proxyman.fish is Linux-only
+{{ if ne .chezmoi.os "linux" }}
+.config/fish/conf.d/proxyman.fish
+{{ end }}

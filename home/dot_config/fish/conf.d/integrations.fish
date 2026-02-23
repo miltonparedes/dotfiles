@@ -83,21 +83,6 @@ if command -q go
     fish_add_path $GOPATH/bin
 end
 
-# Node Version Manager (nvm) - Fish version
-if test -f ~/.config/fish/functions/nvm.fish
-    source ~/.config/fish/functions/nvm.fish
-end
-
-# pyenv
-if command -q pyenv
-    pyenv init - | source
-end
-
-# rbenv
-if command -q rbenv
-    rbenv init - | source
-end
-
 # bat (better cat) configuration
 if command -q bat
     set -gx BAT_THEME "OneHalfDark"
@@ -135,13 +120,6 @@ end
 if test -d ~/.bun/bin
     set -gx BUN_INSTALL "$HOME/.bun"
     fish_add_path $BUN_INSTALL/bin
-end
-
-# Deno - Secure JavaScript/TypeScript runtime
-# Install: curl -fsSL https://deno.land/install.sh | sh
-if test -d ~/.deno/bin
-    set -gx DENO_INSTALL "$HOME/.deno"
-    fish_add_path $DENO_INSTALL/bin
 end
 
 # =============================================================================
