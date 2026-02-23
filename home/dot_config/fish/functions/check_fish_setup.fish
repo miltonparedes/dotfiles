@@ -104,7 +104,7 @@ function check_fish_setup --description 'Verify Fish shell installation and conf
     for tool in $tools
         if not command -q $tool
             set missing_count (math $missing_count + 1)
-        end
+    echo "  just apply            # Apply all configurations (chezmoi)"
     end
 
     if test $missing_count -eq 0
