@@ -1,0 +1,15 @@
+README.md
+LICENSE
+
+# Ghostty is Linux-only
+{{ if ne .chezmoi.os "linux" }}
+.config/ghostty/**
+{{ end }}
+
+# macOS-only apps
+{{ if ne .chezmoi.os "darwin" }}
+Library/**
+{{ end }}
+{{ if ne .chezmoi.os "linux" }}
+.config/lazygit/**
+{{ end }}

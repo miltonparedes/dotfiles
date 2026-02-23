@@ -1,0 +1,13 @@
+set -gx NVM_DIR $HOME/.nvm
+{{- if eq .chezmoi.os "darwin" }}
+{{-   if eq .chezmoi.arch "arm64" }}
+set -gx NVM_HOMEBREW /opt/homebrew/opt/nvm
+{{-   else }}
+set -gx NVM_HOMEBREW /usr/local/opt/nvm
+{{-   end }}
+{{- end }}
+mkdir -p $NVM_DIR
+
+if set -q NVM_HOMEBREW; and test -f "$NVM_HOMEBREW/nvm.sh"; and type -q bass
+  bass source "$NVM_HOMEBREW/nvm.sh" --no-use ';' nvm use --silent default
+end

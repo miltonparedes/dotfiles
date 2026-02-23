@@ -1,0 +1,30 @@
+{
+    "workbench.layoutControl.enabled": false,
+    "workbench.activityBar.location": "bottom",
+    "workbench.sideBar.location": "right",
+    "chat.commandCenter.enabled": false,
+    "workbench.startupEditor": "none",
+    "editor.minimap.enabled": false,
+    "editor.fontSize": 13,
+    "workbench.productIconTheme": "fluent-icons",
+    "git.confirmSync": false,
+    "diffEditor.renderSideBySide": true,
+    "coderabbit.agentType": "Claude Code",
+    "python.analysis.typeCheckingMode": "basic",
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "workbench.statusBar.visible": false,
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3.13",
+    "claudeCode.preferredLocation": "panel",
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+    "chat.tools.terminal.outputLocation": "chat"
+}

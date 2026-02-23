@@ -1,0 +1,317 @@
+{
+  "cloudSessionSync": false,
+  "diffMode": "github",
+  "ideExtensionPromptedAt": {},
+  "ideActivationNudgedForVersion": {},
+  "enableCompletionBell": false,
+  "completionSound": "fx-ok01",
+  "awaitingInputSound": "fx-ack01",
+  "soundFocusMode": "always",
+  "commandAllowlist": [
+    "ls",
+    "pwd",
+    "dir"
+  ],
+  "commandDenylist": [
+    "rm -rf /",
+    "rm -rf /*",
+    "rm -rf .",
+    "rm -rf ~",
+    "rm -rf ~/*",
+    "rm -rf $HOME",
+    "rm -r /",
+    "rm -r /*",
+    "rm -r ~",
+    "rm -r ~/*",
+    "mkfs",
+    "mkfs.ext4",
+    "mkfs.ext3",
+    "mkfs.vfat",
+    "mkfs.ntfs",
+    "dd if=/dev/zero of=/dev",
+    "dd of=/dev",
+    "shutdown",
+    "reboot",
+    "halt",
+    "poweroff",
+    "init 0",
+    "init 6",
+    ":(){ :|: & };:",
+    ":() { :|:& };:",
+    "chmod -R 777 /",
+    "chmod -R 000 /",
+    "chown -R",
+    "format",
+    "powershell Remove-Item -Recurse -Force"
+  ],
+  "enableCustomDroids": true,
+  "enableHooks": false,
+  "includeCoAuthoredByDroid": false,
+  "enableDroidShield": true,
+  "enableReadinessReport": false,
+  "todoDisplayMode": "pinned",
+  "allowBackgroundProcesses": true,
+  "completionSoundFocusMode": "always",
+  "enableSkills": false,
+  "sessionDefaultSettings": {
+    "model": "gpt-5.3-codex",
+    "reasoningEffort": "high",
+    "autonomyMode": "normal"
+  },
+  "customModels": [
+    {
+      "model": "claude-opus-4-6",
+      "id": "custom:Opus-4.6-0",
+      "index": 0,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Opus 4.6",
+      "maxOutputTokens": 64000,
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-opus-4-6",
+      "id": "custom:Opus-4.6-low-1",
+      "index": 1,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Opus 4.6 low",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "enabled",
+          "budget_tokens": 4096
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-opus-4-6",
+      "id": "custom:Opus-4.6-medium-2",
+      "index": 2,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Opus 4.6 medium",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "enabled",
+          "budget_tokens": 16384
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-opus-4-6",
+      "id": "custom:Opus-4.6-high-3",
+      "index": 3,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Opus 4.6 high",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "enabled",
+          "budget_tokens": 32768
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "gpt-5.2-codex",
+      "id": "custom:Codex-5.2-4",
+      "index": 4,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "Codex 5.2",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "none"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
+      "model": "gpt-5.2-codex",
+      "id": "custom:Codex-5.2-low-5",
+      "index": 5,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "Codex 5.2 low",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "low"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
+      "model": "gpt-5.2-codex",
+      "id": "custom:Codex-5.2-medium-6",
+      "index": 6,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "Codex 5.2 medium",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "medium"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
+      "model": "gpt-5.2-codex",
+      "id": "custom:Codex-5.2-high-7",
+      "index": 7,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "Codex 5.2 high",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "high"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
+      "model": "gpt-5.2-codex",
+      "id": "custom:Codex-5.2-xhigh-8",
+      "index": 8,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "Codex 5.2 xhigh",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "xhigh"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
+      "model": "claude-sonnet-4-6",
+      "id": "custom:Sonnet-4.6-9",
+      "index": 9,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Sonnet 4.6",
+      "maxOutputTokens": 32000,
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-sonnet-4-6",
+      "id": "custom:Sonnet-4.6-low-10",
+      "index": 10,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Sonnet 4.6 low",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "enabled",
+          "budget_tokens": 4096
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-sonnet-4-6",
+      "id": "custom:Sonnet-4.6-medium-11",
+      "index": 11,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Sonnet 4.6 medium",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "enabled",
+          "budget_tokens": 16384
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-sonnet-4-6",
+      "id": "custom:Sonnet-4.6-high-12",
+      "index": 12,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Sonnet 4.6 high",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "enabled",
+          "budget_tokens": 32768
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "id": "custom:Gemini-3.1-Pro-low-13",
+      "index": 13,
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/",
+      "apiKey": "{{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}",
+      "displayName": "Gemini 3.1 Pro low",
+      "maxOutputTokens": 32000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "low"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "generic-chat-completion-api"
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "id": "custom:Gemini-3.1-Pro-medium-14",
+      "index": 14,
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/",
+      "apiKey": "{{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}",
+      "displayName": "Gemini 3.1 Pro medium",
+      "maxOutputTokens": 32000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "medium"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "generic-chat-completion-api"
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "id": "custom:Gemini-3.1-Pro-high-15",
+      "index": 15,
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/",
+      "apiKey": "{{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}",
+      "displayName": "Gemini 3.1 Pro high",
+      "maxOutputTokens": 32000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "high"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "generic-chat-completion-api"
+    }
+  ],
+  "logoAnimation": "off",
+  "showTokenUsageIndicator": true
+}

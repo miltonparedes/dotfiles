@@ -1,4 +1,5 @@
 brew "just"
+brew "chezmoi"
 brew "uv"
 brew "bat"
 brew "eza"

@@ -1,0 +1,16 @@
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
+[protonpass]
+    command = "pass-cli"
+
+[data]
+    remote_host = {{ promptStringOnce . "remote_host" "Remote host (e.g., box)" | quote }}
+    remote_user = {{ promptStringOnce . "remote_user" "Remote user" | quote }}
+    remote_workspace = {{ promptStringOnce . "remote_workspace" "Remote workspace path" | quote }}
+    local_workspace = {{ promptStringOnce . "local_workspace" "Local workspace path" | quote }}
+    agents_repo = {{ promptStringOnce . "agents_repo" "Agents repo path (e.g., ~/Workspaces/P/agents)" | quote }}
+{{- if eq .chezmoi.os "darwin" }}
+    lazygit_dir = {{ printf "%s/Library/Application Support/lazygit" .chezmoi.homeDir | quote }}
+{{- else }}
+    lazygit_dir = {{ printf "%s/.config/lazygit" .chezmoi.homeDir | quote }}
+{{- end }}
