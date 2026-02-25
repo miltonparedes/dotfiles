@@ -2,7 +2,7 @@
 # https://developers.openai.com/codex/config-reference/
 #
 # Default model (can override with -m flag)
-model = "gpt-5.2-codex"
+model = "gpt-5.3-codex"
 model_reasoning_effort = "high"
 
 # Default to full-auto mode (sandbox workspace-write + approval on-request)
@@ -14,6 +14,17 @@ sandbox_mode = "workspace-write"
 # Equivalent to: codex --search
 web_search = "live"
 
+# Personality
+personality = "pragmatic"
+
+# Feature flags
+[features]
+unified_exec = true
+shell_snapshot = true
+steer = true
+multi_agent = true
+prevent_idle_sleep = true
+
 # Network access for web search
 [sandbox_workspace_write]
 network_access = true
@@ -21,9 +32,11 @@ network_access = true
 # MCP Servers
 # IMPORTANT: the top-level key is `mcp_servers` rather than `mcpServers`
 [mcp_servers.context7]
+type = "stdio"
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
-env = { "DEFAULT_MINIMUM_TOKENS" = "10000" }
+
+[mcp_servers.context7.env]
 
 # Notice settings (hide migration prompts)
 [notice]
@@ -31,6 +44,7 @@ hide_gpt5_1_migration_prompt = true
 
 [notice.model_migrations]
 "gpt-5.1-codex" = "gpt-5.2-codex"
+"gpt-5.2-codex" = "gpt-5.3-codex"
 
 # Project trust levels (add your projects here)
 # [projects."/path/to/project"]
