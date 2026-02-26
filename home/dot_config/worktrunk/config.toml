@@ -50,7 +50,55 @@
 #
 [commit.generation]
 command = "aichat"
-args = ["-m", "claude:claude-sonnet-4-5-20250929"]
+args = ["-m", "gemini:gemini-3.1-pro-low", "-S"]
+template = """
+Generate a conventional commit message in the format "type: summary".
+
+RULES:
+- Use conventional types: feat, fix, chore, docs, refactor, test, perf, build, ci, style, revert
+- Do NOT include a scope
+- Subject max 72 characters, imperative mood, no trailing period
+- Only return the commit message, no quotes, no code blocks
+- Only include a body if it adds useful information not in the subject
+- Don't repeat the subject in the body
+
+<diffstat>
+{{ git_diff_stat }}
+</diffstat>
+
+<diff>
+{{ git_diff }}
+</diff>
+
+<context>
+Branch: {{ branch }}
+{% if recent_commits %}<recent_commits>
+{% for commit in recent_commits %}- {{ commit }}
+{% endfor %}</recent_commits>{% endif %}
+</context>
+"""
+squash-template = """
+Combine these commits into a single conventional commit message in the format "type: summary".
+
+RULES:
+- Use conventional types: feat, fix, chore, docs, refactor, test, perf, build, ci, style, revert
+- Do NOT include a scope
+- Subject max 72 characters, imperative mood, no trailing period
+- Only return the commit message, no quotes, no code blocks
+- Only include a body if it adds useful information not in the subject
+
+<commits branch="{{ branch }}" target="{{ target_branch }}">
+{% for commit in commits %}- {{ commit }}
+{% endfor %}</commits>
+
+<diffstat>
+{{ git_diff_stat }}
+</diffstat>
+
+<diff>
+{{ git_diff }}
+</diff>
+"""
 #
 # See [Custom prompt templates](#custom-prompt-templates) for inline template options.
 #

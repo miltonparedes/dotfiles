@@ -12,6 +12,7 @@ Library/**
 {{ end }}
 {{ if ne .chezmoi.os "linux" }}
 .config/lazygit/**
+.config/aichat/**
 {{ end }}
 
 # nvm.fish on Linux is managed by fisher, not chezmoi

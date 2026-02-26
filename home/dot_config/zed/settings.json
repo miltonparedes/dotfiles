@@ -266,6 +266,10 @@
       }
     },
     "default_profile": "ask",
+    "commit_message_model": {
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview"
+    },
     "default_model": {
       "enable_thinking": true,
       "provider": "google",
