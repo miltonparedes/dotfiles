@@ -1,0 +1,49 @@
+[flavor]
+dark = "base16"
+
+# Soften UI chrome — replace blue (purple in Mellifluous) with gray
+[tabs]
+active   = { fg = "black", bg = "gray", bold = true }
+inactive = { fg = "gray", bg = "darkgray" }
+
+[mode]
+normal_main = { fg = "black", bg = "gray", bold = true }
+normal_alt  = { fg = "gray", bg = "darkgray" }
+select_main = { fg = "black", bg = "gray", bold = true }
+select_alt  = { fg = "gray", bg = "darkgray" }
+unset_main  = { fg = "black", bg = "gray", bold = true }
+unset_alt   = { fg = "gray", bg = "darkgray" }
+
+[mgr]
+cwd = { fg = "gray" }
+
+[status]
+perm_type      = { fg = "gray" }
+progress_label = { fg = "gray" }
+
+[pick]
+border = { fg = "gray" }
+
+[input]
+border = { fg = "gray" }
+
+[cmp]
+border = { fg = "gray" }
+
+[tasks]
+border = { fg = "gray" }
+
+[spot]
+border = { fg = "gray" }
+title  = { fg = "gray" }
+
+[filetype]
+rules = [
+	{ mime = "image/*", fg = "cyan" },
+	{ mime = "{audio,video}/*", fg = "yellow" },
+	{ mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "magenta" },
+	{ mime = "application/{pdf,doc,rtf}", fg = "green" },
+	{ mime = "vfs/{absent,stale}", fg = "darkgray" },
+	{ url = "*", fg = "gray" },
+	{ url = "*/", fg = "cyan" },
+]
