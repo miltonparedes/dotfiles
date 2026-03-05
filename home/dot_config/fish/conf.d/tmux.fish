@@ -1,5 +1,10 @@
 # TMUX Configuration for Fish Shell
 
+# Fix tmux socket path so sessions are visible across GUI and SSH
+# macOS sets different TMPDIR per login session, causing tmux to create
+# separate sockets for GUI vs SSH. This ensures a shared socket location.
+set -gx TMUX_TMPDIR /tmp
+
 # Auto-start TMUX on SSH sessions (optional)
 # Uncomment the following lines if you want TMUX to start automatically on SSH
 # if status is-interactive
