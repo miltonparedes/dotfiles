@@ -111,6 +111,11 @@ if test "$TERM_PROGRAM" = "kiro"
     . (kiro --locate-shell-integration-path fish)
 end
 
+# Obsidian CLI
+if test -x /Applications/Obsidian.app/Contents/MacOS/Obsidian
+    fish_add_path /Applications/Obsidian.app/Contents/MacOS
+end
+
 # =============================================================================
 # JavaScript/TypeScript Runtimes (macOS & Linux)
 # =============================================================================
