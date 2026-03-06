@@ -1,5 +1,8 @@
 {
   "agent_servers": {
+    "cursor": {
+      "type": "registry"
+    },
     "factory-droid": {
       "type": "registry"
     }
@@ -129,6 +132,16 @@
       {
         "provider": "google",
         "model": "gemini-3.1-pro-preview",
+        "enable_thinking": false
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "gemini-3-flash-preview",
+        "enable_thinking": false
+      },
+      {
+        "provider": "google",
+        "model": "gemini-3-flash-preview",
         "enable_thinking": false
       }
     ],
@@ -271,9 +284,9 @@
       "model": "gemini-3.1-pro-preview"
     },
     "default_model": {
-      "enable_thinking": true,
+      "enable_thinking": false,
       "provider": "google",
-      "model": "gemini-3.1-pro-preview"
+      "model": "gemini-3-flash-preview"
     },
     "dock": "left",
     "default_width": 450

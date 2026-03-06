@@ -1,7 +1,9 @@
 {
+  "apiKeyHelper": "~/.claude/anthropic_key.sh",
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
+  "model": "opus[1m]",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
