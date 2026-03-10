@@ -61,44 +61,18 @@
   "customModels": [
     {
       "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-0",
+      "id": "custom:Opus-4.6-medium-0",
       "index": 0,
-      "baseUrl": "https://api.anthropic.com",
-      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
-      "displayName": "Opus 4.6",
-      "maxOutputTokens": 64000,
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-low-1",
-      "index": 1,
-      "baseUrl": "https://api.anthropic.com",
-      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
-      "displayName": "Opus 4.6 low",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "enabled",
-          "budget_tokens": 4096
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-medium-2",
-      "index": 2,
       "baseUrl": "https://api.anthropic.com",
       "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
       "displayName": "Opus 4.6 medium",
       "maxOutputTokens": 64000,
       "extraArgs": {
         "thinking": {
-          "type": "enabled",
-          "budget_tokens": 16384
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "medium"
         }
       },
       "noImageSupport": false,
@@ -106,16 +80,37 @@
     },
     {
       "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-high-3",
-      "index": 3,
+      "id": "custom:Opus-4.6-high-1",
+      "index": 1,
       "baseUrl": "https://api.anthropic.com",
       "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
       "displayName": "Opus 4.6 high",
       "maxOutputTokens": 64000,
       "extraArgs": {
         "thinking": {
-          "type": "enabled",
-          "budget_tokens": 32768
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-opus-4-6",
+      "id": "custom:Opus-4.6-max-2",
+      "index": 2,
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
+      "displayName": "Opus 4.6 max",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "max"
         }
       },
       "noImageSupport": false,
@@ -123,40 +118,8 @@
     },
     {
       "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-4",
-      "index": 4,
-      "baseUrl": "https://api.openai.com/v1",
-      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
-      "displayName": "GPT 5.4",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "none"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-low-5",
-      "index": 5,
-      "baseUrl": "https://api.openai.com/v1",
-      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
-      "displayName": "GPT 5.4 low",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "low"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-medium-6",
-      "index": 6,
+      "id": "custom:GPT-5.4-medium-3",
+      "index": 3,
       "baseUrl": "https://api.openai.com/v1",
       "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
       "displayName": "GPT 5.4 medium",
@@ -171,8 +134,8 @@
     },
     {
       "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-high-7",
-      "index": 7,
+      "id": "custom:GPT-5.4-high-4",
+      "index": 4,
       "baseUrl": "https://api.openai.com/v1",
       "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
       "displayName": "GPT 5.4 high",
@@ -187,8 +150,8 @@
     },
     {
       "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-xhigh-8",
-      "index": 8,
+      "id": "custom:GPT-5.4-xhigh-5",
+      "index": 5,
       "baseUrl": "https://api.openai.com/v1",
       "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
       "displayName": "GPT 5.4 xhigh",
@@ -203,44 +166,18 @@
     },
     {
       "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-9",
-      "index": 9,
-      "baseUrl": "https://api.anthropic.com",
-      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
-      "displayName": "Sonnet 4.6",
-      "maxOutputTokens": 32000,
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-low-10",
-      "index": 10,
-      "baseUrl": "https://api.anthropic.com",
-      "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
-      "displayName": "Sonnet 4.6 low",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "enabled",
-          "budget_tokens": 4096
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-medium-11",
-      "index": 11,
+      "id": "custom:Sonnet-4.6-medium-6",
+      "index": 6,
       "baseUrl": "https://api.anthropic.com",
       "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
       "displayName": "Sonnet 4.6 medium",
       "maxOutputTokens": 64000,
       "extraArgs": {
         "thinking": {
-          "type": "enabled",
-          "budget_tokens": 16384
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "medium"
         }
       },
       "noImageSupport": false,
@@ -248,16 +185,18 @@
     },
     {
       "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-high-12",
-      "index": 12,
+      "id": "custom:Sonnet-4.6-high-7",
+      "index": 7,
       "baseUrl": "https://api.anthropic.com",
       "apiKey": "{{ protonPass "pass://Development/anthropic-api-key/Secret" | trim }}",
       "displayName": "Sonnet 4.6 high",
       "maxOutputTokens": 64000,
       "extraArgs": {
         "thinking": {
-          "type": "enabled",
-          "budget_tokens": 32768
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
         }
       },
       "noImageSupport": false,
@@ -265,8 +204,8 @@
     },
     {
       "model": "gemini-3.1-pro",
-      "id": "custom:Gemini-3.1-Pro-low-13",
-      "index": 13,
+      "id": "custom:Gemini-3.1-Pro-low-8",
+      "index": 8,
       "baseUrl": "https://generativelanguage.googleapis.com/v1beta/",
       "apiKey": "{{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}",
       "displayName": "Gemini 3.1 Pro low",
@@ -281,8 +220,8 @@
     },
     {
       "model": "gemini-3.1-pro",
-      "id": "custom:Gemini-3.1-Pro-medium-14",
-      "index": 14,
+      "id": "custom:Gemini-3.1-Pro-medium-9",
+      "index": 9,
       "baseUrl": "https://generativelanguage.googleapis.com/v1beta/",
       "apiKey": "{{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}",
       "displayName": "Gemini 3.1 Pro medium",
@@ -297,8 +236,8 @@
     },
     {
       "model": "gemini-3.1-pro",
-      "id": "custom:Gemini-3.1-Pro-high-15",
-      "index": 15,
+      "id": "custom:Gemini-3.1-Pro-high-10",
+      "index": 10,
       "baseUrl": "https://generativelanguage.googleapis.com/v1beta/",
       "apiKey": "{{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}",
       "displayName": "Gemini 3.1 Pro high",
