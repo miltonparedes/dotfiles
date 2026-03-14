@@ -57,7 +57,9 @@ if command -q tmux
     # t2: split current window into 2 vertical panes
     alias t2 'tmux split-window -h'
     # t4: split current window into 4 panes (grid)
-    alias t4 'tmux split-window -h \; split-window -v \; select-pane -t 0 \; split-window -v'
+    function t4 --description 'Split current tmux window into 4 panes (grid)'
+        tmux split-window -h \; split-window -v \; select-pane -L \; split-window -v
+    end
 
     alias ts 'tmux new-session -s'
     alias tl 'tmux list-sessions'
