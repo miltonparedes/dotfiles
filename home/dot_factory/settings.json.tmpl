@@ -165,6 +165,38 @@
       "provider": "openai"
     },
     {
+      "model": "gpt-5.3-codex",
+      "id": "custom:GPT-5.3-Codex-high-11",
+      "index": 11,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "GPT 5.3 Codex high",
+      "maxOutputTokens": 128000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "high"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
+      "model": "gpt-5.3-codex",
+      "id": "custom:GPT-5.3-Codex-xhigh-12",
+      "index": 12,
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "{{ protonPass "pass://Development/openai-api-key/Secret" | trim }}",
+      "displayName": "GPT 5.3 Codex xhigh",
+      "maxOutputTokens": 128000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "xhigh"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "openai"
+    },
+    {
       "model": "claude-sonnet-4-6",
       "id": "custom:Sonnet-4.6-medium-6",
       "index": 6,
