@@ -138,6 +138,12 @@ alias tk 'tmux kill-session'
 # cc: Claude Code CLI without permission prompts
 alias cc 'claude --dangerously-skip-permissions'
 
+# dr: Droid CLI
+alias dr droid
+
+# kr: Kiro CLI
+alias kr kiro-cli
+
 # gem: Gemini CLI
 alias gem gemini
 
