@@ -14,7 +14,20 @@
     "worktrunk@worktrunk": true,
     "code-simplifier@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "obsidian@obsidian-skills": true,
+    "skill-creator@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   },
-  "skipDangerousModePermissionPrompt": true
+  "extraKnownMarketplaces": {
+    "obsidian-skills": {
+      "source": {
+        "source": "github",
+        "repo": "kepano/obsidian-skills"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "tui": "fullscreen"
 }
