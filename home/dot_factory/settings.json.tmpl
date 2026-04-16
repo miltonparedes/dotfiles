@@ -2,7 +2,7 @@
 {{- $aiGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
 {{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
 {{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
-{{- $localAlloyBaseURL := "http://localhost:8081" -}}
+{{- $localAlloyBaseURL := "http://localhost:8081/bedrock" -}}
 {{- $localAlloySecret := "local-alloy" -}}
 {
   "cloudSessionSync": true,
@@ -144,7 +144,7 @@
       "provider": "anthropic"
     },
     {
-      "model": "global.anthropic.claude-opus-4-7-v1",
+      "model": "global.anthropic.claude-opus-4-7",
       "id": "custom:Opus-4.7-local-bedrock-high-4",
       "index": 4,
       "baseUrl": "{{ $localAlloyBaseURL }}",
@@ -163,7 +163,7 @@
       "provider": "anthropic"
     },
     {
-      "model": "global.anthropic.claude-opus-4-7-v1",
+      "model": "global.anthropic.claude-opus-4-7",
       "id": "custom:Opus-4.7-local-bedrock-xhigh-5",
       "index": 5,
       "baseUrl": "{{ $localAlloyBaseURL }}",
@@ -182,7 +182,7 @@
       "provider": "anthropic"
     },
     {
-      "model": "global.anthropic.claude-opus-4-7-v1",
+      "model": "global.anthropic.claude-opus-4-7",
       "id": "custom:Opus-4.7-local-bedrock-max-6",
       "index": 6,
       "baseUrl": "{{ $localAlloyBaseURL }}",
