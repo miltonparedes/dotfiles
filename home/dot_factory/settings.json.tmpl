@@ -2,7 +2,8 @@
 {{- $aiGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
 {{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
 {{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
-{{- $googleAIStudioGatewayURL := printf "%s/google-ai-studio" $aiGatewayBaseURL -}}
+{{- $localAlloyBaseURL := "http://localhost:8081" -}}
+{{- $localAlloySecret := "local-alloy" -}}
 {
   "cloudSessionSync": true,
   "diffMode": "github",
@@ -59,7 +60,7 @@
   "completionSoundFocusMode": "always",
   "enableSkills": false,
   "sessionDefaultSettings": {
-    "model": "custom:GPT-5.4-high-4",
+    "model": "custom:GPT-5.4-high-8",
     "reasoningEffort": "none",
     "autonomyMode": "auto-low",
     "interactionMode": "auto",
@@ -67,12 +68,12 @@
   },
   "customModels": [
     {
-      "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-medium-0",
+      "model": "claude-opus-4-7",
+      "id": "custom:Opus-4.7-medium-0",
       "index": 0,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.6 medium",
+      "displayName": "Opus 4.7 medium",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "thinking": {
@@ -86,12 +87,12 @@
       "provider": "anthropic"
     },
     {
-      "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-high-1",
+      "model": "claude-opus-4-7",
+      "id": "custom:Opus-4.7-high-1",
       "index": 1,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.6 high",
+      "displayName": "Opus 4.7 high",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "thinking": {
@@ -105,12 +106,31 @@
       "provider": "anthropic"
     },
     {
-      "model": "claude-opus-4-6",
-      "id": "custom:Opus-4.6-max-2",
+      "model": "claude-opus-4-7",
+      "id": "custom:Opus-4.7-xhigh-2",
       "index": 2,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.6 max",
+      "displayName": "Opus 4.7 xhigh",
+      "maxOutputTokens": 128000,
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "xhigh"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-opus-4-7",
+      "id": "custom:Opus-4.7-max-3",
+      "index": 3,
+      "baseUrl": "{{ $anthropicGatewayURL }}",
+      "apiKey": "{{ $aiGatewaySecret }}",
+      "displayName": "Opus 4.7 max",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "thinking": {
@@ -124,9 +144,66 @@
       "provider": "anthropic"
     },
     {
+      "model": "global.anthropic.claude-opus-4-7-v1",
+      "id": "custom:Opus-4.7-local-bedrock-high-4",
+      "index": 4,
+      "baseUrl": "{{ $localAlloyBaseURL }}",
+      "apiKey": "{{ $localAlloySecret }}",
+      "displayName": "Opus 4.7 local bedrock high",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "global.anthropic.claude-opus-4-7-v1",
+      "id": "custom:Opus-4.7-local-bedrock-xhigh-5",
+      "index": 5,
+      "baseUrl": "{{ $localAlloyBaseURL }}",
+      "apiKey": "{{ $localAlloySecret }}",
+      "displayName": "Opus 4.7 local bedrock xhigh",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "xhigh"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "global.anthropic.claude-opus-4-7-v1",
+      "id": "custom:Opus-4.7-local-bedrock-max-6",
+      "index": 6,
+      "baseUrl": "{{ $localAlloyBaseURL }}",
+      "apiKey": "{{ $localAlloySecret }}",
+      "displayName": "Opus 4.7 local bedrock max",
+      "maxOutputTokens": 64000,
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
       "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-medium-3",
-      "index": 3,
+      "id": "custom:GPT-5.4-medium-7",
+      "index": 7,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "GPT 5.4 medium",
@@ -141,8 +218,8 @@
     },
     {
       "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-high-4",
-      "index": 4,
+      "id": "custom:GPT-5.4-high-8",
+      "index": 8,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "GPT 5.4 high",
@@ -157,8 +234,8 @@
     },
     {
       "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-xhigh-5",
-      "index": 5,
+      "id": "custom:GPT-5.4-xhigh-9",
+      "index": 9,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "GPT 5.4 xhigh",
@@ -173,8 +250,8 @@
     },
     {
       "model": "gpt-5.3-codex",
-      "id": "custom:GPT-5.3-Codex-high-11",
-      "index": 11,
+      "id": "custom:GPT-5.3-Codex-high-10",
+      "index": 10,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "GPT 5.3 Codex high",
@@ -189,8 +266,8 @@
     },
     {
       "model": "gpt-5.3-codex",
-      "id": "custom:GPT-5.3-Codex-xhigh-12",
-      "index": 12,
+      "id": "custom:GPT-5.3-Codex-xhigh-11",
+      "index": 11,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "GPT 5.3 Codex xhigh",
@@ -205,8 +282,8 @@
     },
     {
       "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-medium-6",
-      "index": 6,
+      "id": "custom:Sonnet-4.6-medium-12",
+      "index": 12,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "Sonnet 4.6 medium",
@@ -224,8 +301,8 @@
     },
     {
       "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-high-7",
-      "index": 7,
+      "id": "custom:Sonnet-4.6-high-13",
+      "index": 13,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
       "displayName": "Sonnet 4.6 high",
@@ -240,54 +317,6 @@
       },
       "noImageSupport": false,
       "provider": "anthropic"
-    },
-    {
-      "model": "gemini-3.1-pro",
-      "id": "custom:Gemini-3.1-Pro-low-8",
-      "index": 8,
-      "baseUrl": "{{ $googleAIStudioGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Gemini 3.1 Pro low",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinkingConfig": {
-          "thinkingLevel": "low"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "generic-chat-completion-api"
-    },
-    {
-      "model": "gemini-3.1-pro",
-      "id": "custom:Gemini-3.1-Pro-medium-9",
-      "index": 9,
-      "baseUrl": "{{ $googleAIStudioGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Gemini 3.1 Pro medium",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinkingConfig": {
-          "thinkingLevel": "medium"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "generic-chat-completion-api"
-    },
-    {
-      "model": "gemini-3.1-pro",
-      "id": "custom:Gemini-3.1-Pro-high-10",
-      "index": 10,
-      "baseUrl": "{{ $googleAIStudioGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Gemini 3.1 Pro high",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinkingConfig": {
-          "thinkingLevel": "high"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "generic-chat-completion-api"
     }
   ],
   "logoAnimation": "off",
