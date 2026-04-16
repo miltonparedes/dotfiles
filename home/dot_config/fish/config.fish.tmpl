@@ -42,6 +42,11 @@ set -g fish_history_size 10000
 # Vi mode configuration
 fish_vi_key_bindings
 
+# Vite Plus CLI environment
+if test -f "$HOME/.vite-plus/env.fish"
+    source "$HOME/.vite-plus/env.fish"
+end
+
 # Load custom functions and completions
 # These are automatically loaded from functions/ and completions/ directories
 

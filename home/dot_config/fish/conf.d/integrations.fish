@@ -111,9 +111,22 @@ if test "$TERM_PROGRAM" = "kiro"
     . (kiro --locate-shell-integration-path fish)
 end
 
-# Obsidian CLI
-if test -x /Applications/Obsidian.app/Contents/MacOS/Obsidian
-    fish_add_path /Applications/Obsidian.app/Contents/MacOS
+# Obsidian CLI - Command line interface for Obsidian
+# Requires: Obsidian 1.12+ with CLI enabled in Settings → General
+if test (uname) = "Darwin"
+    # macOS: CLI binary is inside the app bundle
+    if test -d /Applications/Obsidian.app/Contents/MacOS
+        fish_add_path /Applications/Obsidian.app/Contents/MacOS
+    end
+else if test (uname) = "Linux"
+    # Linux Flatpak: ensure display env is set for Electron IPC (needed in tmux)
+    if test -x /var/lib/flatpak/exports/bin/md.obsidian.Obsidian
+        function obsidian --wraps='flatpak run md.obsidian.Obsidian'
+            set -lx DISPLAY (test -n "$DISPLAY" && echo $DISPLAY || echo :0)
+            set -lx XAUTHORITY (test -n "$XAUTHORITY" && echo $XAUTHORITY || find /run/user/(id -u) -maxdepth 1 -name 'xauth_*' 2>/dev/null | head -1)
+            flatpak run md.obsidian.Obsidian $argv 2>/dev/null
+        end
+    end
 end
 
 # =============================================================================

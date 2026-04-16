@@ -50,7 +50,7 @@
 #
 [commit.generation]
 command = "aichat"
-args = ["-m", "gemini:gemini-3-flash-low", "-S"]
+args = ["-m", "openai:gpt-5.4-mini", "-S"]
 template = """
 Generate a conventional commit message in the format "type: summary".
 

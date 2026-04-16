@@ -1,5 +1,7 @@
-model: gemini:gemini-3-flash-low
+model: openai:gpt-5.4-mini
 clients:
+  - type: openai
+    api_key: {{ protonPass "pass://Development/openai-api-key/Secret" | trim }}
   - type: gemini
     api_key: {{ protonPass "pass://Development/gemini-api-key/Secret" | trim }}
     models:
