@@ -9,3 +9,6 @@ vim.g.autoformat = true
 
 -- Spell checking for both English and Spanish
 vim.opt.spelllang = { "en", "es" }
+
+-- Hybrid clipboard: unnamedplus locally, OSC 52 over SSH.
+require("config.clipboard").setup()
