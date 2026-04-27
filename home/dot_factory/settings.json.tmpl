@@ -2,8 +2,14 @@
 {{- $aiGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
 {{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
 {{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
-{{- $localAlloyBaseURL := "http://localhost:8081/bedrock" -}}
+{{- $localHost := "localhost" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $localHost = .remote_host -}}
+{{- end -}}
+{{- $localAlloyBaseURL := printf "http://%s:8081/bedrock" $localHost -}}
 {{- $localAlloySecret := "local-alloy" -}}
+{{- $gptSubBaseURL := printf "http://%s:8317/v1" $localHost -}}
+{{- $gptSubSecret := protonPass "pass://Development/gpt-proxy/Secret" | trim -}}
 {
   "cloudSessionSync": true,
   "diffMode": "github",
@@ -60,7 +66,7 @@
   "completionSoundFocusMode": "always",
   "enableSkills": false,
   "sessionDefaultSettings": {
-    "model": "custom:GPT-5.4-high-8",
+    "model": "custom:GPT-5.5-sub-high-15",
     "reasoningEffort": "none",
     "autonomyMode": "auto-low",
     "interactionMode": "auto",
@@ -201,12 +207,12 @@
       "provider": "anthropic"
     },
     {
-      "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-medium-7",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-api-medium-7",
       "index": 7,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.4 medium",
+      "displayName": "GPT 5.5 API medium",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "reasoning": {
@@ -217,12 +223,12 @@
       "provider": "openai"
     },
     {
-      "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-high-8",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-api-high-8",
       "index": 8,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.4 high",
+      "displayName": "GPT 5.5 API high",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "reasoning": {
@@ -233,12 +239,12 @@
       "provider": "openai"
     },
     {
-      "model": "gpt-5.4-2026-03-05",
-      "id": "custom:GPT-5.4-xhigh-9",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-api-xhigh-9",
       "index": 9,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.4 xhigh",
+      "displayName": "GPT 5.5 API xhigh",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "reasoning": {
@@ -249,12 +255,28 @@
       "provider": "openai"
     },
     {
-      "model": "gpt-5.3-codex",
-      "id": "custom:GPT-5.3-Codex-high-10",
-      "index": 10,
-      "baseUrl": "{{ $openAIGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.3 Codex high",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-sub-medium-14",
+      "index": 14,
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
+      "displayName": "GPT 5.5 Sub medium",
+      "maxOutputTokens": 128000,
+      "extraArgs": {
+        "reasoning": {
+          "effort": "medium"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "generic-chat-completion-api"
+    },
+    {
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-sub-high-15",
+      "index": 15,
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
+      "displayName": "GPT 5.5 Sub high",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "reasoning": {
@@ -262,15 +284,15 @@
         }
       },
       "noImageSupport": false,
-      "provider": "openai"
+      "provider": "generic-chat-completion-api"
     },
     {
-      "model": "gpt-5.3-codex",
-      "id": "custom:GPT-5.3-Codex-xhigh-11",
-      "index": 11,
-      "baseUrl": "{{ $openAIGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.3 Codex xhigh",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-sub-xhigh-16",
+      "index": 16,
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
+      "displayName": "GPT 5.5 Sub xhigh",
       "maxOutputTokens": 128000,
       "extraArgs": {
         "reasoning": {
@@ -278,7 +300,7 @@
         }
       },
       "noImageSupport": false,
-      "provider": "openai"
+      "provider": "generic-chat-completion-api"
     },
     {
       "model": "claude-sonnet-4-6",
