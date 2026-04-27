@@ -6,5 +6,10 @@ if ! fish -c "type fisher" &>/dev/null; then
     fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
 fi
 
+if fish -c 'type -q fisher; and fisher list | string match -q jorgebucaran/nvm.fish' &>/dev/null; then
+    echo "Removing legacy nvm.fish plugin..."
+    fish -c 'fisher remove jorgebucaran/nvm.fish'
+fi
+
 echo "Updating fisher plugins..."
 fish -c 'fisher update'

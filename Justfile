@@ -103,23 +103,24 @@ install-fonts:
 
 # Check if required dependencies are installed
 check-deps:
-    @echo "Checking dependencies..."
-    @missing=0; \
-    for cmd in fish starship tmux nvim git rg fzf zoxide eza bat delta chezmoi; do \
-        if ! command -v $$cmd >/dev/null 2>&1; then \
-            echo "  $$cmd is not installed"; \
-            missing=1; \
-        else \
-            echo "  $$cmd is installed"; \
-        fi; \
-    done; \
-    if [ $$missing -eq 1 ]; then \
-        echo ""; \
-        echo "Install missing dependencies with:"; \
-        echo "  just install-brew-essential-cli-packages"; \
-        exit 1; \
+    #!/usr/bin/env bash
+    echo "Checking dependencies..."
+    missing=0
+    for cmd in fish starship tmux nvim git rg fzf zoxide eza bat delta chezmoi fnm; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "  $cmd is not installed"
+            missing=1
+        else
+            echo "  $cmd is installed"
+        fi
+    done
+    if [ "$missing" -eq 1 ]; then
+        echo ""
+        echo "Install missing dependencies with:"
+        echo "  just install-brew-essential-cli-packages"
+        exit 1
     fi
-    @echo "All dependencies are installed"
+    echo "All dependencies are installed"
 
 # Switch to fish shell as default
 switch-to-fish:

@@ -133,6 +133,11 @@ end
 # JavaScript/TypeScript Runtimes (macOS & Linux)
 # =============================================================================
 
+# fnm - Fast Node.js version manager
+if command -q fnm
+    fnm env --use-on-cd --shell fish | source
+end
+
 # Bun - Fast JavaScript runtime, bundler, and package manager
 # Install: curl -fsSL https://bun.sh/install | bash
 if test -d ~/.bun/bin
