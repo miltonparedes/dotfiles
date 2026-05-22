@@ -1,0 +1,43 @@
+{{- if eq .chezmoi.os "darwin" }}
+macos-icon = glass
+macos-titlebar-proxy-icon = hidden
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
+{{- end }}
+window-subtitle = false
+window-decoration = auto
+
+shell-integration-features = sudo
+
+
+font-family = JetBrains Mono
+font-size = 14
+# adjust-cell-height = 10%
+
+
+theme = Mellifluous
+mouse-hide-while-typing = true
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
+
+shell-integration = fish
+{{- if eq .chezmoi.os "darwin" }}
+command = /opt/homebrew/bin/fish --login --interactive
+{{- else }}
+command = /usr/bin/fish --login --interactive
+{{- end }}
+
+window-width = 110
+window-height = 35
+
+window-save-state = always
+
+keybind = cmd+p=toggle_quick_terminal
+quick-terminal-position = center
+quick-terminal-animation-duration = 0
+quick-terminal-size = 60%,60%
+
+{{- if eq .chezmoi.os "darwin" }}
+macos-option-as-alt = true
+{{- end }}

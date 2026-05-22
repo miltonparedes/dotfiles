@@ -1,9 +1,40 @@
 {
+  "agent_buffer_font_size": 14.0,
+  "agent_ui_font_size": 14.0,
+  "base_keymap": "Cursor",
+  "minimum_split_diff_width": 130.0,
+  "cli_default_open_behavior": "existing_window",
   "agent_servers": {
+    "better-droid": {
+      "favorite_models": [
+        "custom:GPT-5.5-sub-high-15"
+      ],
+      "type": "custom",
+      "command": "/var/home/milton/Workspaces/P/better-droid-acp/target/debug/better-droid-acp",
+      "env": {
+        "BETTER_DROID_ACP_CONFIG": "/var/home/milton/Workspaces/P/better-droid-acp/examples/better-droid-acp.toml",
+        "RUST_LOG": "better_droid_acp=debug,trace",
+        "BETTER_DROID_ACP_TRACE_LOG": "/tmp/better-droid-acp-trace.log"
+      }
+    },
+    "codex-acp": {
+      "favorite_config_option_values": {
+        "model": [
+          "gpt-5.5"
+        ]
+      },
+      "type": "registry"
+    },
     "cursor": {
       "type": "registry"
     },
     "factory-droid": {
+      "favorite_models": [
+        "custom:GPT-5.5-sub-high-15",
+        "custom:GPT-5.5-sub-xhigh-16",
+        "custom:GPT-5.5-api-high-8",
+        "custom:Opus-4.7-local-bedrock-max-6"
+      ],
       "type": "registry"
     }
   },
@@ -21,7 +52,6 @@
     "runnables": false,
     "breakpoints": false
   },
-  "use_system_window_tabs": true,
   "languages": {
     "YAML": {
       "format_on_save": "on",
@@ -61,27 +91,27 @@
       "projects": [
         {
           "paths": [
-            "/home/milton/.factory/./"
+            "/home/milton/Workspaces/AT/lorenz"
           ]
         },
         {
           "paths": [
-            "/home/milton/Workspaces/K/ai-core-engineering-rules"
+            "/home/milton/Workspaces/P/better-droid-acp"
           ]
         },
         {
           "paths": [
-            "/home/milton/Workspaces/K/python-sdk-auth"
+            "/home/milton/Workspaces/P/better-droid-acp/./"
+          ]
+        },
+        {
+          "paths": [
+            "/home/milton/Workspaces/P/hal-hermes/./"
           ]
         },
         {
           "paths": [
             "/var/home/milton/.config/fish"
-          ]
-        },
-        {
-          "paths": [
-            "/var/home/milton/Workspaces/K/customer-service-bot-backend"
           ]
         },
         {
@@ -92,21 +122,6 @@
         {
           "paths": [
             "~/Workspaces/H/hal"
-          ]
-        },
-        {
-          "paths": [
-            "~/Workspaces/K/ai-purchase-api"
-          ]
-        },
-        {
-          "paths": [
-            "~/Workspaces/K/ai-supply-lead-managers-api"
-          ]
-        },
-        {
-          "paths": [
-            "~/Workspaces/K/supply-origination-bot-backend"
           ]
         }
       ]
@@ -130,18 +145,19 @@
         "enable_thinking": false
       },
       {
-        "provider": "google",
-        "model": "gemini-3.1-pro-preview",
-        "enable_thinking": false
-      },
-      {
         "provider": "copilot_chat",
         "model": "gemini-3-flash-preview",
         "enable_thinking": false
       },
       {
-        "provider": "google",
-        "model": "gemini-3-flash-preview",
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6-latest",
+        "enable_thinking": true,
+        "effort": "high"
+      },
+      {
+        "provider": "openai",
+        "model": "gpt-5.4",
         "enable_thinking": false
       }
     ],
@@ -153,11 +169,12 @@
       "provider": "anthropic",
       "model": "claude-sonnet-4-5-latest"
     },
-    "play_sound_when_agent_done": true,
+    "play_sound_when_agent_done": "always",
     "profiles": {
       "write": {
         "name": "Write",
         "tools": {
+          "search_web": true,
           "copy_path": true,
           "create_directory": true,
           "delete_path": true,
@@ -172,8 +189,7 @@
           "read_file": true,
           "grep": true,
           "terminal": true,
-          "thinking": true,
-          "web_search": true
+          "thinking": true
         },
         "enable_all_context_servers": true,
         "context_servers": {
@@ -202,35 +218,10 @@
           }
         }
       },
-      "architech": {
-        "name": "Architech",
-        "tools": {
-          "terminal": true,
-          "batch_tool": true,
-          "code_symbols": true,
-          "copy_path": true,
-          "create_file": true,
-          "delete_path": true,
-          "diagnostics": true,
-          "edit_file": true,
-          "edit_files": false,
-          "fetch": true,
-          "list_directory": true,
-          "move_path": true,
-          "now": true,
-          "find_path": true,
-          "read_file": true,
-          "grep": true,
-          "symbol_info": true,
-          "thinking": true
-        },
-        "enable_all_context_servers": true,
-        "context_servers": {}
-      },
       "ask": {
         "name": "Ask",
         "tools": {
-          "web_search": true,
+          "search_web": true,
           "terminal": false,
           "diagnostics": true,
           "fetch": true,
@@ -278,15 +269,16 @@
         }
       }
     },
-    "default_profile": "ask",
+    "default_profile": "write",
     "commit_message_model": {
-      "provider": "google",
-      "model": "gemini-3.1-pro-preview"
+      "provider": "anthropic",
+      "model": "claude-sonnet-4.6-latest"
     },
     "default_model": {
-      "enable_thinking": false,
-      "provider": "google",
-      "model": "gemini-3-flash-preview"
+      "effort": "high",
+      "enable_thinking": true,
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6"
     },
     "dock": "left",
     "default_width": 450
@@ -296,7 +288,33 @@
     "auto_fold_dirs": false
   },
   "theme": "VSCode Dark Polished",
-  "ui_font_size": 13.0,
+  "theme_overrides": {
+    "VSCode Dark Polished": {
+      "text": "#CCCCCC",
+      "terminal.background": "#1a1a1a",
+      "terminal.foreground": "#dadada",
+      "terminal.bright_foreground": "#ffffff",
+      "terminal.dim_foreground": "#5b5b5b",
+      "terminal.ansi.background": "#1a1a1a",
+      "terminal.ansi.black": "#1a1a1a",
+      "terminal.ansi.red": "#d29393",
+      "terminal.ansi.green": "#b3b393",
+      "terminal.ansi.yellow": "#cbaa89",
+      "terminal.ansi.blue": "#a8a1be",
+      "terminal.ansi.magenta": "#b39fb0",
+      "terminal.ansi.cyan": "#c0af8c",
+      "terminal.ansi.white": "#dadada",
+      "terminal.ansi.bright_black": "#5b5b5b",
+      "terminal.ansi.bright_red": "#c95954",
+      "terminal.ansi.bright_green": "#828040",
+      "terminal.ansi.bright_yellow": "#a6794c",
+      "terminal.ansi.bright_blue": "#5a6599",
+      "terminal.ansi.bright_magenta": "#9c6995",
+      "terminal.ansi.bright_cyan": "#74a39e",
+      "terminal.ansi.bright_white": "#ffffff"
+    }
+  },
+  "ui_font_size": 14.0,
   "buffer_font_size": 13.0,
   "show_wrap_guides": true,
   "wrap_guides": [
@@ -312,14 +330,22 @@
     "background_coloring": "indent_aware"
   },
   "terminal": {
+    "shell": {
+{{- if eq .chezmoi.os "darwin" }}
+      "program": "/opt/homebrew/bin/fish"
+{{- else }}
+      "program": "/usr/bin/fish"
+{{- end }}
+    },
     "dock": "bottom",
-    "font_family": "Hack",
+    "font_family": "JetBrains Mono",
     "font_size": 13,
-    "line_height": {
-      "custom": 1.2
-    }
+    "font_weight": 400
   },
   "auto_install_extensions": {
     "html": true
+  },
+  "feature_flags": {
+    "agent-panel-terminal": "on"
   }
 }
