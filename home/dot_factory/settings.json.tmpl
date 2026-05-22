@@ -66,8 +66,8 @@
   "completionSoundFocusMode": "always",
   "enableSkills": false,
   "sessionDefaultSettings": {
-    "model": "custom:GPT-5.5-sub-high-15",
-    "reasoningEffort": "none",
+    "model": "custom:GPT-5.5-sub-3",
+    "reasoningEffort": "high",
     "autonomyMode": "auto-low",
     "interactionMode": "auto",
     "autonomyLevel": "low"
@@ -75,268 +75,56 @@
   "customModels": [
     {
       "model": "claude-opus-4-7",
-      "id": "custom:Opus-4.7-medium-0",
+      "id": "custom:Opus-4.7-0",
       "index": 0,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.7 medium",
+      "displayName": "Opus 4.7",
       "maxOutputTokens": 128000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "medium"
-        }
-      },
       "noImageSupport": false,
       "provider": "anthropic"
     },
     {
-      "model": "claude-opus-4-7",
-      "id": "custom:Opus-4.7-high-1",
+      "model": "global.anthropic.claude-opus-4-7",
+      "id": "custom:Opus-4.7-local-bedrock-1",
       "index": 1,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.7 high",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "high"
-        }
-      },
+      "baseUrl": "{{ $localAlloyBaseURL }}",
+      "apiKey": "{{ $localAlloySecret }}",
+      "displayName": "Opus 4.7 local bedrock",
+      "maxOutputTokens": 64000,
       "noImageSupport": false,
       "provider": "anthropic"
     },
     {
-      "model": "claude-opus-4-7",
-      "id": "custom:Opus-4.7-xhigh-2",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-api-2",
       "index": 2,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
+      "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.7 xhigh",
+      "displayName": "GPT 5.5 API",
       "maxOutputTokens": 128000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "xhigh"
-        }
-      },
       "noImageSupport": false,
-      "provider": "anthropic"
+      "provider": "openai"
     },
     {
-      "model": "claude-opus-4-7",
-      "id": "custom:Opus-4.7-max-3",
+      "model": "gpt-5.5",
+      "id": "custom:GPT-5.5-sub-3",
       "index": 3,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Opus 4.7 max",
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
+      "displayName": "GPT 5.5 Sub",
       "maxOutputTokens": 128000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "max"
-        }
-      },
       "noImageSupport": false,
-      "provider": "anthropic"
+      "provider": "openai"
     },
     {
-      "model": "global.anthropic.claude-opus-4-7",
-      "id": "custom:Opus-4.7-local-bedrock-high-4",
+      "model": "claude-sonnet-4-6",
+      "id": "custom:Sonnet-4.6-4",
       "index": 4,
-      "baseUrl": "{{ $localAlloyBaseURL }}",
-      "apiKey": "{{ $localAlloySecret }}",
-      "displayName": "Opus 4.7 local bedrock high",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "high"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "global.anthropic.claude-opus-4-7",
-      "id": "custom:Opus-4.7-local-bedrock-xhigh-5",
-      "index": 5,
-      "baseUrl": "{{ $localAlloyBaseURL }}",
-      "apiKey": "{{ $localAlloySecret }}",
-      "displayName": "Opus 4.7 local bedrock xhigh",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "xhigh"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "global.anthropic.claude-opus-4-7",
-      "id": "custom:Opus-4.7-local-bedrock-max-6",
-      "index": 6,
-      "baseUrl": "{{ $localAlloyBaseURL }}",
-      "apiKey": "{{ $localAlloySecret }}",
-      "displayName": "Opus 4.7 local bedrock max",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "max"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-api-medium-7",
-      "index": 7,
-      "baseUrl": "{{ $openAIGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.5 API medium",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "medium"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-api-high-8",
-      "index": 8,
-      "baseUrl": "{{ $openAIGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.5 API high",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "high"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-api-xhigh-9",
-      "index": 9,
-      "baseUrl": "{{ $openAIGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "GPT 5.5 API xhigh",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "xhigh"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-sub-medium-14",
-      "index": 14,
-      "baseUrl": "{{ $gptSubBaseURL }}",
-      "apiKey": "{{ $gptSubSecret }}",
-      "displayName": "GPT 5.5 Sub medium",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "medium"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-sub-high-15",
-      "index": 15,
-      "baseUrl": "{{ $gptSubBaseURL }}",
-      "apiKey": "{{ $gptSubSecret }}",
-      "displayName": "GPT 5.5 Sub high",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "high"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-sub-xhigh-16",
-      "index": 16,
-      "baseUrl": "{{ $gptSubBaseURL }}",
-      "apiKey": "{{ $gptSubSecret }}",
-      "displayName": "GPT 5.5 Sub xhigh",
-      "maxOutputTokens": 128000,
-      "extraArgs": {
-        "reasoning": {
-          "effort": "xhigh"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-medium-12",
-      "index": 12,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Sonnet 4.6 medium",
+      "displayName": "Sonnet 4.6",
       "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "medium"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
-      "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-high-13",
-      "index": 13,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
-      "displayName": "Sonnet 4.6 high",
-      "maxOutputTokens": 64000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive"
-        },
-        "output_config": {
-          "effort": "high"
-        }
-      },
       "noImageSupport": false,
       "provider": "anthropic"
     }
