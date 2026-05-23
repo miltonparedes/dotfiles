@@ -2,13 +2,13 @@
 {{- $aiGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
 {{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
 {{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
-{{- $localHost := "localhost" -}}
+{{- $localAlloyHost := "localhost" -}}
 {{- if eq .chezmoi.os "darwin" -}}
-{{- $localHost = .remote_host -}}
+{{- $localAlloyHost = .remote_host -}}
 {{- end -}}
-{{- $localAlloyBaseURL := printf "http://%s:8081/bedrock" $localHost -}}
+{{- $localAlloyBaseURL := printf "http://%s:8081/bedrock" $localAlloyHost -}}
 {{- $localAlloySecret := "local-alloy" -}}
-{{- $gptSubBaseURL := printf "http://%s:8317/v1" $localHost -}}
+{{- $gptSubBaseURL := "http://localhost:8317/v1" -}}
 {{- $gptSubSecret := protonPass "pass://Development/gpt-proxy/Secret" | trim -}}
 {
   "cloudSessionSync": true,
