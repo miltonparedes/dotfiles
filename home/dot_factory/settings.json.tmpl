@@ -1,14 +1,26 @@
 {{- $aiGatewayBaseURL := protonPass "pass://Development/ai-gateway/URL" | trim -}}
 {{- $aiGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
+{{- $aiGatewayAccessClientID := protonPass "pass://Metall/Cloudflare AI Gateway/API Key" | trim -}}
+{{- $aiGatewayAccessClientSecret := protonPass "pass://Metall/Cloudflare AI Gateway/Secret" | trim -}}
 {{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
 {{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
 {{- $localAlloyHost := "localhost" -}}
 {{- if eq .chezmoi.os "darwin" -}}
 {{- $localAlloyHost = .remote_host -}}
 {{- end -}}
-{{- $localAlloyBaseURL := printf "http://%s:8081/bedrock" $localAlloyHost -}}
+{{- $localAlloyBaseURL := printf "http://%s:8090/bedrock" $localAlloyHost -}}
+{{- $localAlloyAccessClientID := "" -}}
+{{- $localAlloyAccessClientSecret := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $localAlloyBaseURL = protonPass "pass://Development/Alloy AI Gateway/URL" | trim -}}
+{{- $localAlloyAccessClientID = protonPass "pass://Development/Alloy AI Gateway/API Key" | trim -}}
+{{- $localAlloyAccessClientSecret = protonPass "pass://Development/Alloy AI Gateway/Secret" | trim -}}
+{{- end -}}
 {{- $localAlloySecret := "local-alloy" -}}
 {{- $gptSubBaseURL := "http://localhost:8317/v1" -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{- $gptSubBaseURL = "http://127.0.0.1:8317/v1" -}}
+{{- end -}}
 {{- $gptSubSecret := protonPass "pass://Development/gpt-proxy/Secret" | trim -}}
 {
   "cloudSessionSync": true,
@@ -79,6 +91,10 @@
       "index": 0,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
+      "extraHeaders": {
+        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
+        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+      },
       "displayName": "Opus 4.7",
       "maxOutputTokens": 128000,
       "noImageSupport": false,
@@ -90,6 +106,12 @@
       "index": 1,
       "baseUrl": "{{ $localAlloyBaseURL }}",
       "apiKey": "{{ $localAlloySecret }}",
+      {{- if eq .chezmoi.os "darwin" }}
+      "extraHeaders": {
+        "CF-Access-Client-Id": "{{ $localAlloyAccessClientID }}",
+        "CF-Access-Client-Secret": "{{ $localAlloyAccessClientSecret }}"
+      },
+      {{- end }}
       "displayName": "Opus 4.7 local bedrock",
       "maxOutputTokens": 64000,
       "noImageSupport": false,
@@ -101,6 +123,10 @@
       "index": 2,
       "baseUrl": "{{ $openAIGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
+      "extraHeaders": {
+        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
+        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+      },
       "displayName": "GPT 5.5 API",
       "maxOutputTokens": 128000,
       "noImageSupport": false,
@@ -123,6 +149,10 @@
       "index": 4,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
+      "extraHeaders": {
+        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
+        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+      },
       "displayName": "Sonnet 4.6",
       "maxOutputTokens": 64000,
       "noImageSupport": false,
