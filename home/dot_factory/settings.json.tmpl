@@ -86,8 +86,8 @@
   },
   "customModels": [
     {
-      "model": "claude-opus-4-7",
-      "id": "custom:Opus-4.7-0",
+      "model": "claude-opus-4-8",
+      "id": "custom:Opus-4.8-0",
       "index": 0,
       "baseUrl": "{{ $anthropicGatewayURL }}",
       "apiKey": "{{ $aiGatewaySecret }}",
@@ -95,7 +95,7 @@
         "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
         "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
       },
-      "displayName": "Opus 4.7",
+      "displayName": "Opus 4.8",
       "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "anthropic"
@@ -157,6 +157,19 @@
       "maxOutputTokens": 64000,
       "noImageSupport": false,
       "provider": "anthropic"
+    },
+    {
+      "model": "us.anthropic.claude-opus-4-8",
+      "id": "custom:Opus-4.8-bedrock-5",
+      "index": 5,
+      "displayName": "Opus 4.8 Bedrock",
+      "maxOutputTokens": 64000,
+      "noImageSupport": false,
+      "provider": "anthropic",
+      "bedrock": {
+        "awsProfile": "default",
+        "awsRegion": "us-east-1"
+      }
     }
   ],
   "logoAnimation": "off",
