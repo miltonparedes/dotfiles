@@ -4,19 +4,6 @@
 {{- $aiGatewayAccessClientSecret := protonPass "pass://Metall/Cloudflare AI Gateway/Secret" | trim -}}
 {{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
 {{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
-{{- $localAlloyHost := "localhost" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $localAlloyHost = .remote_host -}}
-{{- end -}}
-{{- $localAlloyBaseURL := printf "http://%s:8090/bedrock" $localAlloyHost -}}
-{{- $localAlloyAccessClientID := "" -}}
-{{- $localAlloyAccessClientSecret := "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $localAlloyBaseURL = protonPass "pass://Development/Alloy AI Gateway/URL" | trim -}}
-{{- $localAlloyAccessClientID = protonPass "pass://Development/Alloy AI Gateway/API Key" | trim -}}
-{{- $localAlloyAccessClientSecret = protonPass "pass://Development/Alloy AI Gateway/Secret" | trim -}}
-{{- end -}}
-{{- $localAlloySecret := "local-alloy" -}}
 {{- $gptSubBaseURL := "http://localhost:8317/v1" -}}
 {{- if eq .chezmoi.os "linux" -}}
 {{- $gptSubBaseURL = "http://127.0.0.1:8317/v1" -}}
@@ -101,23 +88,6 @@
       "provider": "anthropic"
     },
     {
-      "model": "global.anthropic.claude-opus-4-7",
-      "id": "custom:Opus-4.7-local-bedrock-1",
-      "index": 1,
-      "baseUrl": "{{ $localAlloyBaseURL }}",
-      "apiKey": "{{ $localAlloySecret }}",
-      {{- if eq .chezmoi.os "darwin" }}
-      "extraHeaders": {
-        "CF-Access-Client-Id": "{{ $localAlloyAccessClientID }}",
-        "CF-Access-Client-Secret": "{{ $localAlloyAccessClientSecret }}"
-      },
-      {{- end }}
-      "displayName": "Opus 4.7 local bedrock",
-      "maxOutputTokens": 64000,
-      "noImageSupport": false,
-      "provider": "anthropic"
-    },
-    {
       "model": "gpt-5.5",
       "id": "custom:GPT-5.5-api-2",
       "index": 2,
@@ -167,9 +137,47 @@
       "noImageSupport": false,
       "provider": "anthropic",
       "bedrock": {
-        "awsProfile": "default",
         "awsRegion": "us-east-1"
       }
+    },
+    {
+      "model": "claude-fable-5",
+      "id": "custom:Fable-5-6",
+      "index": 6,
+      "baseUrl": "{{ $anthropicGatewayURL }}",
+      "apiKey": "{{ $aiGatewaySecret }}",
+      "extraHeaders": {
+        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
+        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+      },
+      "displayName": "Fable 5",
+      "maxOutputTokens": 128000,
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive",
+          "display": "summarized"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
+    },
+    {
+      "model": "global.anthropic.claude-fable-5",
+      "id": "custom:Fable-5-bedrock-7",
+      "index": 7,
+      "displayName": "Fable 5 Bedrock",
+      "maxOutputTokens": 128000,
+      "bedrock": {
+        "awsRegion": "us-east-1"
+      },
+      "extraArgs": {
+        "thinking": {
+          "type": "adaptive",
+          "display": "summarized"
+        }
+      },
+      "noImageSupport": false,
+      "provider": "anthropic"
     }
   ],
   "logoAnimation": "off",
