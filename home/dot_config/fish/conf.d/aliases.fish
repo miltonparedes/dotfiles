@@ -144,9 +144,6 @@ alias dr droid
 # kr: Kiro CLI
 alias kr kiro-cli
 
-# gem: Gemini CLI
-alias gem gemini
-
 # co: OpenCode CLI
 alias co opencode
 

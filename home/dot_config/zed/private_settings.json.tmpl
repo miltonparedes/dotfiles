@@ -330,6 +330,10 @@
     "background_coloring": "indent_aware"
   },
   "terminal": {
+    "env": {
+      "ZED_WANTS_FISH": "1",
+      "BASH_ENV": "${HOME}/.config/shell/zed-fish-shell-hook.sh"
+    },
     "shell": {
 {{- if eq .chezmoi.os "darwin" }}
       "program": "/opt/homebrew/bin/fish"

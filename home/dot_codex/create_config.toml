@@ -17,6 +17,10 @@ web_search = "live"
 # Personality
 personality = "pragmatic"
 
+[tui]
+status_line = ["model", "reasoning", "branch-changes", "approval-mode", "context-used"]
+status_line_use_colors = false
+
 # Feature flags
 [features]
 unified_exec = true

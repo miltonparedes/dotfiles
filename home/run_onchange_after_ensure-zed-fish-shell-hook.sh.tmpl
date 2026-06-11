@@ -1,0 +1,35 @@
+#!/bin/bash
+# Keep the Zed fish handoff hook installed before other shell startup sources.
+# hash: {{ include "dot_config/shell/zed-fish-shell-hook.sh" | sha256sum }}
+set -euo pipefail
+
+hook_line='if [ -r "$HOME/.config/shell/zed-fish-shell-hook.sh" ]; then . "$HOME/.config/shell/zed-fish-shell-hook.sh"; fi'
+start_marker="# >>> zed-fish-shell-hook >>>"
+end_marker="# <<< zed-fish-shell-hook <<<"
+
+ensure_hook_block() {
+  local file="$1"
+  local tmp
+
+  mkdir -p "$(dirname "$file")"
+  touch "$file"
+  tmp="$(mktemp)"
+
+  {
+    printf '%s\n' "$start_marker"
+    printf '%s\n' '# Force fish for Zed terminals when bash/zsh is launched first.'
+    printf '%s\n' "$hook_line"
+    printf '%s\n\n' "$end_marker"
+    awk -v start="$start_marker" -v end="$end_marker" '
+      $0 == start { skipping = 1; next }
+      $0 == end { skipping = 0; next }
+      !skipping { print }
+    ' "$file"
+  } > "$tmp"
+
+  mv "$tmp" "$file"
+}
+
+ensure_hook_block "$HOME/.zshenv"
+ensure_hook_block "$HOME/.bashrc"
+ensure_hook_block "$HOME/.bash_profile"

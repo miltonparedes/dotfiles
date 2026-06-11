@@ -1,0 +1,25 @@
+#!/bin/bash
+# Ensure Codex TUI status line is consistent on existing machines.
+# hash: {{ include "dot_codex/create_config.toml" | sha256sum }}
+set -euo pipefail
+
+config="$HOME/.codex/config.toml"
+tmp="$(mktemp)"
+
+mkdir -p "$(dirname "$config")"
+touch "$config"
+
+awk '
+  /^\[tui\][[:space:]]*$/ { skipping = 1; next }
+  /^\[[^]]+\][[:space:]]*$/ { skipping = 0 }
+  !skipping { print }
+' "$config" > "$tmp"
+
+cat >> "$tmp" <<'EOF'
+
+[tui]
+status_line = ["model", "reasoning", "branch-changes", "approval-mode", "context-used"]
+status_line_use_colors = false
+EOF
+
+mv "$tmp" "$config"

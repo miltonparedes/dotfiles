@@ -29,7 +29,6 @@ just install-lazygit      # Lazygit
 
 ```bash
 just install-claude       # Claude Code
-just install-gemini       # Gemini CLI
 just install-codex        # Codex CLI
 just install-aichat       # AIChat
 just install-coding-agents # All
@@ -67,7 +66,6 @@ git/config                 # Git config with delta
 lazygit/                   # Lazygit config
 aichat/                    # AIChat config
 claude/                    # Claude Code settings
-gemini/                    # Gemini CLI settings
 codex/                     # Codex CLI config
 code/                      # VSCode settings
 zed/                       # Zed editor settings
@@ -82,6 +80,20 @@ Set as default shell:
 echo $(which fish) | sudo tee -a /etc/shells
 chsh -s $(which fish)
 ```
+
+### Zed Remote fish handoff
+
+Zed remote terminals can start the platform login shell before applying the
+configured fish shell. These dotfiles set `terminal.env.ZED_WANTS_FISH=1` in Zed
+and install a shared hook for zsh and bash:
+
+- macOS/zsh: `.zshenv` sources `~/.config/shell/zed-fish-shell-hook.sh`.
+- Linux/bash: `.bashrc` and `.bash_profile` source the same hook, and Zed sets
+  `BASH_ENV=${HOME}/.config/shell/zed-fish-shell-hook.sh` for non-interactive
+  bash launches.
+
+The hook uses `ZED_FISH_LAUNCHED` to avoid loops and falls back to common fish
+paths on macOS and Linux when `fish` is not already on `PATH`.
 
 Useful abbreviations (expand with space):
 - `g` -> `git`
