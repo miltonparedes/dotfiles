@@ -52,7 +52,6 @@
     "chmod -R 777 /",
     "chmod -R 000 /",
     "chown -R",
-    "format",
     "powershell Remove-Item -Recurse -Force"
   ],
   "enableCustomDroids": true,
@@ -69,7 +68,9 @@
     "reasoningEffort": "high",
     "autonomyMode": "auto-medium",
     "interactionMode": "auto",
-    "autonomyLevel": "medium"
+    "autonomyLevel": "medium",
+    "specModeModel": "custom:Opus-4.8-bedrock-5",
+    "specModeReasoningEffort": "high"
   },
   "customModels": [
     {
@@ -201,5 +202,12 @@
   },
   "hasSeenMissionOnboarding": true,
   "nerdFont": true,
-  "reauthBannerShownTui": true
+  "reauthBannerShownTui": true,
+  "modelFavorites": [
+    "custom:GPT-5.5-sub-3",
+    "custom:Opus-4.8-bedrock-5",
+    "custom:Opus-4.8-0",
+    "custom:GPT-5.5-api-2",
+    "custom:GPT-5.5-pro-8"
+  ]
 }
