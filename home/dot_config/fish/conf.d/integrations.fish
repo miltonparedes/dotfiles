@@ -61,14 +61,14 @@ end
 if test (uname) = "Darwin"
     # macOS Homebrew
     if test -x /opt/homebrew/bin/brew
-        eval (/opt/homebrew/bin/brew shellenv)
+        eval (/opt/homebrew/bin/brew shellenv fish)
     else if test -x /usr/local/bin/brew
-        eval (/usr/local/bin/brew shellenv)
+        eval (/usr/local/bin/brew shellenv fish)
     end
 else if test (uname) = "Linux"
     # Linuxbrew
     if test -x /home/linuxbrew/.linuxbrew/bin/brew
-        eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)
     end
 end
 
@@ -91,7 +91,7 @@ if command -q bat
 end
 
 # ripgrep configuration
-if command -q rg
+if command -q rg; and test -f ~/.config/ripgrep/config
     set -gx RIPGREP_CONFIG_PATH ~/.config/ripgrep/config
 end
 

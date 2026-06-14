@@ -67,9 +67,9 @@
   "sessionDefaultSettings": {
     "model": "custom:GPT-5.5-sub-3",
     "reasoningEffort": "high",
-    "autonomyMode": "auto-low",
+    "autonomyMode": "auto-medium",
     "interactionMode": "auto",
-    "autonomyLevel": "low"
+    "autonomyLevel": "medium"
   },
   "customModels": [
     {
@@ -178,8 +178,28 @@
       },
       "noImageSupport": false,
       "provider": "anthropic"
+    },
+    {
+      "model": "gpt-5.5-pro",
+      "id": "custom:GPT-5.5-pro-8",
+      "index": 8,
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
+      "displayName": "GPT 5.5 Pro",
+      "maxOutputTokens": 128000,
+      "noImageSupport": false,
+      "provider": "openai"
     }
   ],
   "logoAnimation": "off",
-  "showTokenUsageIndicator": true
+  "showTokenUsageIndicator": true,
+  "enabledPlugins": {
+    "core@factory-plugins": true,
+    "droid-evolved@factory-plugins": true,
+    "droid-control@factory-plugins": true,
+    "autoresearch@factory-plugins": true
+  },
+  "hasSeenMissionOnboarding": true,
+  "nerdFont": true,
+  "reauthBannerShownTui": true
 }
