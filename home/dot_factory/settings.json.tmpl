@@ -84,6 +84,7 @@
         "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
       },
       "displayName": "Opus 4.8",
+      "maxContextLimit": 1000000,
       "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "anthropic"
@@ -99,6 +100,7 @@
         "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
       },
       "displayName": "GPT 5.5 API",
+      "maxContextLimit": 1050000,
       "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "openai"
@@ -125,6 +127,7 @@
         "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
       },
       "displayName": "Sonnet 4.6",
+      "maxContextLimit": 1000000,
       "maxOutputTokens": 64000,
       "noImageSupport": false,
       "provider": "anthropic"
@@ -134,6 +137,7 @@
       "id": "custom:Opus-4.8-bedrock-5",
       "index": 5,
       "displayName": "Opus 4.8 Bedrock",
+      "maxContextLimit": 1000000,
       "maxOutputTokens": 64000,
       "noImageSupport": false,
       "provider": "anthropic",
@@ -152,6 +156,7 @@
         "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
       },
       "displayName": "Fable 5",
+      "maxContextLimit": 1000000,
       "maxOutputTokens": 128000,
       "extraArgs": {
         "thinking": {
@@ -167,6 +172,7 @@
       "id": "custom:Fable-5-bedrock-7",
       "index": 7,
       "displayName": "Fable 5 Bedrock",
+      "maxContextLimit": 1000000,
       "maxOutputTokens": 128000,
       "bedrock": {
         "awsRegion": "us-east-1"
