@@ -134,6 +134,24 @@ alias nvimconfig 'nvim ~/.config/nvim/init.lua'
 alias t 'tmux -2'
 alias tk 'tmux kill-session'
 
+# ─── Kitmux ───────────────────────────────────────────────
+# kt: running agent threads
+alias kt 'kitmux threads'
+# kta: running agent threads from all directories
+alias kta 'kitmux threads --all'
+# ka: kitmux agent launcher
+alias ka 'kitmux agents'
+# kd: Droid persistent headless thread through kitmux
+alias kd 'kitmux droid --headless'
+# kcx: Codex persistent headless thread through kitmux
+alias kcx 'kitmux codex --headless'
+# kcl: Claude persistent headless thread through kitmux
+alias kcl 'kitmux claude --headless'
+# kcu: Cursor persistent headless thread through kitmux
+alias kcu 'kitmux cursor --headless'
+# kco: OpenCode persistent headless thread through kitmux
+alias kco 'kitmux opencode --headless'
+
 # ─── Coding Agents ────────────────────────────────────────
 # cc: Claude Code CLI without permission prompts
 alias cc 'claude --dangerously-skip-permissions'
