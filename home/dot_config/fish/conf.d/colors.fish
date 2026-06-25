@@ -24,8 +24,13 @@ set -g fish_pager_color_description yellow
 set -g fish_pager_color_prefix blue
 set -g fish_pager_color_progress brwhite --background=cyan
 
+# Advertise 24-bit true color support to TUIs.
+set -gx COLORTERM truecolor
+
 # Enable 24-bit true color support if available
 if test "$TERM" = "xterm-256color"
+    or test "$TERM" = "xterm-ghostty"
+    or test "$TERM" = "ghostty"
     or test "$TERM" = "screen-256color"
     or test "$TERM" = "tmux-256color"
     set -g fish_term24bit 1
