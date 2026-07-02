@@ -1,9 +1,10 @@
-{{- $aiGatewayBaseURL := protonPass "pass://Development/ai-gateway/URL" | trim -}}
-{{- $aiGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
-{{- $aiGatewayAccessClientID := protonPass "pass://Metall/Cloudflare AI Gateway/API Key" | trim -}}
-{{- $aiGatewayAccessClientSecret := protonPass "pass://Metall/Cloudflare AI Gateway/Secret" | trim -}}
-{{- $anthropicGatewayURL := printf "%s/anthropic" $aiGatewayBaseURL -}}
-{{- $openAIGatewayURL := printf "%s/openai" $aiGatewayBaseURL -}}
+{{- $byokGatewaySecret := protonPass "pass://Development/ai-gateway/Secret" | trim -}}
+{{- $byokGatewayURL := protonPass "pass://Development/ai-gateway/URL" | trim -}}
+{{- $byokAnthropicURL := printf "%s/anthropic" $byokGatewayURL -}}
+{{- $byokOpenAIURL := printf "%s/openai" $byokGatewayURL -}}
+{{- $workersAIShimSecret := protonPass "pass://Development/tools-workers-ai-shim/Secret" | trim -}}
+{{- $workersAIShimURL := regexReplaceAll "/+$" (protonPass "pass://Development/tools-workers-ai-shim/URL" | trim) "" -}}
+{{- $workersAIShimOpenAIURL := printf "%s/v1" $workersAIShimURL -}}
 {{- $gptSubBaseURL := "http://localhost:8317/v1" -}}
 {{- if eq .chezmoi.os "linux" -}}
 {{- $gptSubBaseURL = "http://127.0.0.1:8317/v1" -}}
@@ -52,10 +53,11 @@
     "chmod -R 777 /",
     "chmod -R 000 /",
     "chown -R",
+    "format",
     "powershell Remove-Item -Recurse -Force"
   ],
   "enableCustomDroids": true,
-  "enableHooks": false,
+  "enableHooks": true,
   "includeCoAuthoredByDroid": false,
   "enableDroidShield": true,
   "enableReadinessReport": false,
@@ -69,21 +71,24 @@
     "autonomyMode": "auto-medium",
     "interactionMode": "auto",
     "autonomyLevel": "medium",
-    "specModeModel": "custom:Opus-4.8-bedrock-5",
+    "specModeModel": "custom:Opus-4.8-0",
     "specModeReasoningEffort": "xhigh"
   },
+  "dismissedNewModels": [
+    "claude-opus-4-8",
+    "kimi-k2.7-code"
+  ],
   "customModels": [
     {
       "model": "claude-opus-4-8",
       "id": "custom:Opus-4.8-0",
       "index": 0,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
+      "baseUrl": "{{ $byokAnthropicURL }}",
+      "apiKey": "{{ $byokGatewaySecret }}",
       "extraHeaders": {
-        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
-        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+        "cf-aig-authorization": "Bearer {{ $byokGatewaySecret }}"
       },
-      "displayName": "Opus 4.8",
+      "displayName": "Opus 4.8 BYOK",
       "maxContextLimit": 1000000,
       "maxOutputTokens": 128000,
       "noImageSupport": false,
@@ -93,13 +98,12 @@
       "model": "gpt-5.5",
       "id": "custom:GPT-5.5-api-2",
       "index": 2,
-      "baseUrl": "{{ $openAIGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
+      "baseUrl": "{{ $byokOpenAIURL }}",
+      "apiKey": "{{ $byokGatewaySecret }}",
       "extraHeaders": {
-        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
-        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+        "cf-aig-authorization": "Bearer {{ $byokGatewaySecret }}"
       },
-      "displayName": "GPT 5.5 API",
+      "displayName": "GPT 5.5 BYOK",
       "maxContextLimit": 1050000,
       "maxOutputTokens": 128000,
       "noImageSupport": false,
@@ -117,74 +121,46 @@
       "provider": "openai"
     },
     {
-      "model": "claude-sonnet-4-6",
-      "id": "custom:Sonnet-4.6-4",
+      "model": "claude-sonnet-5",
+      "id": "custom:Sonnet-5-4",
       "index": 4,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
+      "baseUrl": "{{ $byokAnthropicURL }}",
+      "apiKey": "{{ $byokGatewaySecret }}",
       "extraHeaders": {
-        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
-        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+        "cf-aig-authorization": "Bearer {{ $byokGatewaySecret }}"
       },
-      "displayName": "Sonnet 4.6",
+      "displayName": "Sonnet 5 BYOK",
       "maxContextLimit": 1000000,
-      "maxOutputTokens": 64000,
+      "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "anthropic"
-    },
-    {
-      "model": "us.anthropic.claude-opus-4-8",
-      "id": "custom:Opus-4.8-bedrock-5",
-      "index": 5,
-      "displayName": "Opus 4.8 Bedrock",
-      "maxContextLimit": 1000000,
-      "maxOutputTokens": 64000,
-      "noImageSupport": false,
-      "provider": "anthropic",
-      "bedrock": {
-        "awsRegion": "us-east-1"
-      }
     },
     {
       "model": "claude-fable-5",
       "id": "custom:Fable-5-6",
       "index": 6,
-      "baseUrl": "{{ $anthropicGatewayURL }}",
-      "apiKey": "{{ $aiGatewaySecret }}",
+      "baseUrl": "{{ $byokAnthropicURL }}",
+      "apiKey": "{{ $byokGatewaySecret }}",
       "extraHeaders": {
-        "CF-Access-Client-Id": "{{ $aiGatewayAccessClientID }}",
-        "CF-Access-Client-Secret": "{{ $aiGatewayAccessClientSecret }}"
+        "cf-aig-authorization": "Bearer {{ $byokGatewaySecret }}"
       },
-      "displayName": "Fable 5",
+      "displayName": "Fable 5 BYOK",
       "maxContextLimit": 1000000,
       "maxOutputTokens": 128000,
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive",
-          "display": "summarized"
-        }
-      },
       "noImageSupport": false,
       "provider": "anthropic"
     },
     {
-      "model": "global.anthropic.claude-fable-5",
-      "id": "custom:Fable-5-bedrock-7",
-      "index": 7,
-      "displayName": "Fable 5 Bedrock",
-      "maxContextLimit": 1000000,
-      "maxOutputTokens": 128000,
-      "bedrock": {
-        "awsRegion": "us-east-1"
-      },
-      "extraArgs": {
-        "thinking": {
-          "type": "adaptive",
-          "display": "summarized"
-        }
-      },
-      "noImageSupport": false,
-      "provider": "anthropic"
+      "model": "@cf/zai-org/glm-5.2",
+      "id": "custom:GLM-5.2-workers-5",
+      "index": 5,
+      "baseUrl": "{{ $workersAIShimOpenAIURL }}",
+      "apiKey": "{{ $workersAIShimSecret }}",
+      "displayName": "GLM 5.2 Workers AI",
+      "maxContextLimit": 262144,
+      "maxOutputTokens": 32768,
+      "noImageSupport": true,
+      "provider": "openai"
     },
     {
       "model": "gpt-5.5-pro",
@@ -207,13 +183,98 @@
     "autoresearch@factory-plugins": true
   },
   "hasSeenMissionOnboarding": true,
-  "nerdFont": true,
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event notification --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event post-tool-use --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event pre-tool-use --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event session-end --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event session-start --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event stop --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "'/Users/milton/.config/kitmux/hooks/agent-event' --agent droid --event user-prompt-submit --stdin-json",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
+  "nerdFont": false,
   "reauthBannerShownTui": true,
   "modelFavorites": [
     "custom:GPT-5.5-sub-3",
-    "custom:Opus-4.8-bedrock-5",
+    "custom:GLM-5.2-workers-5",
     "custom:Opus-4.8-0",
+    "custom:Fable-5-6",
+    "custom:Sonnet-5-4",
     "custom:GPT-5.5-api-2",
     "custom:GPT-5.5-pro-8"
-  ]
+  ],
+  "windowZoomLevel": 0,
+  "toolResultDisplay": "compact"
 }
