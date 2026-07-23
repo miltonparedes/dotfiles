@@ -66,7 +66,7 @@
   "completionSoundFocusMode": "always",
   "enableSkills": false,
   "sessionDefaultSettings": {
-    "model": "custom:GPT-5.5-sub-3",
+    "model": "gpt-5.6-sol",
     "reasoningEffort": "high",
     "autonomyMode": "auto-medium",
     "interactionMode": "auto",
@@ -93,32 +93,6 @@
       "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "anthropic"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-api-2",
-      "index": 2,
-      "baseUrl": "{{ $byokOpenAIURL }}",
-      "apiKey": "{{ $byokGatewaySecret }}",
-      "extraHeaders": {
-        "cf-aig-authorization": "Bearer {{ $byokGatewaySecret }}"
-      },
-      "displayName": "GPT 5.5 BYOK",
-      "maxContextLimit": 1050000,
-      "maxOutputTokens": 128000,
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-sub-3",
-      "index": 3,
-      "baseUrl": "{{ $gptSubBaseURL }}",
-      "apiKey": "{{ $gptSubSecret }}",
-      "displayName": "GPT 5.5 Sub",
-      "maxOutputTokens": 128000,
-      "noImageSupport": false,
-      "provider": "openai"
     },
     {
       "model": "claude-sonnet-5",
@@ -163,23 +137,13 @@
       "provider": "openai"
     },
     {
-      "model": "gpt-5.5-pro",
-      "id": "custom:GPT-5.5-pro-8",
-      "index": 8,
-      "baseUrl": "{{ $gptSubBaseURL }}",
-      "apiKey": "{{ $gptSubSecret }}",
-      "displayName": "GPT 5.5 Pro",
-      "maxOutputTokens": 128000,
-      "noImageSupport": false,
-      "provider": "openai"
-    },
-    {
-      "model": "gpt-5.5",
-      "id": "custom:GPT-5.5-fast-priority-9",
+      "model": "gpt-5.6",
+      "id": "custom:GPT-5.6-sol-fast-priority-9",
       "index": 9,
       "baseUrl": "http://localhost:8317/v1",
-      "apiKey": "gossip9-squatted8-swab1-fanatic1-attire8",
-      "displayName": "GPT 5.5 Fast",
+      "apiKey": "****************************************",
+      "displayName": "GPT 5.6 Sol Fast",
+      "maxContextLimit": 1050000,
       "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "openai",
@@ -281,14 +245,12 @@
   "nerdFont": false,
   "reauthBannerShownTui": true,
   "modelFavorites": [
-    "custom:GPT-5.5-fast-priority-9",
-    "custom:GPT-5.5-sub-3",
+    "custom:GPT-5.6-sol-fast-priority-9",
+    "gpt-5.6-sol",
     "custom:GLM-5.2-workers-5",
     "custom:Opus-4.8-0",
     "custom:Fable-5-6",
-    "custom:Sonnet-5-4",
-    "custom:GPT-5.5-api-2",
-    "custom:GPT-5.5-pro-8"
+    "custom:Sonnet-5-4"
   ],
   "windowZoomLevel": 0,
   "toolResultDisplay": "compact"
