@@ -66,12 +66,12 @@
   "completionSoundFocusMode": "always",
   "enableSkills": false,
   "sessionDefaultSettings": {
-    "model": "gpt-5.6-sol",
+    "model": "custom:GPT-5.6-sol-fast-priority-9",
     "reasoningEffort": "high",
     "autonomyMode": "auto-medium",
     "interactionMode": "auto",
     "autonomyLevel": "medium",
-    "specModeModel": "custom:Opus-4.8-0",
+    "specModeModel": "custom:Opus-5-0",
     "specModeReasoningEffort": "xhigh"
   },
   "dismissedNewModels": [
@@ -80,19 +80,31 @@
   ],
   "customModels": [
     {
-      "model": "claude-opus-4-8",
-      "id": "custom:Opus-4.8-0",
+      "model": "claude-opus-5",
+      "id": "custom:Opus-5-0",
       "index": 0,
       "baseUrl": "{{ $byokAnthropicURL }}",
       "apiKey": "{{ $byokGatewaySecret }}",
       "extraHeaders": {
         "cf-aig-authorization": "Bearer {{ $byokGatewaySecret }}"
       },
-      "displayName": "Opus 4.8 BYOK",
+      "displayName": "Opus 5 BYOK",
       "maxContextLimit": 1000000,
       "maxOutputTokens": 128000,
       "noImageSupport": false,
       "provider": "anthropic"
+    },
+    {
+      "model": "gpt-5.6",
+      "id": "custom:GPT-5.6-sol-3",
+      "index": 3,
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
+      "displayName": "GPT 5.6 Sol",
+      "maxContextLimit": 1050000,
+      "maxOutputTokens": 128000,
+      "noImageSupport": false,
+      "provider": "openai"
     },
     {
       "model": "claude-sonnet-5",
@@ -140,8 +152,8 @@
       "model": "gpt-5.6",
       "id": "custom:GPT-5.6-sol-fast-priority-9",
       "index": 9,
-      "baseUrl": "http://localhost:8317/v1",
-      "apiKey": "****************************************",
+      "baseUrl": "{{ $gptSubBaseURL }}",
+      "apiKey": "{{ $gptSubSecret }}",
       "displayName": "GPT 5.6 Sol Fast",
       "maxContextLimit": 1050000,
       "maxOutputTokens": 128000,
@@ -246,9 +258,9 @@
   "reauthBannerShownTui": true,
   "modelFavorites": [
     "custom:GPT-5.6-sol-fast-priority-9",
-    "gpt-5.6-sol",
+    "custom:GPT-5.6-sol-3",
     "custom:GLM-5.2-workers-5",
-    "custom:Opus-4.8-0",
+    "custom:Opus-5-0",
     "custom:Fable-5-6",
     "custom:Sonnet-5-4"
   ],
