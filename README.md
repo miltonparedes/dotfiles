@@ -116,6 +116,59 @@ Fish functions:
 - `ts <name>` new session
 - `tl` list sessions
 
+## Herdr
+
+Managed by chezmoi at `home/dot_config/herdr/config.toml.tmpl` (Herdr 0.8.2+).
+Only configuration is tracked; sessions, logs, sockets and local plugins stay local.
+Fish is selected per platform: Homebrew on macOS, `/usr/bin/fish` on Linux.
+New terminals follow the current pane directory; existing shells keep running.
+
+Preview, apply and reload just this configuration:
+
+```bash
+chezmoi diff ~/.config/herdr/config.toml
+chezmoi apply ~/.config/herdr/config.toml
+herdr config check
+herdr server reload-config
+```
+
+Gruvbox separators use `surface_dim = "#928374"`, matching the scrollbar's
+`overlay0`, instead of the invisible `#282828` default. This follows the approach
+used on `box` (`#665c54` separators), with more contrast locally. The active tab
+uses muted ochre `#b39a62`; Herdr shares this accent with focused pane borders.
+Internal splitters stay visible without an outside frame or gaps.
+
+Prefix: backtick, matching tmux. Press it twice to type a literal backtick.
+Herdr supports one prefix, so tmux's secondary `Ctrl-a` is not replicated.
+
+| Shortcut | Action |
+| --- | --- |
+| Prefix + `h/j/k/l` or arrows | Focus pane |
+| Prefix + `H/J/K/L` | Resize pane |
+| Prefix + `\|` | Split side by side |
+| Prefix + `-` or `\` | Split top/bottom |
+| Prefix + `f` | Zoom pane |
+| Prefix + `c`, `1..9` | New tab, select tab |
+| `Ctrl-Tab` / `Ctrl-Shift-Tab` | Next / previous tab |
+| Prefix + `o` / `w`, or `Alt-s` | Workspace picker |
+| Prefix + `e`, or `Alt-k` | Native navigation (Goto) |
+| Prefix + `W` | Open worktree |
+| Prefix + `Alt-w` | Rename workspace |
+| Prefix + `A` | Open notification target |
+| Prefix + `Alt-1..9` | Focus indexed agent |
+| Prefix + `p`, or `Alt-j` | Fish popup; `exit` closes it |
+| Prefix + `g` / `v` | Lazygit / Neovim popup |
+| Prefix + `z` | Open current directory in Zed |
+| Prefix + `r` / `R` | Reload config / resize mode |
+| Prefix + `q` / `?` | Detach / active shortcut help |
+
+These use native Herdr navigation instead of invoking kitmux, which controls
+tmux sessions. Alt and Ctrl-Tab shortcuts depend on the outer terminal forwarding
+them; prefix shortcuts remain available (use Prefix + `1..9` to select a tab).
+The settings above apply locally; remote servers need their own configuration.
+
+Reference: [Herdr configuration](https://herdr.dev/docs/configuration/).
+
 ## CLI tools
 
 See `cli.Brewfile` for full list. Install with:

@@ -68,6 +68,8 @@ abbr -a sl ls
 abbr -a al la
 
 # ─── Quick Commands ───────────────────────────────────────
+# hr: herdr terminal workspace manager
+abbr -a hr herdr
 # h: command history
 abbr -a h history
 # tf: terraform
