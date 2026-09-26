@@ -46,6 +46,8 @@ alias j just
 # lazygit: TUI (COLORTERM needed for delta true color)
 alias lazygit 'COLORTERM=truecolor command lazygit'
 alias lg lazygit
+# hr: herdr terminal workspace manager
+alias hr herdr
 
 # ─── Git ──────────────────────────────────────────────────
 # g: git shortcut
