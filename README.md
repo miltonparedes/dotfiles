@@ -2,7 +2,7 @@
 
 Configuration for Fish, Starship, TMUX, Neovim and development tools.
 
-Works on macOS (Homebrew) and Fedora/Bluefin (DNF).
+Works on macOS (Homebrew), Omarchy/Arch (pacman) and Fedora/Bluefin (DNF).
 
 ## Installation
 
@@ -168,6 +168,26 @@ them; prefix shortcuts remain available (use Prefix + `1..9` to select a tab).
 The settings above apply locally; remote servers need their own configuration.
 
 Reference: [Herdr configuration](https://herdr.dev/docs/configuration/).
+
+## Omarchy
+
+Hyprland (`~/.config/hypr/*.lua`) and Omarchy shell (`~/.config/omarchy/shell.json`, menu
+extensions) are managed by chezmoi and only applied when the `omarchy` command exists.
+
+System-level config that lives outside `$HOME` is kept in `system/omarchy/` and applied with
+`just`, since chezmoi should not run `sudo`:
+
+```
+system/omarchy/
+  packages.txt                  # Arch/AUR packages added on top of Omarchy
+  modules-load.d/nct6687.conf   # MSI fan controller kernel module
+  coolercontrol/backup.tar.gz   # CoolerControl fan curves (from `just omarchy-backup`)
+```
+
+```bash
+just omarchy-backup    # after changing fan curves in CoolerControl
+just omarchy-restore   # fresh install: packages + fan module + CoolerControl
+```
 
 ## CLI tools
 

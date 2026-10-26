@@ -1,0 +1,6 @@
+# Arch/AUR packages added on top of Omarchy. One per line; `#` comments allowed.
+# Install with: just omarchy-packages
+chezmoi
+just
+nct6687d-dkms-git
+coolercontrol-bin

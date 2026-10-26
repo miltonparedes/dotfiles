@@ -162,6 +162,39 @@ install-linux-ssh-tools:
     fi
     @echo "Linux SSH tools installed"
 
+# --- Omarchy (Arch) system config outside $HOME: packages, kernel modules, CoolerControl ---
+
+# Install the Arch/AUR packages listed in system/omarchy/packages.txt (yay for AUR)
+omarchy-packages:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pkgs=$(grep -vE '^\s*(#|$)' system/omarchy/packages.txt | tr '\n' ' ')
+    echo "Installing: $pkgs"
+    yay -S --needed --noconfirm $pkgs
+
+# Snapshot CoolerControl config (fan curves, profiles, UI settings) into the repo
+omarchy-backup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    out=system/omarchy/coolercontrol/backup.tar.gz
+    sudo coolercontrold backup --keep 3 --output "$out"
+    sudo chown "$USER" "$out"
+    echo "CoolerControl config saved to $out"
+
+# Restore Omarchy system config on a fresh install: packages, nct6687 fan module, CoolerControl
+omarchy-restore:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just omarchy-packages
+    sudo install -m 644 system/omarchy/modules-load.d/nct6687.conf /etc/modules-load.d/nct6687.conf
+    sudo modprobe nct6687 || echo "nct6687 not loaded yet (reboot if the DKMS module was just built)"
+    if [[ -f system/omarchy/coolercontrol/backup.tar.gz ]]; then
+        sudo systemctl stop coolercontrold 2>/dev/null || true
+        sudo coolercontrold restore system/omarchy/coolercontrol/backup.tar.gz
+    fi
+    sudo systemctl enable --now coolercontrold
+    echo "Omarchy system config restored"
+
 # Show help
 help:
     @echo "Available commands:"
@@ -184,6 +217,11 @@ help:
     @echo "  just switch-to-fish       # Guide to switch to Fish shell"
     @echo "  just install-linux-ssh-tools  # Linux clipboard tools"
     @echo "  just bedrock-enable-fable-retention  # Enable Bedrock provider data sharing for Fable 5"
+    @echo ""
+    @echo "Omarchy:"
+    @echo "  just omarchy-packages     # Install Arch/AUR packages from system/omarchy/packages.txt"
+    @echo "  just omarchy-backup       # Save CoolerControl fan config into the repo"
+    @echo "  just omarchy-restore      # Packages + nct6687 module + CoolerControl on a fresh install"
 
 # Default command
 default: help
