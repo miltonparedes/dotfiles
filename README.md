@@ -189,10 +189,11 @@ just omarchy-restore   # fresh install: packages + fan module + CoolerControl
 
 ## CLI tools
 
-See `cli.Brewfile` for full list. Install with:
+See `cli.Brewfile` (macOS/Homebrew) or `cli.pacman.txt` (Omarchy/Arch) for the full list. Install with:
 
 ```bash
-just install-brew-essential-cli-packages
+just install-brew-essential-cli-packages     # macOS
+just install-pacman-essential-cli-packages   # Omarchy
 ```
 
 Main tools: bat, eza, fd, ripgrep, fzf, zoxide, lazygit, gh, btop.

@@ -8,10 +8,10 @@ apply:
 diff:
     chezmoi diff
 
-# Full installation: brew + chezmoi + kitmux + nvim
+# Full installation: brew/pacman + chezmoi + kitmux + nvim
 install:
     @echo "Starting full installation..."
-    just install-brew-essential-cli-packages
+    @if command -v pacman >/dev/null 2>&1; then just install-pacman-essential-cli-packages; else just install-brew-essential-cli-packages; fi
     chezmoi apply -v
     just install-kitmux
     just install-nvim-plugins
@@ -29,6 +29,11 @@ install-brew-essential-cli-packages:
     brew bundle --file cli.Brewfile
     brew upgrade
     brew cleanup
+
+# Install Arch packages (Omarchy)
+install-pacman-essential-cli-packages:
+    @echo "Installing pacman packages..."
+    sudo pacman -S --needed --noconfirm $(grep -vE '^\s*(#|$)' cli.pacman.txt)
 
 # Build and install kitmux (TUI tmux session manager)
 install-kitmux:
@@ -202,6 +207,7 @@ help:
     @echo "Installation:"
     @echo "  just install              # Full install (brew + chezmoi + kitmux + nvim)"
     @echo "  just install-brew-essential-cli-packages  # Homebrew packages"
+    @echo "  just install-pacman-essential-cli-packages  # Arch packages (Omarchy)"
     @echo "  just install-kitmux       # Build kitmux session manager"
     @echo "  just install-nvim-plugins # Install Neovim plugins"
     @echo "  just install-nvim-deps    # Install Neovim dependencies"

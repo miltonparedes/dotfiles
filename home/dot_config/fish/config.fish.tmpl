@@ -12,6 +12,13 @@ set -g fish_greeting
 # Common user bin directory (Linux/macOS)
 fish_add_path ~/.local/bin
 
+# Omarchy: what ~/.bashrc bootstraps for bash (OMARCHY_PATH + mise shims).
+# bash stays the login shell; fish is only the interactive shell launched by the terminal.
+if test -d /usr/share/omarchy
+    set -gx OMARCHY_PATH /usr/share/omarchy
+    fish_add_path --append ~/.local/share/mise/shims
+end
+
 # Detect Homebrew based on OS and CPU architecture
 {{- if eq .chezmoi.os "darwin" }}
 {{-   if eq .chezmoi.arch "arm64" }}
