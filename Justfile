@@ -55,10 +55,6 @@ update-nvim-plugins:
         echo "Plugin update may have encountered issues"; \
     fi
 
-# Enable Bedrock provider data sharing required by Claude Fable 5
-bedrock-enable-fable-retention:
-    python3 scripts/aws/enable-bedrock-provider-data-share.py
-
 # Install Neovim dependencies
 install-nvim-deps:
     @echo "Installing Neovim dependencies..."
@@ -216,7 +212,6 @@ help:
     @echo "  just check-deps           # Check dependencies"
     @echo "  just switch-to-fish       # Guide to switch to Fish shell"
     @echo "  just install-linux-ssh-tools  # Linux clipboard tools"
-    @echo "  just bedrock-enable-fable-retention  # Enable Bedrock provider data sharing for Fable 5"
     @echo ""
     @echo "Omarchy:"
     @echo "  just omarchy-packages     # Install Arch/AUR packages from system/omarchy/packages.txt"

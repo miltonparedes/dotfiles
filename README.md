@@ -30,7 +30,6 @@ just install-lazygit      # Lazygit
 ```bash
 just install-claude       # Claude Code
 just install-codex        # Codex CLI
-just install-aichat       # AIChat
 just install-coding-agents # All
 ```
 
@@ -64,7 +63,6 @@ tmux.conf                  # TMUX config
 starship.toml              # Prompt config
 git/config                 # Git config with delta
 lazygit/                   # Lazygit config
-aichat/                    # AIChat config
 claude/                    # Claude Code settings
 codex/                     # Codex CLI config
 code/                      # VSCode settings
