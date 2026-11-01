@@ -1,5 +1,4 @@
 {
-  "apiKeyHelper": "~/.claude/anthropic_key.sh",
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },

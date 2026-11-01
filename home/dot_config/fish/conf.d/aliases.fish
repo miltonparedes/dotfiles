@@ -143,8 +143,6 @@ alias kt 'kitmux threads'
 alias kta 'kitmux threads --all'
 # ka: kitmux agent launcher
 alias ka 'kitmux agents'
-# kd: Droid persistent headless thread through kitmux
-alias kd 'kitmux droid --headless'
 # kcx: Codex persistent headless thread through kitmux
 alias kcx 'kitmux codex --headless'
 # kcl: Claude persistent headless thread through kitmux
@@ -157,9 +155,6 @@ alias kco 'kitmux opencode --headless'
 # ─── Coding Agents ────────────────────────────────────────
 # cc: Claude Code CLI without permission prompts
 alias cc 'claude --dangerously-skip-permissions'
-
-# dr: Droid CLI
-alias dr droid
 
 # kr: Kiro CLI
 alias kr kiro-cli
@@ -183,11 +178,6 @@ alias cxw 'codex review'
 alias cxa 'codex apply'
 # cxy: Codex CLI danger mode (no approvals, no sandbox)
 alias cxy 'codex --dangerously-bypass-approvals-and-sandbox'
-
-# i: AIChat interactive
-alias i aichat
-# ie: AIChat execute mode
-alias ie 'aichat -e'
 
 # ccu: Claude Code usage stats
 alias ccu 'bunx ccusage'

@@ -1,0 +1,23 @@
+# Arch packages for Omarchy, the pacman counterpart of cli.Brewfile.
+# Install with: just install-pacman-essential-cli-packages
+# Not listed: gh (managed by mise), fnm (Omarchy uses mise for Node).
+just
+chezmoi
+uv
+bat
+eza
+fd
+glab
+zoxide
+jq
+lazygit
+yazi
+micro
+fzf
+btop
+fish
+ripgrep
+starship
+tmux
+neovim
+git-delta
