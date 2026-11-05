@@ -35,12 +35,11 @@ install-pacman-essential-cli-packages:
     @echo "Installing pacman packages..."
     sudo pacman -S --needed --noconfirm $(grep -vE '^\s*(#|$)' cli.pacman.txt)
 
-# Build and install kitmux (TUI tmux session manager)
+# Install kitmux (TUI tmux session manager) from GitHub releases into ~/.local/bin
 install-kitmux:
     #!/usr/bin/env bash
-    echo "Building kitmux..."
-    cd ~/Workspaces/M/kitmux && GOPROXY=direct go build -ldflags="-s -w" -o "$(go env GOPATH)/bin/kitmux" .
-    echo "kitmux installed to $(go env GOPATH)/bin/kitmux"
+    set -euo pipefail
+    curl -fsSL https://raw.githubusercontent.com/miltonparedes/kitmux/main/install.sh | sh
 
 # Trigger Lazy plugin installation
 install-nvim-plugins:
@@ -208,7 +207,7 @@ help:
     @echo "  just install              # Full install (brew + chezmoi + kitmux + nvim)"
     @echo "  just install-brew-essential-cli-packages  # Homebrew packages"
     @echo "  just install-pacman-essential-cli-packages  # Arch packages (Omarchy)"
-    @echo "  just install-kitmux       # Build kitmux session manager"
+    @echo "  just install-kitmux       # Install kitmux session manager"
     @echo "  just install-nvim-plugins # Install Neovim plugins"
     @echo "  just install-nvim-deps    # Install Neovim dependencies"
     @echo "  just install-fonts        # Install JetBrains Mono Nerd Font"
