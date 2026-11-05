@@ -1,8 +1,5 @@
 sourceDir = {{ .chezmoi.sourceDir | quote }}
 
-[protonpass]
-    command = "pass-cli"
-
 [data]
     remote_host = {{ promptStringOnce . "remote_host" "Remote host (e.g., box)" | quote }}
     remote_user = {{ promptStringOnce . "remote_user" "Remote user" | quote }}

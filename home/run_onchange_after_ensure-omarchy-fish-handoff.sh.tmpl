@@ -1,0 +1,32 @@
+{{- if lookPath "omarchy" -}}
+#!/bin/bash
+# Keep the Omarchy fish handoff sourced at the end of ~/.bashrc, after the
+# Omarchy rc, so interactive SSH/rex sessions land in fish with its environment.
+# hash: {{ include "dot_config/shell/omarchy-fish-handoff.sh" | sha256sum }}
+set -euo pipefail
+
+hook_line='[[ -r "$HOME/.config/shell/omarchy-fish-handoff.sh" ]] && source "$HOME/.config/shell/omarchy-fish-handoff.sh"'
+start_marker="# >>> omarchy-fish-handoff >>>"
+end_marker="# <<< omarchy-fish-handoff <<<"
+file="$HOME/.bashrc"
+
+touch "$file"
+tmp="$(mktemp)"
+
+{
+  # Drop any previous block, then append a fresh one at the end.
+  awk -v start="$start_marker" -v end="$end_marker" '
+    $0 == start { skipping = 1; next }
+    $0 == end { skipping = 0; next }
+    !skipping { print }
+  ' "$file"
+  printf '\n%s\n' "$start_marker"
+  printf '%s\n' '# Hand interactive bash (SSH, rex) over to fish; bash stays the login shell.'
+  printf '%s\n' "$hook_line"
+  printf '%s\n' "$end_marker"
+} > "$tmp"
+
+# Keep the file's mode and avoid piling up blank lines on reruns.
+cat -s "$tmp" > "$file"
+rm -f "$tmp"
+{{- end }}

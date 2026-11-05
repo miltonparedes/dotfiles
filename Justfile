@@ -8,10 +8,10 @@ apply:
 diff:
     chezmoi diff
 
-# Full installation: brew + chezmoi + kitmux + nvim
+# Full installation: brew/pacman + chezmoi + kitmux + nvim
 install:
     @echo "Starting full installation..."
-    just install-brew-essential-cli-packages
+    @if command -v pacman >/dev/null 2>&1; then just install-pacman-essential-cli-packages; else just install-brew-essential-cli-packages; fi
     chezmoi apply -v
     just install-kitmux
     just install-nvim-plugins
@@ -30,12 +30,16 @@ install-brew-essential-cli-packages:
     brew upgrade
     brew cleanup
 
-# Build and install kitmux (TUI tmux session manager)
+# Install Arch packages (Omarchy)
+install-pacman-essential-cli-packages:
+    @echo "Installing pacman packages..."
+    sudo pacman -S --needed --noconfirm $(grep -vE '^\s*(#|$)' cli.pacman.txt)
+
+# Install kitmux (TUI tmux session manager) from GitHub releases into ~/.local/bin
 install-kitmux:
     #!/usr/bin/env bash
-    echo "Building kitmux..."
-    cd ~/Workspaces/M/kitmux && GOPROXY=direct go build -ldflags="-s -w" -o "$(go env GOPATH)/bin/kitmux" .
-    echo "kitmux installed to $(go env GOPATH)/bin/kitmux"
+    set -euo pipefail
+    curl -fsSL https://raw.githubusercontent.com/miltonparedes/kitmux/main/install.sh | sh
 
 # Trigger Lazy plugin installation
 install-nvim-plugins:
@@ -54,10 +58,6 @@ update-nvim-plugins:
     else \
         echo "Plugin update may have encountered issues"; \
     fi
-
-# Enable Bedrock provider data sharing required by Claude Fable 5
-bedrock-enable-fable-retention:
-    python3 scripts/aws/enable-bedrock-provider-data-share.py
 
 # Install Neovim dependencies
 install-nvim-deps:
@@ -129,7 +129,11 @@ check-deps:
 # Switch to fish shell as default
 switch-to-fish:
     @echo "Switching to Fish shell..."
-    @if command -v fish >/dev/null 2>&1; then \
+    @if command -v omarchy >/dev/null 2>&1; then \
+        echo "On Omarchy, keep bash as the login shell (do not chsh)."; \
+        echo "Ghostty launches fish, and chezmoi apply hands interactive SSH/rex"; \
+        echo "bash sessions over to fish via ~/.config/shell/omarchy-fish-handoff.sh."; \
+    elif command -v fish >/dev/null 2>&1; then \
         echo "Fish is installed at: $$(which fish)"; \
         echo ""; \
         echo "To make Fish your default shell, run:"; \
@@ -162,6 +166,39 @@ install-linux-ssh-tools:
     fi
     @echo "Linux SSH tools installed"
 
+# --- Omarchy (Arch) system config outside $HOME: packages, kernel modules, CoolerControl ---
+
+# Install the Arch/AUR packages listed in system/omarchy/packages.txt (yay for AUR)
+omarchy-packages:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pkgs=$(grep -vE '^\s*(#|$)' system/omarchy/packages.txt | tr '\n' ' ')
+    echo "Installing: $pkgs"
+    yay -S --needed --noconfirm $pkgs
+
+# Snapshot CoolerControl config (fan curves, profiles, UI settings) into the repo
+omarchy-backup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    out=system/omarchy/coolercontrol/backup.tar.gz
+    sudo coolercontrold backup --keep 3 --output "$out"
+    sudo chown "$USER" "$out"
+    echo "CoolerControl config saved to $out"
+
+# Restore Omarchy system config on a fresh install: packages, nct6687 fan module, CoolerControl
+omarchy-restore:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just omarchy-packages
+    sudo install -m 644 system/omarchy/modules-load.d/nct6687.conf /etc/modules-load.d/nct6687.conf
+    sudo modprobe nct6687 || echo "nct6687 not loaded yet (reboot if the DKMS module was just built)"
+    if [[ -f system/omarchy/coolercontrol/backup.tar.gz ]]; then
+        sudo systemctl stop coolercontrold 2>/dev/null || true
+        sudo coolercontrold restore system/omarchy/coolercontrol/backup.tar.gz
+    fi
+    sudo systemctl enable --now coolercontrold
+    echo "Omarchy system config restored"
+
 # Show help
 help:
     @echo "Available commands:"
@@ -173,7 +210,8 @@ help:
     @echo "Installation:"
     @echo "  just install              # Full install (brew + chezmoi + kitmux + nvim)"
     @echo "  just install-brew-essential-cli-packages  # Homebrew packages"
-    @echo "  just install-kitmux       # Build kitmux session manager"
+    @echo "  just install-pacman-essential-cli-packages  # Arch packages (Omarchy)"
+    @echo "  just install-kitmux       # Install kitmux session manager"
     @echo "  just install-nvim-plugins # Install Neovim plugins"
     @echo "  just install-nvim-deps    # Install Neovim dependencies"
     @echo "  just install-fonts        # Install JetBrains Mono Nerd Font"
@@ -183,7 +221,11 @@ help:
     @echo "  just check-deps           # Check dependencies"
     @echo "  just switch-to-fish       # Guide to switch to Fish shell"
     @echo "  just install-linux-ssh-tools  # Linux clipboard tools"
-    @echo "  just bedrock-enable-fable-retention  # Enable Bedrock provider data sharing for Fable 5"
+    @echo ""
+    @echo "Omarchy:"
+    @echo "  just omarchy-packages     # Install Arch/AUR packages from system/omarchy/packages.txt"
+    @echo "  just omarchy-backup       # Save CoolerControl fan config into the repo"
+    @echo "  just omarchy-restore      # Packages + nct6687 module + CoolerControl on a fresh install"
 
 # Default command
 default: help

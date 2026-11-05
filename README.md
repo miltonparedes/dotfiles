@@ -2,7 +2,7 @@
 
 Configuration for Fish, Starship, TMUX, Neovim and development tools.
 
-Works on macOS (Homebrew) and Fedora/Bluefin (DNF).
+Works on macOS (Homebrew), Omarchy/Arch (pacman) and Fedora/Bluefin (DNF).
 
 ## Installation
 
@@ -30,7 +30,6 @@ just install-lazygit      # Lazygit
 ```bash
 just install-claude       # Claude Code
 just install-codex        # Codex CLI
-just install-aichat       # AIChat
 just install-coding-agents # All
 ```
 
@@ -64,7 +63,6 @@ tmux.conf                  # TMUX config
 starship.toml              # Prompt config
 git/config                 # Git config with delta
 lazygit/                   # Lazygit config
-aichat/                    # AIChat config
 claude/                    # Claude Code settings
 codex/                     # Codex CLI config
 code/                      # VSCode settings
@@ -74,12 +72,29 @@ cli.Brewfile               # Homebrew packages
 
 ## Fish shell
 
-Set as default shell:
+Set as default shell (macOS, Fedora/Bluefin):
 
 ```bash
 echo $(which fish) | sudo tee -a /etc/shells
 chsh -s $(which fish)
 ```
+
+### Omarchy: fish without chsh
+
+On Omarchy, bash stays the login shell: Omarchy's scripts, the uwsm session and
+the `~/.bashrc` environment bootstrap expect it. fish is the interactive shell
+instead:
+
+- Ghostty launches `fish --login --interactive` directly.
+- Remote sessions (SSH, rex blocks) start bash. `chezmoi apply` appends a block
+  to the end of `~/.bashrc` that sources
+  `~/.config/shell/omarchy-fish-handoff.sh`, which runs `exec fish` once the
+  Omarchy environment is set up.
+
+The handoff only fires for an interactive bash with no command, so
+`ssh host cmd`, `scp`, `rsync`, `bash -c` and scripts keep running in bash.
+Typing `bash` inside fish gives you bash. To skip fish entirely, use
+`ssh host bash --norc`.
 
 ### Zed Remote fish handoff
 
@@ -169,12 +184,33 @@ The settings above apply locally; remote servers need their own configuration.
 
 Reference: [Herdr configuration](https://herdr.dev/docs/configuration/).
 
-## CLI tools
+## Omarchy
 
-See `cli.Brewfile` for full list. Install with:
+Hyprland (`~/.config/hypr/*.lua`) and Omarchy shell (`~/.config/omarchy/shell.json`, menu
+extensions) are managed by chezmoi and only applied when the `omarchy` command exists.
+
+System-level config that lives outside `$HOME` is kept in `system/omarchy/` and applied with
+`just`, since chezmoi should not run `sudo`:
+
+```
+system/omarchy/
+  packages.txt                  # Arch/AUR packages added on top of Omarchy
+  modules-load.d/nct6687.conf   # MSI fan controller kernel module
+  coolercontrol/backup.tar.gz   # CoolerControl fan curves (from `just omarchy-backup`)
+```
 
 ```bash
-just install-brew-essential-cli-packages
+just omarchy-backup    # after changing fan curves in CoolerControl
+just omarchy-restore   # fresh install: packages + fan module + CoolerControl
+```
+
+## CLI tools
+
+See `cli.Brewfile` (macOS/Homebrew) or `cli.pacman.txt` (Omarchy/Arch) for the full list. Install with:
+
+```bash
+just install-brew-essential-cli-packages     # macOS
+just install-pacman-essential-cli-packages   # Omarchy
 ```
 
 Main tools: bat, eza, fd, ripgrep, fzf, zoxide, lazygit, gh, btop.

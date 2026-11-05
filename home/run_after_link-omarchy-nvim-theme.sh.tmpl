@@ -1,0 +1,9 @@
+{{ if lookPath "omarchy" -}}
+#!/bin/bash
+# Point nvim's plugins/theme.lua at the current Omarchy theme, as Omarchy's own
+# nvim config does. ~/.config/nvim is a symlink to this repo's nvim/, so the
+# link lives there (gitignored). Lazy's change detection reloads it on
+# `omarchy theme set`, which triggers omarchy-theme-hotreload.lua.
+set -euo pipefail
+ln -sfn "$HOME/.local/state/omarchy/current/theme/neovim.lua" {{ joinPath .chezmoi.workingTree "nvim/lua/plugins/theme.lua" | quote }}
+{{ end -}}

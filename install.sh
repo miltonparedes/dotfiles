@@ -44,8 +44,12 @@ install_chezmoi() {
     fi
 
     print_status "Installing chezmoi..."
-    ensure_brew
-    brew install chezmoi
+    if command -v pacman >/dev/null 2>&1; then
+        sudo pacman -S --noconfirm --needed chezmoi
+    else
+        ensure_brew
+        brew install chezmoi
+    fi
     print_success "chezmoi installed"
 }
 
@@ -56,8 +60,12 @@ install_just() {
     fi
 
     print_status "Installing just..."
-    ensure_brew
-    brew install just
+    if command -v pacman >/dev/null 2>&1; then
+        sudo pacman -S --noconfirm --needed just
+    else
+        ensure_brew
+        brew install just
+    fi
     print_success "just installed"
 }
 
