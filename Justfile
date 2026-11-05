@@ -129,7 +129,11 @@ check-deps:
 # Switch to fish shell as default
 switch-to-fish:
     @echo "Switching to Fish shell..."
-    @if command -v fish >/dev/null 2>&1; then \
+    @if command -v omarchy >/dev/null 2>&1; then \
+        echo "On Omarchy, keep bash as the login shell (do not chsh)."; \
+        echo "Ghostty launches fish, and chezmoi apply hands interactive SSH/rex"; \
+        echo "bash sessions over to fish via ~/.config/shell/omarchy-fish-handoff.sh."; \
+    elif command -v fish >/dev/null 2>&1; then \
         echo "Fish is installed at: $$(which fish)"; \
         echo ""; \
         echo "To make Fish your default shell, run:"; \

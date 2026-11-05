@@ -23,4 +23,5 @@ Library/**
 {{ if not (lookPath "omarchy") }}
 .config/hypr/**
 .config/omarchy/**
+.config/shell/omarchy-fish-handoff.sh
 {{ end }}

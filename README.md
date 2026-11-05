@@ -72,12 +72,29 @@ cli.Brewfile               # Homebrew packages
 
 ## Fish shell
 
-Set as default shell:
+Set as default shell (macOS, Fedora/Bluefin):
 
 ```bash
 echo $(which fish) | sudo tee -a /etc/shells
 chsh -s $(which fish)
 ```
+
+### Omarchy: fish without chsh
+
+On Omarchy, bash stays the login shell: Omarchy's scripts, the uwsm session and
+the `~/.bashrc` environment bootstrap expect it. fish is the interactive shell
+instead:
+
+- Ghostty launches `fish --login --interactive` directly.
+- Remote sessions (SSH, rex blocks) start bash. `chezmoi apply` appends a block
+  to the end of `~/.bashrc` that sources
+  `~/.config/shell/omarchy-fish-handoff.sh`, which runs `exec fish` once the
+  Omarchy environment is set up.
+
+The handoff only fires for an interactive bash with no command, so
+`ssh host cmd`, `scp`, `rsync`, `bash -c` and scripts keep running in bash.
+Typing `bash` inside fish gives you bash. To skip fish entirely, use
+`ssh host bash --norc`.
 
 ### Zed Remote fish handoff
 
