@@ -1,3 +1,9 @@
+-- On Omarchy the colorscheme comes from plugins/theme.lua (the current Omarchy
+-- theme) and all-themes.lua keeps every theme plugin available for hot reload.
+if require("omarchy").has_theme() then
+  return {}
+end
+
 return {
   -- Disable unused colorschemes
   { "folke/tokyonight.nvim", enabled = false },
